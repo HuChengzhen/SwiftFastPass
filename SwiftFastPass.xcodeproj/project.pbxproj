@@ -3,17 +3,28 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3522A8FC7B0045189E /* FilesViewController.swift */; };
+		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
+		AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
+		AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
+		AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */; };
+		AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */; };
+		AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */; };
+		AE99EF5022A95AA700C6E13A /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4F22A95AA700C6E13A /* Document.swift */; };
+		AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */; };
+		AE99EF5422A998B300C6E13A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE99EF5322A998B300C6E13A /* CloudKit.framework */; };
 		AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A222A8EE15007662AD /* AppDelegate.swift */; };
-		AEC6F1A522A8EE15007662AD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A422A8EE15007662AD /* ViewController.swift */; };
-		AEC6F1A822A8EE15007662AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A622A8EE15007662AD /* Main.storyboard */; };
 		AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A922A8EE17007662AD /* Assets.xcassets */; };
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
 		AEC6F1B822A8EE17007662AD /* SwiftFastPassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */; };
 		AEC6F1C322A8EE17007662AD /* SwiftFastPassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */; };
+		AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */; };
+		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
+		DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,10 +45,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.debug.xcconfig"; sourceTree = "<group>"; };
+		4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPassUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C36E7AE38772CB2391778D6 /* Pods-SwiftFastPassUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassUITests.release.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassUITests/Pods-SwiftFastPassUITests.release.xcconfig"; sourceTree = "<group>"; };
+		9E6DC55D2D7F23DD24034242 /* Pods-SwiftFastPass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.release.xcconfig"; path = "Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.release.xcconfig"; sourceTree = "<group>"; };
+		AE02DE3422A8F2820045189E /* SwiftFastPass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftFastPass.entitlements; sourceTree = "<group>"; };
+		AE02DE3522A8FC7B0045189E /* FilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesViewController.swift; sourceTree = "<group>"; };
+		AE02DE3822A8FF480045189E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		AE3BC21822A8F71F00C84275 /* KeePassKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeePassKit.framework; path = Carthage/Build/iOS/KeePassKit.framework; sourceTree = "<group>"; };
+		AE3BC21922A8F71F00C84275 /* KissXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KissXML.framework; path = Carthage/Build/iOS/KissXML.framework; sourceTree = "<group>"; };
+		AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
+		AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
+		AE3F897A56809895C5158C55 /* Pods-SwiftFastPassTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.release.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.release.xcconfig"; sourceTree = "<group>"; };
+		AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendEventScrollView.swift; sourceTree = "<group>"; };
+		AE99EF4F22A95AA700C6E13A /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDatabaseViewController.swift; sourceTree = "<group>"; };
+		AE99EF5322A998B300C6E13A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		AEC6F19F22A8EE15007662AD /* SwiftFastPass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftFastPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1A222A8EE15007662AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		AEC6F1A422A8EE15007662AD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		AEC6F1A722A8EE15007662AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AEC6F1A922A8EE17007662AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AEC6F1AC22A8EE17007662AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AEC6F1AE22A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,6 +73,9 @@
 		AEC6F1BE22A8EE17007662AD /* SwiftFastPassUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftFastPassUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFastPassUITests.swift; sourceTree = "<group>"; };
 		AEC6F1C422A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFC10FB97654DD633DAF0723 /* Pods-SwiftFastPassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassUITests.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassUITests/Pods-SwiftFastPassUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		F7621FE858EC47F48B917420 /* Pods-SwiftFastPassTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +83,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */,
+				AE99EF5422A998B300C6E13A /* CloudKit.framework in Frameworks */,
+				AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */,
+				AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,12 +102,63 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		38823227909DC13D3569EC75 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */,
+				9E6DC55D2D7F23DD24034242 /* Pods-SwiftFastPass.release.xcconfig */,
+				F7621FE858EC47F48B917420 /* Pods-SwiftFastPassTests.debug.xcconfig */,
+				AE3F897A56809895C5158C55 /* Pods-SwiftFastPassTests.release.xcconfig */,
+				CFC10FB97654DD633DAF0723 /* Pods-SwiftFastPassUITests.debug.xcconfig */,
+				9C36E7AE38772CB2391778D6 /* Pods-SwiftFastPassUITests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		AE02DE3722A8FF350045189E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AE02DE3822A8FF480045189E /* File.swift */,
+				AE99EF4F22A95AA700C6E13A /* Document.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AE3BC21D22A9079800C84275 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				AE3BC21F22A9088300C84275 /* Views */,
+				AE3BC21E22A907A700C84275 /* ViewControllers */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		AE3BC21E22A907A700C84275 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				AE02DE3522A8FC7B0045189E /* FilesViewController.swift */,
+				AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		AE3BC21F22A9088300C84275 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */,
+				AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */,
+				AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		AEC6F19622A8EE15007662AD = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +166,8 @@
 				AEC6F1B622A8EE17007662AD /* SwiftFastPassTests */,
 				AEC6F1C122A8EE17007662AD /* SwiftFastPassUITests */,
 				AEC6F1A022A8EE15007662AD /* Products */,
+				38823227909DC13D3569EC75 /* Pods */,
+				C5B2E5E87A20C8D35870CBF2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,9 +184,10 @@
 		AEC6F1A122A8EE15007662AD /* SwiftFastPass */ = {
 			isa = PBXGroup;
 			children = (
+				AE02DE3722A8FF350045189E /* Models */,
+				AE3BC21D22A9079800C84275 /* UI */,
+				AE02DE3422A8F2820045189E /* SwiftFastPass.entitlements */,
 				AEC6F1A222A8EE15007662AD /* AppDelegate.swift */,
-				AEC6F1A422A8EE15007662AD /* ViewController.swift */,
-				AEC6F1A622A8EE15007662AD /* Main.storyboard */,
 				AEC6F1A922A8EE17007662AD /* Assets.xcassets */,
 				AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */,
 				AEC6F1AE22A8EE17007662AD /* Info.plist */,
@@ -125,6 +213,19 @@
 			path = SwiftFastPassUITests;
 			sourceTree = "<group>";
 		};
+		C5B2E5E87A20C8D35870CBF2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AE99EF5322A998B300C6E13A /* CloudKit.framework */,
+				AE3BC21822A8F71F00C84275 /* KeePassKit.framework */,
+				AE3BC21922A8F71F00C84275 /* KissXML.framework */,
+				4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */,
+				C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */,
+				6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -132,9 +233,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AEC6F1C722A8EE17007662AD /* Build configuration list for PBXNativeTarget "SwiftFastPass" */;
 			buildPhases = (
+				C5EAAD3385CA5EC2FD9AA4FD /* [CP] Check Pods Manifest.lock */,
 				AEC6F19B22A8EE15007662AD /* Sources */,
 				AEC6F19C22A8EE15007662AD /* Frameworks */,
 				AEC6F19D22A8EE15007662AD /* Resources */,
+				AE3BC21C22A8F73E00C84275 /* ShellScript */,
+				7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -149,6 +253,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AEC6F1CA22A8EE17007662AD /* Build configuration list for PBXNativeTarget "SwiftFastPassTests" */;
 			buildPhases = (
+				53531402F32532039004A801 /* [CP] Check Pods Manifest.lock */,
 				AEC6F1AF22A8EE17007662AD /* Sources */,
 				AEC6F1B022A8EE17007662AD /* Frameworks */,
 				AEC6F1B122A8EE17007662AD /* Resources */,
@@ -167,6 +272,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AEC6F1CD22A8EE17007662AD /* Build configuration list for PBXNativeTarget "SwiftFastPassUITests" */;
 			buildPhases = (
+				44209F34E460C7E5DEBD1469 /* [CP] Check Pods Manifest.lock */,
 				AEC6F1BA22A8EE17007662AD /* Sources */,
 				AEC6F1BB22A8EE17007662AD /* Frameworks */,
 				AEC6F1BC22A8EE17007662AD /* Resources */,
@@ -231,7 +337,6 @@
 			files = (
 				AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */,
 				AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */,
-				AEC6F1A822A8EE15007662AD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,12 +356,125 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		44209F34E460C7E5DEBD1469 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftFastPassUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		53531402F32532039004A801 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftFastPassTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AE3BC21C22A8F73E00C84275 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/KeePassKit.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/KissXML.framework",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/KeePassKit.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/KissXML.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
+		};
+		C5EAAD3385CA5EC2FD9AA4FD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftFastPass-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		AEC6F19B22A8EE15007662AD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AEC6F1A522A8EE15007662AD /* ViewController.swift in Sources */,
+				AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */,
+				AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */,
+				AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */,
+				AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */,
+				AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */,
+				AE02DE3922A8FF480045189E /* File.swift in Sources */,
+				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -293,14 +511,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		AEC6F1A622A8EE15007662AD /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				AEC6F1A722A8EE15007662AD /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -430,11 +640,19 @@
 		};
 		AEC6F1C822A8EE17007662AD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = SwiftFastPass/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -448,11 +666,19 @@
 		};
 		AEC6F1C922A8EE17007662AD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E6DC55D2D7F23DD24034242 /* Pods-SwiftFastPass.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = SwiftFastPass/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -466,6 +692,7 @@
 		};
 		AEC6F1CB22A8EE17007662AD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F7621FE858EC47F48B917420 /* Pods-SwiftFastPassTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -487,6 +714,7 @@
 		};
 		AEC6F1CC22A8EE17007662AD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE3F897A56809895C5158C55 /* Pods-SwiftFastPassTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -508,6 +736,7 @@
 		};
 		AEC6F1CE22A8EE17007662AD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFC10FB97654DD633DAF0723 /* Pods-SwiftFastPassUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -528,6 +757,7 @@
 		};
 		AEC6F1CF22A8EE17007662AD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9C36E7AE38772CB2391778D6 /* Pods-SwiftFastPassUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
