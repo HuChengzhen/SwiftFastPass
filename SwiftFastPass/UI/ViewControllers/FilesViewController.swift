@@ -60,7 +60,7 @@ class FilesViewController: UIViewController {
         alertViewController.addAction(newDataBase)
         
         let importDataBase = UIAlertAction(title: NSLocalizedString("Import Database", comment: ""), style: .default) { (alertAction) in
-            let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .open)
+            let documentPicker = UIDocumentPickerViewController(documentTypes: ["com.jflan.MiniKeePass.kdbx", "com.jflan.MiniKeePass.kdb"], in: .open)
             documentPicker.delegate = self
             self.present(documentPicker, animated: true, completion: nil)
         }

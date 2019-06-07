@@ -11,7 +11,7 @@ import UIKit
 class File: NSObject, NSCoding {
 
     let name: String
-    let bookmark: Data
+    private(set) var bookmark: Data
     var image: UIImage?
     private(set) var password: String?
     private(set) var keyFileContent: Data?
@@ -22,6 +22,11 @@ class File: NSObject, NSCoding {
         self.name = name
         self.bookmark = bookmark
     }
+    
+    func updateBookmark(_ bookmark: Data) {
+        self.bookmark = bookmark
+    }
+    
     
     func attach(password: String?, keyFileContent: Data?) {
         self.password = password
