@@ -35,6 +35,7 @@ class FilesViewController: UIViewController {
         } else {
             collectionView.backgroundColor = UIColor.white
         }
+        collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
         collectionView.register(FileCollectionViewCell.self, forCellWithReuseIdentifier: "FileCollectionViewCell")
         collectionView.delegate = self
@@ -47,6 +48,7 @@ class FilesViewController: UIViewController {
     
     @objc func addButtonTapped(sender: Any) {
         let alertViewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertViewController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         
         let newDataBase = UIAlertAction(title: NSLocalizedString("New Database", comment: ""), style: .default) { (alertAction) in
             let newDatabaseViewController = NewDatabaseViewController()
@@ -82,11 +84,15 @@ extension FilesViewController: UICollectionViewDelegate, UICollectionViewDataSou
         let file = File.files[indexPath.row]
         cell.fileImageView.image = file.image ?? UIImage(named: "Directory")
         cell.nameLabel.text = file.name
+        cell.delegate = self
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        let file = File.files[indexPath.row]
+        let lockViewController = LockViewController()
+        lockViewController.file = file
+        self.navigationController?.pushViewController(lockViewController, animated: true)
     }
 }
 
@@ -96,7 +102,6 @@ extension FilesViewController: UIDocumentPickerDelegate {
             if url.startAccessingSecurityScopedResource() {
                 let name = url.lastPathComponent
                 let bookmark: Data
-                let document = Document(fileURL: url)
                 do {
                     try bookmark = url.bookmarkData(options: .suitableForBookmarkFile)
                 } catch {
@@ -120,5 +125,26 @@ extension FilesViewController: NewDatabaseDelegate {
         File.files.append(file)
         let indexPath = IndexPath(row: File.files.endIndex - 1, section: 0)
         self.collectionView.insertItems(at: [indexPath])
+    }
+}
+
+extension FilesViewController: CardCollectionViewCellDelegate {
+    func cardCollectionViewCellDeleteButtonTapped(cell: CardCollectionViewCell) {
+        let alertController = UIAlertController(title: NSLocalizedString("Do you want to remove this database from this app?", comment: ""), message: nil, preferredStyle: .actionSheet)
+        alertController.popoverPresentationController?.sourceRect = cell.bounds
+        alertController.popoverPresentationController?.sourceView = cell.deleteButton
+        
+        let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: ""), style: .destructive) { (action) in
+            if let indexPath = self.collectionView.indexPath(for: cell) {
+                File.files.remove(at: indexPath.row)
+                self.collectionView.deleteItems(at: [indexPath])
+            }
+        }
+        alertController.addAction(removeAction)
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
 }

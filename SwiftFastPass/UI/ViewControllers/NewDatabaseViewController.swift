@@ -23,13 +23,13 @@ class NewDatabaseViewController: FormViewController {
         super.viewDidLoad()
         navigationItem.title = NSLocalizedString("New Database", comment: "")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped(sender:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped(sender:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped(sender:)))
         navigationItem.rightBarButtonItem?.isEnabled = false
         
         form +++ Section()
             <<< NameRow("name") { row in
-                row.title = "Name"
-                row.placeholder = "Enter name here"
+                row.title = NSLocalizedString("Name", comment: "")
+                row.placeholder = NSLocalizedString("Enter name here", comment: "")
                 row.add(rule: RuleRequired())
                 row.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
@@ -37,16 +37,16 @@ class NewDatabaseViewController: FormViewController {
                 })
         +++ Section()
             <<< PasswordRow("password") { row in
-                row.title = "Password"
-                row.placeholder = "Enter password here"
+                row.title = NSLocalizedString("Password", comment: "")
+                row.placeholder = NSLocalizedString("Enter password here", comment: "")
                 row.add(rule: RuleRequired())
                 row.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
                     self.validateInputUpdateAddButtonState()
                 })
             <<< PasswordRow("confirmPassword") { row in
-                row.title = "Confirm password"
-                row.placeholder = "Confirm password here"
+                row.title = NSLocalizedString("Confirm password", comment: "")
+                row.placeholder = NSLocalizedString("Confirm password here", comment: "")
                 row.add(rule: RuleRequired())
                 row.add(rule: RuleClosure(closure: { (value) -> ValidationError? in
                     let passwordRow: PasswordRow? = self.form.rowBy(tag: "password")
@@ -88,7 +88,7 @@ class NewDatabaseViewController: FormViewController {
         self.dismiss(animated: true, completion: nil)
     }
 
-    @objc func addButtonTapped(sender: Any) {
+    @objc func doneButtonTapped(sender: Any) {
         let tree = KPKTree(templateContents: ())
         let targetDirURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents")
         let name = (form.rowBy(tag: "name") as! NameRow).value!

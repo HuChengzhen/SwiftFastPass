@@ -29,20 +29,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.makeKeyAndVisible()
     }
     
-    private func setupICloudDocumentsDirectory() {
-        let documentsURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents")
-//        if !FileManager.default.fileExists(atPath: documentsURL.path) {
-            do {
-                try FileManager.default.createDirectory(at: documentsURL, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("setupICloudDocumentsDirectory error: \(error)")
+    private func setupICloudDocumentsDirectory() -> Bool {
+        let documentsURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
+        if let URL = documentsURL {
+            if !FileManager.default.fileExists(atPath: URL.path) {
+                do {
+                    try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    print("setupICloudDocumentsDirectory error: \(error)")
+                }
             }
-//        }
+            return true
+        }
+        return false
     }
     
+    private func showICloudSupportInfo() {
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        self.window = window
+        let viewController = UIViewController()
+        if #available(iOS 13.0, *) {
+            viewController.view.backgroundColor = UIColor.systemBackground
+        } else {
+            viewController.view.backgroundColor = UIColor.white
+        }
+        window.rootViewController = viewController
+        
+        let alertController = UIAlertController(title: NSLocalizedString("Please open iCloud in system settings", comment: ""), message: NSLocalizedString("This app does not work without iCloud", comment: ""), preferredStyle: .alert)
+        
+        window.makeKeyAndVisible()
+        window.rootViewController?.present(alertController, animated: true, completion: nil)
+    }
+    
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        setupICloudDocumentsDirectory()
-        setupWindow()
+        if setupICloudDocumentsDirectory() {
+            setupWindow()
+        } else {
+            showICloudSupportInfo()
+        }
         return true
     }
 

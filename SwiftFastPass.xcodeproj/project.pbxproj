@@ -16,7 +16,7 @@
 		AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */; };
 		AE99EF5022A95AA700C6E13A /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4F22A95AA700C6E13A /* Document.swift */; };
 		AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */; };
-		AE99EF5422A998B300C6E13A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE99EF5322A998B300C6E13A /* CloudKit.framework */; };
+		AE9C91E522AA430F008C1629 /* LockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91E422AA430F008C1629 /* LockViewController.swift */; };
 		AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A222A8EE15007662AD /* AppDelegate.swift */; };
 		AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A922A8EE17007662AD /* Assets.xcassets */; };
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
@@ -62,6 +62,7 @@
 		AE99EF4F22A95AA700C6E13A /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDatabaseViewController.swift; sourceTree = "<group>"; };
 		AE99EF5322A998B300C6E13A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		AE9C91E422AA430F008C1629 /* LockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockViewController.swift; sourceTree = "<group>"; };
 		AEC6F19F22A8EE15007662AD /* SwiftFastPass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftFastPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1A222A8EE15007662AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AEC6F1A922A8EE17007662AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -84,7 +85,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */,
-				AE99EF5422A998B300C6E13A /* CloudKit.framework in Frameworks */,
 				AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */,
 				AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */,
 			);
@@ -145,6 +145,7 @@
 			children = (
 				AE02DE3522A8FC7B0045189E /* FilesViewController.swift */,
 				AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */,
+				AE9C91E422AA430F008C1629 /* LockViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -474,6 +475,7 @@
 				AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */,
 				AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */,
 				AE02DE3922A8FF480045189E /* File.swift in Sources */,
+				AE9C91E522AA430F008C1629 /* LockViewController.swift in Sources */,
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 			);
