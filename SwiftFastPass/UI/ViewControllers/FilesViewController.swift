@@ -14,9 +14,20 @@ class FilesViewController: UIViewController {
 
     var collectionView: UICollectionView!
     
+    lazy var emptyView: UIView = {
+        let emptyView = UIView(frame: view.bounds)
+        let label = UILabel()
+        label.text = NSLocalizedString("Press + to add database", comment: "")
+        label.sizeToFit()
+        emptyView.addSubview(label)
+        label.center = emptyView.center
+        return emptyView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        showEmptyViewIfNeeded()
     }
     
     func setupUI() {
@@ -44,6 +55,11 @@ class FilesViewController: UIViewController {
             make.edges.equalTo(view)
         }
         
+        view.addSubview(emptyView)
+    }
+    
+    func showEmptyViewIfNeeded() {
+        emptyView.isHidden = !File.files.isEmpty
     }
     
     @objc func addButtonTapped(sender: Any) {
@@ -94,6 +110,15 @@ extension FilesViewController: UICollectionViewDelegate, UICollectionViewDataSou
         lockViewController.file = file
         self.navigationController?.pushViewController(lockViewController, animated: true)
     }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        collectionView.visibleCells.forEach { (cell) in
+            let cell = cell as! FileCollectionViewCell
+            if cell.scrollView.contentOffset.x > 0 {
+                cell.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+            }
+        }
+    }
 }
 
 extension FilesViewController: UIDocumentPickerDelegate {
@@ -125,6 +150,7 @@ extension FilesViewController: NewDatabaseDelegate {
         File.files.append(file)
         let indexPath = IndexPath(row: File.files.endIndex - 1, section: 0)
         self.collectionView.insertItems(at: [indexPath])
+        self.showEmptyViewIfNeeded()
     }
 }
 
@@ -138,6 +164,7 @@ extension FilesViewController: CardCollectionViewCellDelegate {
             if let indexPath = self.collectionView.indexPath(for: cell) {
                 File.files.remove(at: indexPath.row)
                 self.collectionView.deleteItems(at: [indexPath])
+                self.showEmptyViewIfNeeded()
             }
         }
         alertController.addAction(removeAction)

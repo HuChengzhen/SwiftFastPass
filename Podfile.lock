@@ -1,20 +1,24 @@
 PODS:
   - Eureka (5.0.0)
+  - MenuItemKit (3.2.0)
   - SnapKit (5.0.0)
 
 DEPENDENCIES:
   - Eureka
+  - MenuItemKit
   - SnapKit (~> 5.0.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Eureka
+    - MenuItemKit
     - SnapKit
 
 SPEC CHECKSUMS:
   Eureka: 0f64f477ec8ef6201c6fec143d60ff5c201cf654
+  MenuItemKit: 0f2a4628dd4be911a05b2285f4ba9ca84268b3a8
   SnapKit: fd22d10eb9aff484d79a8724eab922c1ddf89bcf
 
-PODFILE CHECKSUM: 9fdba10662057c03c8295ce91af73d0ec192fd43
+PODFILE CHECKSUM: 7135285bc0404d91c2821b5a2914f66361889147
 
 COCOAPODS: 1.7.1

@@ -27,7 +27,7 @@ class NewDatabaseViewController: FormViewController {
         navigationItem.rightBarButtonItem?.isEnabled = false
         
         form +++ Section()
-            <<< NameRow("name") { row in
+            <<< TextRow("name") { row in
                 row.title = NSLocalizedString("Name", comment: "")
                 row.placeholder = NSLocalizedString("Enter name here", comment: "")
                 row.add(rule: RuleRequired())
@@ -88,10 +88,13 @@ class NewDatabaseViewController: FormViewController {
         self.dismiss(animated: true, completion: nil)
     }
 
-    @objc func doneButtonTapped(sender: Any) {
+    @objc func doneButtonTapped(sender: UIButton) {
+        sender.isEnabled = false
+        self.view.endEditing(true)
+        
         let tree = KPKTree(templateContents: ())
         let targetDirURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents")
-        let name = (form.rowBy(tag: "name") as! NameRow).value!
+        let name = (form.rowBy(tag: "name") as! TextRow).value!
         let fileName =  name + ".kdbx"
         let fileURL = targetDirURL.appendingPathComponent(fileName)
         let password = (form.rowBy(tag: "password") as! PasswordRow).value!
@@ -101,6 +104,7 @@ class NewDatabaseViewController: FormViewController {
             let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
             alertController.addAction(cancel)
             self.present(alertController, animated: true, completion: nil)
+            sender.isEnabled = true
             return
         }
         
@@ -111,6 +115,7 @@ class NewDatabaseViewController: FormViewController {
                 try keyFileContent!.write(to: keyFileURL, options: .atomic)
             } catch {
                 print("NewDatabaseViewController.addButtonTapped error: \(error)")
+                sender.isEnabled = true
                 return
             }
         }
@@ -125,12 +130,15 @@ class NewDatabaseViewController: FormViewController {
                     let bookmark = try document.fileURL.bookmarkData(options: .suitableForBookmarkFile)
                     let file = File(name: fileName, bookmark: bookmark)
                     file.attach(password: password, keyFileContent: self.keyFileContent)
+                    file.image = document.tree?.root?.image()
                     self.delegate?.newDatabase(viewController: self, didNewDatabase: file)
                     self.dismiss(animated: true, completion: nil)
+                    return
                 } catch {
                     print("NewDatabaseViewController.addButtonTapped error: \(error)")
                 }
             }
+            sender.isEnabled = true
         }
     }
 

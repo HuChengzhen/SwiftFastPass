@@ -155,5 +155,9 @@
 			</dict>
 		</dict>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>DejaVuSansMono-Bold.ttf</string>
+	</array>
 </dict>
 </plist>

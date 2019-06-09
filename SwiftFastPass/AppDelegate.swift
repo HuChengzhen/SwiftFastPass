@@ -68,6 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             showICloudSupportInfo()
         }
+        
         return true
     }
 

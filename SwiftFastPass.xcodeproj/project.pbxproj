@@ -9,15 +9,30 @@
 /* Begin PBXBuildFile section */
 		AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3522A8FC7B0045189E /* FilesViewController.swift */; };
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
+		AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */; };
+		AE3122A022AD8FC000391D84 /* PasswordGenerateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */; };
 		AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
 		AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
 		AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */; };
 		AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */; };
+		AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5199F422AD431E002F3BA9 /* ImagePickerController.swift */; };
+		AE5199FA22AD431E002F3BA9 /* ImageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5199F522AD431E002F3BA9 /* ImageRow.swift */; };
+		AE5199FC22AD431E002F3BA9 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5199F822AD431E002F3BA9 /* ImageCell.swift */; };
+		AE5199FE22AD49CD002F3BA9 /* SelectIconViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5199FD22AD49CD002F3BA9 /* SelectIconViewController.swift */; };
+		AE519A0022AD4E16002F3BA9 /* IconCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5199FF22AD4E16002F3BA9 /* IconCollectionViewCell.swift */; };
+		AE519A1B22AD5656002F3BA9 /* NSString+MPPasswordCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519A1A22AD5656002F3BA9 /* NSString+MPPasswordCreation.m */; };
+		AE519A1E22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */; };
+		AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */; };
 		AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */; };
 		AE99EF5022A95AA700C6E13A /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4F22A95AA700C6E13A /* Document.swift */; };
 		AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */; };
 		AE9C91E522AA430F008C1629 /* LockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91E422AA430F008C1629 /* LockViewController.swift */; };
 		AE9C91E722AA8B5F008C1629 /* DatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91E622AA8B5F008C1629 /* DatabaseViewController.swift */; };
+		AE9C91E922ACF961008C1629 /* NodeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91E822ACF961008C1629 /* NodeTableViewCell.swift */; };
+		AE9C91EB22AD03FA008C1629 /* Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91EA22AD03FA008C1629 /* Icons.swift */; };
+		AE9C91ED22AD2130008C1629 /* AddGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91EC22AD2130008C1629 /* AddGroupViewController.swift */; };
+		AE9C91EF22AD2224008C1629 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91EE22AD2224008C1629 /* EntryViewController.swift */; };
+		AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */; };
 		AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A222A8EE15007662AD /* AppDelegate.swift */; };
 		AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A922A8EE17007662AD /* Assets.xcassets */; };
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
@@ -54,17 +69,36 @@
 		AE02DE3422A8F2820045189E /* SwiftFastPass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftFastPass.entitlements; sourceTree = "<group>"; };
 		AE02DE3522A8FC7B0045189E /* FilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesViewController.swift; sourceTree = "<group>"; };
 		AE02DE3822A8FF480045189E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DejaVuSansMono-Bold.ttf"; sourceTree = "<group>"; };
+		AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordGenerateViewController.swift; sourceTree = "<group>"; };
 		AE3BC21822A8F71F00C84275 /* KeePassKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeePassKit.framework; path = Carthage/Build/iOS/KeePassKit.framework; sourceTree = "<group>"; };
 		AE3BC21922A8F71F00C84275 /* KissXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KissXML.framework; path = Carthage/Build/iOS/KissXML.framework; sourceTree = "<group>"; };
 		AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		AE3F897A56809895C5158C55 /* Pods-SwiftFastPassTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.release.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.release.xcconfig"; sourceTree = "<group>"; };
+		AE5199F422AD431E002F3BA9 /* ImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerController.swift; sourceTree = "<group>"; };
+		AE5199F522AD431E002F3BA9 /* ImageRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageRow.swift; sourceTree = "<group>"; };
+		AE5199F622AD431E002F3BA9 /* ImageRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRow.h; sourceTree = "<group>"; };
+		AE5199F822AD431E002F3BA9 /* ImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
+		AE5199FD22AD49CD002F3BA9 /* SelectIconViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectIconViewController.swift; sourceTree = "<group>"; };
+		AE5199FF22AD4E16002F3BA9 /* IconCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconCollectionViewCell.swift; sourceTree = "<group>"; };
+		AE519A0E22AD5486002F3BA9 /* SwiftFastPass-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftFastPass-Bridging-Header.h"; sourceTree = "<group>"; };
+		AE519A1922AD5656002F3BA9 /* NSString+MPPasswordCreation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MPPasswordCreation.h"; sourceTree = "<group>"; };
+		AE519A1A22AD5656002F3BA9 /* NSString+MPPasswordCreation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MPPasswordCreation.m"; sourceTree = "<group>"; };
+		AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MPComposedCharacterAdditions.m"; sourceTree = "<group>"; };
+		AE519A1D22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MPComposedCharacterAdditions.h"; sourceTree = "<group>"; };
+		AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPasswordViewController.swift; sourceTree = "<group>"; };
 		AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendEventScrollView.swift; sourceTree = "<group>"; };
 		AE99EF4F22A95AA700C6E13A /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDatabaseViewController.swift; sourceTree = "<group>"; };
 		AE99EF5322A998B300C6E13A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		AE9C91E422AA430F008C1629 /* LockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockViewController.swift; sourceTree = "<group>"; };
 		AE9C91E622AA8B5F008C1629 /* DatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseViewController.swift; sourceTree = "<group>"; };
+		AE9C91E822ACF961008C1629 /* NodeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeTableViewCell.swift; sourceTree = "<group>"; };
+		AE9C91EA22AD03FA008C1629 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
+		AE9C91EC22AD2130008C1629 /* AddGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupViewController.swift; sourceTree = "<group>"; };
+		AE9C91EE22AD2224008C1629 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
+		AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KPKNode+Image.swift"; sourceTree = "<group>"; };
 		AEC6F19F22A8EE15007662AD /* SwiftFastPass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftFastPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1A222A8EE15007662AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AEC6F1A922A8EE17007662AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -129,8 +163,17 @@
 			children = (
 				AE02DE3822A8FF480045189E /* File.swift */,
 				AE99EF4F22A95AA700C6E13A /* Document.swift */,
+				AE9C91EA22AD03FA008C1629 /* Icons.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		AE31229622AD8BF000391D84 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 		AE3BC21D22A9079800C84275 /* UI */ = {
@@ -149,6 +192,11 @@
 				AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */,
 				AE9C91E422AA430F008C1629 /* LockViewController.swift */,
 				AE9C91E622AA8B5F008C1629 /* DatabaseViewController.swift */,
+				AE9C91EC22AD2130008C1629 /* AddGroupViewController.swift */,
+				AE9C91EE22AD2224008C1629 /* EntryViewController.swift */,
+				AE5199FD22AD49CD002F3BA9 /* SelectIconViewController.swift */,
+				AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */,
+				AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -159,8 +207,40 @@
 				AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */,
 				AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */,
 				AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */,
+				AE9C91E822ACF961008C1629 /* NodeTableViewCell.swift */,
+				AE5199FF22AD4E16002F3BA9 /* IconCollectionViewCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		AE5199F322AD431E002F3BA9 /* ImageRow */ = {
+			isa = PBXGroup;
+			children = (
+				AE5199F422AD431E002F3BA9 /* ImagePickerController.swift */,
+				AE5199F522AD431E002F3BA9 /* ImageRow.swift */,
+				AE5199F622AD431E002F3BA9 /* ImageRow.h */,
+				AE5199F822AD431E002F3BA9 /* ImageCell.swift */,
+			);
+			path = ImageRow;
+			sourceTree = "<group>";
+		};
+		AE519A0F22AD549D002F3BA9 /* PasswordCreator */ = {
+			isa = PBXGroup;
+			children = (
+				AE519A1922AD5656002F3BA9 /* NSString+MPPasswordCreation.h */,
+				AE519A1A22AD5656002F3BA9 /* NSString+MPPasswordCreation.m */,
+				AE519A1D22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.h */,
+				AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */,
+			);
+			path = PasswordCreator;
+			sourceTree = "<group>";
+		};
+		AE9C91F522AD3B59008C1629 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		AEC6F19622A8EE15007662AD = {
@@ -188,6 +268,11 @@
 		AEC6F1A122A8EE15007662AD /* SwiftFastPass */ = {
 			isa = PBXGroup;
 			children = (
+				AE31229622AD8BF000391D84 /* fonts */,
+				AE519A0F22AD549D002F3BA9 /* PasswordCreator */,
+				AE519A0E22AD5486002F3BA9 /* SwiftFastPass-Bridging-Header.h */,
+				AE5199F322AD431E002F3BA9 /* ImageRow */,
+				AE9C91F522AD3B59008C1629 /* Utils */,
 				AE02DE3722A8FF350045189E /* Models */,
 				AE3BC21D22A9079800C84275 /* UI */,
 				AE02DE3422A8F2820045189E /* SwiftFastPass.entitlements */,
@@ -303,6 +388,7 @@
 				TargetAttributes = {
 					AEC6F19E22A8EE15007662AD = {
 						CreatedOnToolsVersion = 10.2.1;
+						LastSwiftMigration = 1100;
 					};
 					AEC6F1B222A8EE17007662AD = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -341,6 +427,7 @@
 			files = (
 				AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */,
 				AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */,
+				AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,14 +561,28 @@
 			files = (
 				AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */,
 				AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */,
+				AE519A1E22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.m in Sources */,
+				AE9C91EB22AD03FA008C1629 /* Icons.swift in Sources */,
+				AE9C91EF22AD2224008C1629 /* EntryViewController.swift in Sources */,
 				AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */,
 				AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */,
+				AE9C91E922ACF961008C1629 /* NodeTableViewCell.swift in Sources */,
+				AE5199FE22AD49CD002F3BA9 /* SelectIconViewController.swift in Sources */,
+				AE9C91ED22AD2130008C1629 /* AddGroupViewController.swift in Sources */,
 				AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */,
 				AE02DE3922A8FF480045189E /* File.swift in Sources */,
+				AE519A0022AD4E16002F3BA9 /* IconCollectionViewCell.swift in Sources */,
 				AE9C91E522AA430F008C1629 /* LockViewController.swift in Sources */,
+				AE3122A022AD8FC000391D84 /* PasswordGenerateViewController.swift in Sources */,
+				AE5199FC22AD431E002F3BA9 /* ImageCell.swift in Sources */,
+				AE519A1B22AD5656002F3BA9 /* NSString+MPPasswordCreation.m in Sources */,
+				AE5199FA22AD431E002F3BA9 /* ImageRow.swift in Sources */,
+				AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */,
+				AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */,
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 				AE9C91E722AA8B5F008C1629 /* DatabaseViewController.swift in Sources */,
+				AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -649,6 +750,7 @@
 			baseConfigurationReference = 1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
@@ -665,6 +767,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftFastPass/SwiftFastPass-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -675,6 +779,7 @@
 			baseConfigurationReference = 9E6DC55D2D7F23DD24034242 /* Pods-SwiftFastPass.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
@@ -691,6 +796,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftFastPass/SwiftFastPass-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

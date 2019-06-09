@@ -70,20 +70,22 @@ class LockViewController: FormViewController {
             if success {
                 if updateFile {
                     self.file.attach(password: password, keyFileContent: keyFileContent)
+                    self.file.image = document.tree?.root?.image()
                 }
-                let databaseViewController = DatabaseViewController()
-                databaseViewController.document = document
-                databaseViewController.group = document.tree?.root
                 DispatchQueue.main.async {
+                    let databaseViewController = DatabaseViewController()
+                    databaseViewController.document = document
+                    databaseViewController.group = document.tree?.root
                     self.navigationController?.pushViewController(databaseViewController, animated: true)
                     let index = self.navigationController!.viewControllers.firstIndex(of: self)!
                     self.navigationController?.viewControllers.remove(at: index)
                 }
             } else {
-                let alertController = UIAlertController(title: NSLocalizedString("Password or key file is not correct", comment: ""), message: NSLocalizedString("Please check password and key file", comment: ""), preferredStyle: .alert)
-                let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
-                alertController.addAction(cancel)
                 DispatchQueue.main.async {
+                    let alertController = UIAlertController(title: NSLocalizedString("Password or key file is not correct", comment: ""), message: NSLocalizedString("Please check password and key file", comment: ""), preferredStyle: .alert)
+                    let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
+                    alertController.addAction(cancel)
+                    
                     self.present(alertController, animated: true, completion: nil)
                 }
             }

@@ -17,6 +17,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
     let scrollView: SendEventScrollView
     let cardView: UIView
     let deleteButton: UIButton
+    
     weak var delegate: CardCollectionViewCellDelegate?
     
     override init(frame: CGRect) {
