@@ -7,7 +7,6 @@ target 'SwiftFastPass' do
 
   # Pods for SwiftFastPass
   pod 'SnapKit', '~> 5.0.0'
-  pod 'Eureka'
   pod 'MenuItemKit'
   
   target 'SwiftFastPassTests' do

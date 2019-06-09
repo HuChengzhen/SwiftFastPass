@@ -11,6 +11,8 @@
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
 		AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */; };
 		AE3122A022AD8FC000391D84 /* PasswordGenerateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */; };
+		AE3122AB22ADC7D200391D84 /* Eureka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3122A822ADC79900391D84 /* Eureka.framework */; };
+		AE3122AC22ADC7D200391D84 /* Eureka.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AE3122A822ADC79900391D84 /* Eureka.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
 		AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
 		AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */; };
@@ -44,6 +46,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AE3122A722ADC79900391D84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE3122A222ADC79900391D84 /* Eureka.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 51729DEB1B9A4F5E004A00EB;
+			remoteInfo = Eureka;
+		};
+		AE3122A922ADC79900391D84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE3122A222ADC79900391D84 /* Eureka.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 51729DF51B9A4F5E004A00EB;
+			remoteInfo = EurekaTests;
+		};
 		AEC6F1B422A8EE17007662AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AEC6F19722A8EE15007662AD /* Project object */;
@@ -60,6 +76,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		AE3122AD22ADC7D200391D84 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				AE3122AC22ADC7D200391D84 /* Eureka.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.debug.xcconfig"; sourceTree = "<group>"; };
 		4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +101,7 @@
 		AE02DE3822A8FF480045189E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DejaVuSansMono-Bold.ttf"; sourceTree = "<group>"; };
 		AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordGenerateViewController.swift; sourceTree = "<group>"; };
+		AE3122A222ADC79900391D84 /* Eureka.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Eureka.xcodeproj; path = Eureka/Eureka.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AE3BC21822A8F71F00C84275 /* KeePassKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeePassKit.framework; path = Carthage/Build/iOS/KeePassKit.framework; sourceTree = "<group>"; };
 		AE3BC21922A8F71F00C84275 /* KissXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KissXML.framework; path = Carthage/Build/iOS/KissXML.framework; sourceTree = "<group>"; };
 		AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -121,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */,
+				AE3122AB22ADC7D200391D84 /* Eureka.framework in Frameworks */,
 				AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */,
 				AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */,
 			);
@@ -174,6 +206,15 @@
 				AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */,
 			);
 			path = fonts;
+			sourceTree = "<group>";
+		};
+		AE3122A322ADC79900391D84 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AE3122A822ADC79900391D84 /* Eureka.framework */,
+				AE3122AA22ADC79900391D84 /* EurekaTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		AE3BC21D22A9079800C84275 /* UI */ = {
@@ -268,6 +309,7 @@
 		AEC6F1A122A8EE15007662AD /* SwiftFastPass */ = {
 			isa = PBXGroup;
 			children = (
+				AE3122A222ADC79900391D84 /* Eureka.xcodeproj */,
 				AE31229622AD8BF000391D84 /* fonts */,
 				AE519A0F22AD549D002F3BA9 /* PasswordCreator */,
 				AE519A0E22AD5486002F3BA9 /* SwiftFastPass-Bridging-Header.h */,
@@ -328,6 +370,7 @@
 				AEC6F19D22A8EE15007662AD /* Resources */,
 				AE3BC21C22A8F73E00C84275 /* ShellScript */,
 				7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */,
+				AE3122AD22ADC7D200391D84 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -411,6 +454,12 @@
 			mainGroup = AEC6F19622A8EE15007662AD;
 			productRefGroup = AEC6F1A022A8EE15007662AD /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = AE3122A322ADC79900391D84 /* Products */;
+					ProjectRef = AE3122A222ADC79900391D84 /* Eureka.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				AEC6F19E22A8EE15007662AD /* SwiftFastPass */,
@@ -419,6 +468,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		AE3122A822ADC79900391D84 /* Eureka.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Eureka.framework;
+			remoteRef = AE3122A722ADC79900391D84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE3122AA22ADC79900391D84 /* EurekaTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = EurekaTests.xctest;
+			remoteRef = AE3122A922ADC79900391D84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AEC6F19D22A8EE15007662AD /* Resources */ = {
