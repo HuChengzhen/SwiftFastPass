@@ -53,7 +53,7 @@ class EntryViewController: FormViewController {
                 }
                 .cellSetup({ (cell, row) in
                     if #available(iOS 13.0, *) {
-                        cell.accessoryView?.tintColor = UIColor.label
+//                        cell.accessoryView?.tintColor = UIColor.label
                     } else {
                         cell.accessoryView?.tintColor = UIColor.black
                     }

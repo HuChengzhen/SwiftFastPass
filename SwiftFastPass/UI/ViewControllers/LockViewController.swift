@@ -120,7 +120,8 @@ class LockViewController: FormViewController {
             keyFileContent = nil
             let buttonRow = form.rowBy(tag: "keyFile") as! ButtonRow
             buttonRow.title = NSLocalizedString("Select Key File", comment: "")
-            cell.tintColor = UIColor.systemBlue
+//            cell.tintColor = UIColor.systemBlue
+            cell.tintColor = UIColor.blue
             buttonRow.updateCell()
         }
     }
@@ -139,7 +140,8 @@ extension LockViewController: UIDocumentPickerDelegate {
             self.keyFileContent = data
             let buttonRow = form.rowBy(tag: "keyFile") as! ButtonRow
             buttonRow.title = NSLocalizedString("File: ", comment: "") + url.lastPathComponent
-            buttonRow.cell.tintColor = UIColor.systemRed
+//            buttonRow.cell.tintColor = UIColor.systemRed
+            buttonRow.cell.tintColor = UIColor.red
             buttonRow.updateCell()
         }
     }

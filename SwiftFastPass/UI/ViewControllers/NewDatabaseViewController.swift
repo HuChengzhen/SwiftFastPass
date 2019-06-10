@@ -71,12 +71,14 @@ class NewDatabaseViewController: FormViewController {
             keyFileContent = nil
             row.title = NSLocalizedString("New Key File", comment: "")
             row.updateCell()
-            cell.tintColor = UIColor.systemBlue
+//            cell.tintColor = UIColor.systemBlue
+            cell.tintColor = UIColor.blue
         } else {
             keyFileContent = NSData.kpk_generateKeyfileData(for: .kdbx)
             row.title = NSLocalizedString("Remove Key File", comment: "")
             row.updateCell()
-            cell.tintColor = UIColor.systemRed
+//            cell.tintColor = UIColor.systemRed
+            cell.tintColor = UIColor.red
         }
     }
     

@@ -38,7 +38,7 @@ class ShowPasswordViewController: UIViewController {
             make.center.equalToSuperview()
         }
         if #available(iOS 13.0, *) {
-            outerView.backgroundColor = UIColor.label.withAlphaComponent(0.1)
+//            outerView.backgroundColor = UIColor.label.withAlphaComponent(0.1)
         } else {
             outerView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         }

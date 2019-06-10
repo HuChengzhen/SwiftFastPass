@@ -29,7 +29,7 @@ class SelectIconViewController: UIViewController {
         flowLayout.minimumLineSpacing = 8
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         if #available(iOS 13.0, *) {
-            collectionView.backgroundColor = UIColor.systemBackground
+//            collectionView.backgroundColor = UIColor.systemBackground
         } else {
             collectionView.backgroundColor = UIColor.white
         }

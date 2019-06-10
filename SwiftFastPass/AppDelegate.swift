@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = window
         let viewController = UIViewController()
         if #available(iOS 13.0, *) {
-            viewController.view.backgroundColor = UIColor.systemBackground
+//            viewController.view.backgroundColor = UIColor.systemBackground
         } else {
             viewController.view.backgroundColor = UIColor.white
         }

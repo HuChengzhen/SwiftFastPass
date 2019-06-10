@@ -26,7 +26,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
         deleteButton = UIButton(type: .system)
         super.init(frame: frame)
         if #available(iOS 13.0, *) {
-            contentView.backgroundColor = UIColor.systemBackground
+//            contentView.backgroundColor = UIColor.systemBackground
         } else {
             contentView.backgroundColor = UIColor.white
         }
@@ -42,7 +42,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
         
         scrollView.addSubview(cardView)
         if #available(iOS 13.0, *) {
-            cardView.backgroundColor = UIColor.secondarySystemGroupedBackground
+//            cardView.backgroundColor = UIColor.secondarySystemGroupedBackground
         } else {
             cardView.backgroundColor = UIColor.white
         }

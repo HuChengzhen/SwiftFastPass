@@ -47,7 +47,7 @@ class FilesViewController: UIViewController {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         self.view.addSubview(collectionView)
         if #available(iOS 13.0, *) {
-            collectionView.backgroundColor = UIColor.systemBackground
+//            collectionView.backgroundColor = UIColor.systemBackground
         } else {
             collectionView.backgroundColor = UIColor.white
         }
