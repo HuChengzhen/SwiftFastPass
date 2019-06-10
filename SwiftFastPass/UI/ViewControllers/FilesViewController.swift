@@ -30,6 +30,11 @@ class FilesViewController: UIViewController {
         showEmptyViewIfNeeded()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
     func setupUI() {
         self.navigationItem.title = NSLocalizedString("Database", comment: "")
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped(sender:)))
@@ -90,13 +95,16 @@ class FilesViewController: UIViewController {
 
 }
 
-extension FilesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension FilesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return File.files.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FileCollectionViewCell", for: indexPath) as! FileCollectionViewCell
+        if cell.scrollView.contentOffset.x > 0 {
+            cell.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+        }
         let file = File.files[indexPath.row]
         cell.fileImageView.image = file.image ?? UIImage(named: "Directory")
         cell.nameLabel.text = file.name
@@ -119,6 +127,14 @@ extension FilesViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
         }
     }
+//    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize{
+//        let itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 60)
+//        return itemSize
+//    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let itemSize = CGSize(width: view.bounds.width, height: 60)
+        return itemSize
+    }
 }
 
 extension FilesViewController: UIDocumentPickerDelegate {
@@ -140,6 +156,7 @@ extension FilesViewController: UIDocumentPickerDelegate {
                 
                 let indexPath = IndexPath(row: File.files.endIndex - 1, section: 0)
                 self.collectionView.insertItems(at: [indexPath])
+                self.showEmptyViewIfNeeded()
             }
         }
     }

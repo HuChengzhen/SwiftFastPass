@@ -48,6 +48,7 @@ class ShowPasswordViewController: UIViewController {
         outerView.addSubview(passwordLabel)
         passwordLabel.font = UIFont(name: "DejaVuSansMono-Bold", size: 40)
         passwordLabel.text = password
+        passwordLabel.lineBreakMode = .byCharWrapping
         passwordLabel.numberOfLines = 0
 
         passwordLabel.snp.makeConstraints { (make) in

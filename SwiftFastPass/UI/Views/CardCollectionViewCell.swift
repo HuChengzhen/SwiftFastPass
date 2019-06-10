@@ -57,7 +57,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
             make.left.equalTo(self.scrollView).offset(10)
             make.top.bottom.equalTo(self.scrollView)
             make.height.equalTo(self.contentView)
-            make.width.equalTo(UIScreen.main.bounds.size.width - 10 * 2)
+            make.width.equalTo(self.contentView).offset(-20)
         }
         
         scrollView.addSubview(deleteButton)

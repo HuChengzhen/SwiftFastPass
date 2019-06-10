@@ -1,0 +1,52 @@
+/* 
+  Localizable.strings
+  SwiftFastPass
+
+  Created by 胡诚真 on 2019/6/10.
+  Copyright © 2019 huchengzhen. All rights reserved.
+*/
+"Database" = "Database";
+"New Database" = "New Database";
+"Import Database" = "Import Database";
+"Cancel" = "Cancel";
+"Press + to add database" = "Press + to add database";
+"Do you want to remove this database from this app?" = "Do you want to remove this database from this app?";
+"Remove" = "Remove";
+"Name" = "Name";
+"Enter name here" = "Enter name here";
+"Password" = "Password";
+"Enter password here" = "Enter password here";
+"Confirm password" = "Confirm password";
+"Confirm password here" = "Confirm password here";
+"New Key File" = "New Key File";
+"Remove Key File" = "Remove Key File";
+"The file with the same name already exists in the folder" = "The file with the same name already exists in the folder";
+"Please use a different file name" = "Please use a different file name";
+"Verify identity to open password database" = "Verify identity to open password database";
+"Password or key file is not correct" = "Password or key file is not correct";
+"Please check password and key file" = "Please check password and key file";
+"Open" = "Open";
+"Select Key File" = "Select Key File";
+"File: " = "File: ";
+"Please select the content to create" = "Please select the content to create";
+"Add Group" = "Add Group";
+"Add Item" = "Add Item";
+"Group" = "Group";
+"Item" = "Item";
+"Delete" = "Delete";
+"Do you want to delete this entry?" = "Do you want to delete this entry?";
+"Save Failed" = "Save Failed";
+"New Group" = "New Group";
+"Icon" = "Icon";
+"Title" = "Title";
+"New Item" = "New Item";
+"User Name" = "User Name";
+"Generate Password" = "Generate Password";
+"Are you sure you want to modify the database?" = "Are you sure you want to modify the database?";
+"This modification cannot be restored" = "This modification cannot be restored";
+"Confirm" = "Confirm";
+"Copy" = "Copy";
+"Display" = "Display";
+"Length" = "Length";
+"Please open iCloud in system settings" = "Please open iCloud in system settings";
+"This app does not work without iCloud" = "This app does not work without iCloud";

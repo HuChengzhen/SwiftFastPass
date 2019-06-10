@@ -35,6 +35,8 @@
 		AE9C91ED22AD2130008C1629 /* AddGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91EC22AD2130008C1629 /* AddGroupViewController.swift */; };
 		AE9C91EF22AD2224008C1629 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91EE22AD2224008C1629 /* EntryViewController.swift */; };
 		AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */; };
+		AEA1258E22AE2C72003AD579 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259022AE2C72003AD579 /* Localizable.strings */; };
+		AEA1259222AE2C7C003AD579 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259422AE2C7C003AD579 /* InfoPlist.strings */; };
 		AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A222A8EE15007662AD /* AppDelegate.swift */; };
 		AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A922A8EE17007662AD /* Assets.xcassets */; };
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
@@ -119,6 +121,8 @@
 		AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MPComposedCharacterAdditions.m"; sourceTree = "<group>"; };
 		AE519A1D22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MPComposedCharacterAdditions.h"; sourceTree = "<group>"; };
 		AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPasswordViewController.swift; sourceTree = "<group>"; };
+		AE6E1DB122AE28A8001F99F9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		AE6E1DB522AE28B6001F99F9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendEventScrollView.swift; sourceTree = "<group>"; };
 		AE99EF4F22A95AA700C6E13A /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDatabaseViewController.swift; sourceTree = "<group>"; };
@@ -130,6 +134,10 @@
 		AE9C91EC22AD2130008C1629 /* AddGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroupViewController.swift; sourceTree = "<group>"; };
 		AE9C91EE22AD2224008C1629 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
 		AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KPKNode+Image.swift"; sourceTree = "<group>"; };
+		AEA1258F22AE2C72003AD579 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		AEA1259122AE2C77003AD579 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		AEA1259322AE2C7C003AD579 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AEA1259522AE2C81003AD579 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		AEC6F19F22A8EE15007662AD /* SwiftFastPass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftFastPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1A222A8EE15007662AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AEC6F1A922A8EE17007662AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -322,6 +330,8 @@
 				AEC6F1A922A8EE17007662AD /* Assets.xcassets */,
 				AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */,
 				AEC6F1AE22A8EE17007662AD /* Info.plist */,
+				AEA1259022AE2C72003AD579 /* Localizable.strings */,
+				AEA1259422AE2C7C003AD579 /* InfoPlist.strings */,
 			);
 			path = SwiftFastPass;
 			sourceTree = "<group>";
@@ -450,6 +460,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = AEC6F19622A8EE15007662AD;
 			productRefGroup = AEC6F1A022A8EE15007662AD /* Products */;
@@ -492,8 +503,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */,
+				AEA1258E22AE2C72003AD579 /* Localizable.strings in Resources */,
 				AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */,
 				AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */,
+				AEA1259222AE2C7C003AD579 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,10 +697,30 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		AEA1259022AE2C72003AD579 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AEA1258F22AE2C72003AD579 /* en */,
+				AEA1259122AE2C77003AD579 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		AEA1259422AE2C7C003AD579 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AEA1259322AE2C7C003AD579 /* en */,
+				AEA1259522AE2C81003AD579 /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				AEC6F1AC22A8EE17007662AD /* Base */,
+				AE6E1DB122AE28A8001F99F9 /* zh-Hans */,
+				AE6E1DB522AE28B6001F99F9 /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -699,6 +732,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -760,6 +794,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -819,7 +854,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -848,7 +883,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

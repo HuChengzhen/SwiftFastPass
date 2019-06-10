@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  SwiftFastPass
+
+  Created by 胡诚真 on 2019/6/10.
+  Copyright © 2019 huchengzhen. All rights reserved.
+*/
+"CFBundleDisplayName" = "Fast Pass";
+"NSFaceIDUsageDescription" = "需要面容ID进行身份验证";
