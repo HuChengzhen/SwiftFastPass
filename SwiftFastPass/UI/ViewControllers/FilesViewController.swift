@@ -48,6 +48,7 @@ class FilesViewController: UIViewController {
         self.view.addSubview(collectionView)
         if #available(iOS 13.0, *) {
 //            collectionView.backgroundColor = UIColor.systemBackground
+            collectionView.backgroundColor = UIColor.white
         } else {
             collectionView.backgroundColor = UIColor.white
         }

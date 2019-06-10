@@ -30,6 +30,7 @@ class SelectIconViewController: UIViewController {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         if #available(iOS 13.0, *) {
 //            collectionView.backgroundColor = UIColor.systemBackground
+            collectionView.backgroundColor = UIColor.white
         } else {
             collectionView.backgroundColor = UIColor.white
         }

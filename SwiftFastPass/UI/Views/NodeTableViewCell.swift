@@ -22,6 +22,7 @@ class NodeTableViewCell: UITableViewCell {
         self.contentView.addSubview(iconImageView)
         if #available(iOS 13.0, *) {
 //            iconImageView.tintColor = UIColor.label
+            iconImageView.tintColor = UIColor.black
         } else {
             iconImageView.tintColor = UIColor.black
         }

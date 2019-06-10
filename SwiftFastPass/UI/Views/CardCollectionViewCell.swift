@@ -27,6 +27,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
         super.init(frame: frame)
         if #available(iOS 13.0, *) {
 //            contentView.backgroundColor = UIColor.systemBackground
+            contentView.backgroundColor = UIColor.white
         } else {
             contentView.backgroundColor = UIColor.white
         }
@@ -43,6 +44,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
         scrollView.addSubview(cardView)
         if #available(iOS 13.0, *) {
 //            cardView.backgroundColor = UIColor.secondarySystemGroupedBackground
+            cardView.backgroundColor = UIColor.white
         } else {
             cardView.backgroundColor = UIColor.white
         }

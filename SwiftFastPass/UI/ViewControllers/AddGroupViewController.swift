@@ -40,6 +40,7 @@ class AddGroupViewController: FormViewController {
                 .cellSetup({ (cell, row) in
                     if #available(iOS 13.0, *) {
 //                        cell.accessoryView?.tintColor = UIColor.label
+                        cell.accessoryView?.tintColor = UIColor.black
                     } else {
                         cell.accessoryView?.tintColor = UIColor.black
                     }

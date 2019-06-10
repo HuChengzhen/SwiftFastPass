@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let viewController = UIViewController()
         if #available(iOS 13.0, *) {
 //            viewController.view.backgroundColor = UIColor.systemBackground
+            viewController.view.backgroundColor = UIColor.white
         } else {
             viewController.view.backgroundColor = UIColor.white
         }

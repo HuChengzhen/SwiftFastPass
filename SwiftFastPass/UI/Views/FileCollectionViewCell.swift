@@ -21,6 +21,7 @@ class FileCollectionViewCell: CardCollectionViewCell {
         cardView.addSubview(fileImageView)
         if #available(iOS 13.0, *) {
 //            fileImageView.tintColor = UIColor.label
+            fileImageView.tintColor = UIColor.black
         } else {
             fileImageView.tintColor = UIColor.black
         }
