@@ -11,8 +11,6 @@
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
 		AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */; };
 		AE3122A022AD8FC000391D84 /* PasswordGenerateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */; };
-		AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
-		AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
 		AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */; };
 		AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */; };
 		AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5199F422AD431E002F3BA9 /* ImagePickerController.swift */; };
@@ -35,6 +33,8 @@
 		AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */; };
 		AEA1258E22AE2C72003AD579 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259022AE2C72003AD579 /* Localizable.strings */; };
 		AEA1259222AE2C7C003AD579 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259422AE2C7C003AD579 /* InfoPlist.strings */; };
+		AEBF15092347472C00E17E04 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
+		AEBF150B2347472C00E17E04 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
 		AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A222A8EE15007662AD /* AppDelegate.swift */; };
 		AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A922A8EE17007662AD /* Assets.xcassets */; };
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
@@ -46,20 +46,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AE3122A722ADC79900391D84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AE3122A222ADC79900391D84 /* Eureka.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 51729DEB1B9A4F5E004A00EB;
-			remoteInfo = Eureka;
-		};
-		AE3122A922ADC79900391D84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AE3122A222ADC79900391D84 /* Eureka.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 51729DF51B9A4F5E004A00EB;
-			remoteInfo = EurekaTests;
-		};
 		AEC6F1B422A8EE17007662AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AEC6F19722A8EE15007662AD /* Project object */;
@@ -92,7 +78,6 @@
 		AE02DE3822A8FF480045189E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DejaVuSansMono-Bold.ttf"; sourceTree = "<group>"; };
 		AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordGenerateViewController.swift; sourceTree = "<group>"; };
-		AE3122A222ADC79900391D84 /* Eureka.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Eureka.xcodeproj; path = Eureka/Eureka.xcodeproj; sourceTree = SOURCE_ROOT; };
 		AE3BC21822A8F71F00C84275 /* KeePassKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeePassKit.framework; path = Carthage/Build/iOS/KeePassKit.framework; sourceTree = "<group>"; };
 		AE3BC21922A8F71F00C84275 /* KissXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KissXML.framework; path = Carthage/Build/iOS/KissXML.framework; sourceTree = "<group>"; };
 		AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -127,6 +112,8 @@
 		AEA1259122AE2C77003AD579 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		AEA1259322AE2C7C003AD579 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AEA1259522AE2C81003AD579 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		AEBF150123473FB400E17E04 /* Carthage */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Carthage; sourceTree = "<group>"; };
+		AEBF15052347436800E17E04 /* Build */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Build; path = Carthage/Build; sourceTree = "<group>"; };
 		AEC6F19F22A8EE15007662AD /* SwiftFastPass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftFastPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1A222A8EE15007662AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AEC6F1A922A8EE17007662AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -149,9 +136,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEBF15092347472C00E17E04 /* KeePassKit.framework in Frameworks */,
+				AEBF150B2347472C00E17E04 /* KissXML.framework in Frameworks */,
 				AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */,
-				AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */,
-				AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,15 +196,6 @@
 				AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */,
 			);
 			path = fonts;
-			sourceTree = "<group>";
-		};
-		AE3122A322ADC79900391D84 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				AE3122A822ADC79900391D84 /* Eureka.framework */,
-				AE3122AA22ADC79900391D84 /* EurekaTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		AE3BC21D22A9079800C84275 /* UI */ = {
@@ -312,7 +290,6 @@
 		AEC6F1A122A8EE15007662AD /* SwiftFastPass */ = {
 			isa = PBXGroup;
 			children = (
-				AE3122A222ADC79900391D84 /* Eureka.xcodeproj */,
 				AE31229622AD8BF000391D84 /* fonts */,
 				AE519A0F22AD549D002F3BA9 /* PasswordCreator */,
 				AE519A0E22AD5486002F3BA9 /* SwiftFastPass-Bridging-Header.h */,
@@ -352,6 +329,8 @@
 		C5B2E5E87A20C8D35870CBF2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AEBF15052347436800E17E04 /* Build */,
+				AEBF150123473FB400E17E04 /* Carthage */,
 				AE99EF5322A998B300C6E13A /* CloudKit.framework */,
 				AE3BC21822A8F71F00C84275 /* KeePassKit.framework */,
 				AE3BC21922A8F71F00C84275 /* KissXML.framework */,
@@ -375,7 +354,7 @@
 				AEC6F19D22A8EE15007662AD /* Resources */,
 				AE3BC21C22A8F73E00C84275 /* ShellScript */,
 				7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */,
-				AEBF14FC2346F51A00E17E04 /* ShellScript */,
+				AEBF150E2347482200E17E04 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -460,12 +439,6 @@
 			mainGroup = AEC6F19622A8EE15007662AD;
 			productRefGroup = AEC6F1A022A8EE15007662AD /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = AE3122A322ADC79900391D84 /* Products */;
-					ProjectRef = AE3122A222ADC79900391D84 /* Eureka.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				AEC6F19E22A8EE15007662AD /* SwiftFastPass */,
@@ -474,23 +447,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		AE3122A822ADC79900391D84 /* Eureka.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Eureka.framework;
-			remoteRef = AE3122A722ADC79900391D84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		AE3122AA22ADC79900391D84 /* EurekaTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = EurekaTests.xctest;
-			remoteRef = AE3122A922ADC79900391D84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AEC6F19D22A8EE15007662AD /* Resources */ = {
@@ -604,7 +560,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
 		};
-		AEBF14FC2346F51A00E17E04 /* ShellScript */ = {
+		AEBF150E2347482200E17E04 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (

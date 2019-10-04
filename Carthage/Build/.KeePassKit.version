@@ -1,0 +1,9 @@
+{
+  "commitish" : "2.4.7",
+  "iOS" : [
+    {
+      "name" : "KeePassKit",
+      "hash" : "0abb2fbf46d399154f1892efcfd60bf433fe8f1a73687d746cb4104054592035"
+    }
+  ]
+}

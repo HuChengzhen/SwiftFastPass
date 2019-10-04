@@ -1,0 +1,27 @@
+{
+  "Mac" : [
+    {
+      "name" : "KissXML",
+      "hash" : "7e8f8c598f650b07fa13871a893003803630c2ca818e8b9cd5a15a619f978726"
+    }
+  ],
+  "watchOS" : [
+    {
+      "name" : "KissXML",
+      "hash" : "e5533ccc6dea9d30f5cc0e75bbf0df18eb04914cf59e64b10ebb255016116118"
+    }
+  ],
+  "tvOS" : [
+    {
+      "name" : "KissXML",
+      "hash" : "a7c8fb95e1df792a383dca17f08c60cbfd4ecb079a2dd3dec7c7c5c90b86382b"
+    }
+  ],
+  "commitish" : "5.2.3",
+  "iOS" : [
+    {
+      "name" : "KissXML",
+      "hash" : "d0ba314939ff3addcb068b1b446b3f8d9db2a609eaed3958156e86cf9d66334d"
+    }
+  ]
+}
