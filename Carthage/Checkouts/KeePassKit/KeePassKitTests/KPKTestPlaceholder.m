@@ -84,8 +84,26 @@
   XCTAssertEqualObjects([self.entry.notes kpk_finalValueForEntry:self.entry], expected);
 }
 
-- (void)testPickFieldPlaceholder {
+- (void)testRecursivePickCharsPlaceholder {
+  self.tree.delegate = self;
   
+  self.entry.username = @"{PICKCHARS:Password}";
+  self.entry.password = @"{PICKCHARS:UserName}";
+  
+  XCTAssertEqualObjects([self.entry.username kpk_finalValueForEntry:self.entry], @"");
+  
+  self.entry.username = @"{PICKCHARS:Password}Username";
+  self.entry.password = @"{PICKCHARS:UserName}Password";
+  self.entry.notes = @"notes";
+
+  XCTAssertEqualObjects([self.entry.username kpk_finalValueForEntry:self.entry], @"PasswordUsernamePasswordUsernamePasswordUsernamePasswordUsernamePasswordUsername");
+}
+
+- (void)testMalformedPickCharsPlaceholder {
+  self.tree.delegate = self;
+  self.entry.username = @"{PICKCHARS:Title,C=5}";
+  
+  XCTAssertEqualObjects([self.entry.username kpk_finalValueForEntry:self.entry], @"");
 }
 
 #pragma mark - KPKTreeDelegate;
@@ -96,8 +114,11 @@
   return nil;
 }
 
-- (NSString *)tree:(KPKTree *)tree resolvePickCharsPlaceholderForEntry:(KPKEntry *)entry field:(NSString *)field options:(NSString *)options {
-  NSString *value = [entry valueForAttributeWithKey:field];
+- (NSString *)tree:(KPKTree *)tree resolvePickFieldPlaceholderForEntry:(KPKEntry *)entry {
+  return @"pickedField";
+}
+
+- (NSString *)tree:(KPKTree *)tree resolvePickCharsPlaceholderForValue:(NSString *)value options:(NSString *)options {
   return value ? value : @"";
 }
 

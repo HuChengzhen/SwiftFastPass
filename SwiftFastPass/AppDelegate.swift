@@ -79,6 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
+        File.save()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {

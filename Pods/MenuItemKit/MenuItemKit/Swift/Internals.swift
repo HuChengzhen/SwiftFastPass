@@ -6,7 +6,11 @@
 //  Copyright © 2016 lazyapps. All rights reserved.
 //
 
+import UIKit
 import ObjectiveC.runtime
+#if !NON_SPM
+import ObjCSwizzlings
+#endif
 
 let imageItemIdetifier = "\u{FEFF}\u{200B}"
 
@@ -27,6 +31,11 @@ func setNewIMPWithBlock<T>(_ block: T, forSelector selector: Selector, toClass k
   }
 
   var actionBox: Box<MenuItemAction?> {
+    let key: StaticString = #function
+    return associatedBoxForKey(key, initialValue: nil)
+  }
+
+  var actionFilterBox: Box<ActionFilter?> {
     let key: StaticString = #function
     return associatedBoxForKey(key, initialValue: nil)
   }

@@ -8,6 +8,9 @@
 
 import UIKit
 import ObjectiveC.runtime
+#if !NON_SPM
+@_exported import ObjCSwizzlings
+#endif
 
 public extension UIMenuItem {
   @objc(mik_initWithTitle:image:action:)

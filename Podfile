@@ -8,7 +8,7 @@ target 'SwiftFastPass' do
   # Pods for SwiftFastPass
   pod 'SnapKit', '~> 5.0.0'
   pod 'MenuItemKit'
-  
+  pod 'Eureka'
   target 'SwiftFastPassTests' do
     inherit! :search_paths
     # Pods for testing

@@ -11,6 +11,7 @@
 #endif
 
 #import "MenuItemKit.h"
+#import "Headers.h"
 
 FOUNDATION_EXPORT double MenuItemKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char MenuItemKitVersionString[];

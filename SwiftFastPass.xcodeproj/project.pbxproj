@@ -11,8 +11,6 @@
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
 		AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */; };
 		AE3122A022AD8FC000391D84 /* PasswordGenerateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */; };
-		AE3122AB22ADC7D200391D84 /* Eureka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3122A822ADC79900391D84 /* Eureka.framework */; };
-		AE3122AC22ADC7D200391D84 /* Eureka.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AE3122A822ADC79900391D84 /* Eureka.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
 		AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
 		AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */; };
@@ -77,20 +75,6 @@
 			remoteInfo = SwiftFastPass;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		AE3122AD22ADC7D200391D84 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				AE3122AC22ADC7D200391D84 /* Eureka.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		025FF0D6072556F81FB9C972 /* Pods-SwiftFastPass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.release.xcconfig"; sourceTree = "<group>"; };
@@ -166,7 +150,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */,
-				AE3122AB22ADC7D200391D84 /* Eureka.framework in Frameworks */,
 				AE3BC21A22A8F71F00C84275 /* KeePassKit.framework in Frameworks */,
 				AE3BC21B22A8F71F00C84275 /* KissXML.framework in Frameworks */,
 			);
@@ -392,7 +375,7 @@
 				AEC6F19D22A8EE15007662AD /* Resources */,
 				AE3BC21C22A8F73E00C84275 /* ShellScript */,
 				7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */,
-				AE3122AD22ADC7D200391D84 /* Embed Frameworks */,
+				AEBF14FC2346F51A00E17E04 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -620,6 +603,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
+		};
+		AEBF14FC2346F51A00E17E04 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# skip if we run in debug\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\necho \"Skip frameworks cleaning in debug version\"\nexit 0\nfi\n\nAPP_PATH=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n\n# This script loops through the frameworks embedded in the application and\n# removes unused architectures.\nfind \"$APP_PATH\" -name '*.framework' -type d | while read -r FRAMEWORK\ndo\nFRAMEWORK_EXECUTABLE_NAME=$(defaults read \"$FRAMEWORK/Info.plist\" CFBundleExecutable)\nFRAMEWORK_EXECUTABLE_PATH=\"$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME\"\necho \"Executable is $FRAMEWORK_EXECUTABLE_PATH\"\n\nEXTRACTED_ARCHS=()\n\nfor ARCH in $ARCHS\ndo\necho \"Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME\"\nlipo -extract \"$ARCH\" \"$FRAMEWORK_EXECUTABLE_PATH\" -o \"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\"\nEXTRACTED_ARCHS+=(\"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\")\ndone\n\necho \"Merging extracted architectures: ${ARCHS}\"\nlipo -o \"$FRAMEWORK_EXECUTABLE_PATH-merged\" -create \"${EXTRACTED_ARCHS[@]}\"\nrm \"${EXTRACTED_ARCHS[@]}\"\n\necho \"Replacing original executable with thinned version\"\nrm \"$FRAMEWORK_EXECUTABLE_PATH\"\nmv \"$FRAMEWORK_EXECUTABLE_PATH-merged\" \"$FRAMEWORK_EXECUTABLE_PATH\"\n\ndone\n";
 		};
 		C5EAAD3385CA5EC2FD9AA4FD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -866,7 +866,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -878,6 +878,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SwiftFastPass/SwiftFastPass-Bridging-Header.h";
@@ -895,7 +896,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -907,6 +908,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SwiftFastPass/SwiftFastPass-Bridging-Header.h";

@@ -128,11 +128,11 @@
       return KPKComparsionDifferent;
     }
   }
-
+  
   if(![self.mutableCustomData isEqualToDictionary:aNode.mutableCustomData]) {
     return KPKComparsionDifferent;
   }
-
+  
   BOOL isEqual = (_iconId == aNode->_iconId)
   && (_iconUUID == aNode.iconUUID || [_iconUUID isEqual:aNode->_iconUUID])
   && (self.title == aNode.title || [self.title isEqual:aNode.title])
@@ -250,8 +250,8 @@
 }
 
 - (NSString *)breadcrumbWithSeparator:(NSString *)separator {
-  if(self.parent && (self.rootGroup != self.parent)) {
-    return [[self.parent breadcrumb] stringByAppendingFormat:@" > %@", self.title];
+  if(self.parent) {
+    return [[self.parent breadcrumbWithSeparator:separator] stringByAppendingFormat:@"%@%@", separator, self.title];
   }
   return self.title;
 }
@@ -317,10 +317,14 @@
     [entry remove];
   }
   [[self.undoManager prepareWithInvocationTarget:self] addToGroup:self.parent atIndex:self.index];
-  NSAssert(nil == self.tree.mutableDeletedObjects[self.uuid], @"Node already registered as deleted!");
+  if(nil != self.tree.mutableDeletedObjects[self.uuid]) {
+    NSLog(@"Internal inconsitency: Node %@ already registered as deleted!", self);
+  }
   self.tree.mutableDeletedObjects[self.uuid] = [[KPKDeletedNode alloc] initWithNode:self];
   /* keep a strong reference for undo support in the tree */
-  NSAssert(nil == self.tree.mutableDeletedNodes[self.uuid], @"Node is already deleted!");
+  if(nil != self.tree.mutableDeletedNodes[self.uuid]) {
+    NSLog(@"Internal inconsintency: Node %@ is already deleted!", self);
+  }
   self.tree.mutableDeletedNodes[self.uuid] = self;
   [self.parent _removeChild:self];
 }

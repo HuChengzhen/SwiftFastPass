@@ -22,7 +22,12 @@
    convert big endian to host
    if conversion took place, we need to shift by the size
    */
+#if __LP64__ || NS_BUILD_32_LIKE_64
   NSUInteger beNumber = (NSUInteger)CFSwapInt64BigToHost(number);
+#else
+  NSUInteger beNumber = (NSUInteger)CFSwapInt32BigToHost(number);
+#endif
+
   if(beNumber != number) {
     beNumber >>= (8 * (sizeof(NSUInteger) - self.length));
   }
@@ -52,8 +57,8 @@
   uint8_t mac[CC_SHA1_DIGEST_LENGTH];
   CCHmac(kCCHmacAlgSHA1, key.bytes, key.length, &beCounter, sizeof(uint64_t), mac);
   
-  /* offset ist lowest 4 bit on last byte */
-  uint8_t offset = (mac[19] & 0xf);
+  /* offset is lowest 4 bit on last byte */
+  uint8_t offset = (mac[CC_SHA1_DIGEST_LENGTH - 1] & 0xf);
   
   uint8_t otp[4];
   otp[0] = mac[offset] & 0x7f;
