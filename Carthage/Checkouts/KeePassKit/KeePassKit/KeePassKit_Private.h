@@ -9,6 +9,7 @@
 @import Foundation;
 
 #import "NSDate+KPKAdditions.h"
+#import "NSData+KPKBase32.h"
 
 #import "KPKXmlTreeReader.h"
 
@@ -23,4 +24,5 @@
 #import "KPKTimeInfo_Private.h"
 #import "KPKMetaData_Private.h"
 #import "KPKWindowAssociation_Private.h"
+#import "KPKOTPGenerator_Private.h"
 

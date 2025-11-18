@@ -129,6 +129,13 @@
     }
   }
   
+  if(self.tags.count != aNode.tags.count) {
+    // FIXME: Tag order should not matter!
+    if(![self.tags isEqualToArray:aNode.tags]) {
+      return KPKComparsionDifferent;
+    }
+  }
+  
   if(![self.mutableCustomData isEqualToDictionary:aNode.mutableCustomData]) {
     return KPKComparsionDifferent;
   }
@@ -245,6 +252,17 @@
   }
 }
 
+- (void)setTags:(NSArray<NSString *> *)tags {
+  [[self.undoManager prepareWithInvocationTarget:self] setTags:self.tags];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_TAGS", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the tags of an enty")];
+  [self.tree _unregisterTags:_tags];
+  
+  tags = [[NSSet setWithArray:tags].allObjects sortedArrayUsingSelector:@selector(compare:)];
+ 
+  _tags = tags ? [[NSArray alloc] initWithArray:tags copyItems:YES] : nil;
+  [self.tree _registerTags:_tags];
+}
+
 - (NSString *)breadcrumb {
   return [self breadcrumbWithSeparator:@"."];
 }
@@ -289,7 +307,7 @@
 }
 
 - (void)trashOrRemove {
-  /* If we do create a trahs group we should also remove it after a undo operation */
+  /* If we do create a trash group we should also remove it after a undo operation */
   if(self == self.tree.trash) {
     return; // Prevent recursive trashing of trash group
   }
@@ -320,7 +338,7 @@
   if(nil != self.tree.mutableDeletedObjects[self.uuid]) {
     NSLog(@"Internal inconsitency: Node %@ already registered as deleted!", self);
   }
-  self.tree.mutableDeletedObjects[self.uuid] = [[KPKDeletedNode alloc] initWithNode:self];
+  self.tree.mutableDeletedObjects[self.uuid] = [[KPKDeletedNode alloc] initWithUUID:self.uuid];
   /* keep a strong reference for undo support in the tree */
   if(nil != self.tree.mutableDeletedNodes[self.uuid]) {
     NSLog(@"Internal inconsintency: Node %@ is already deleted!", self);
@@ -342,6 +360,7 @@
     return; // no need to move, we're where we want to be
   }
   [[self.undoManager prepareWithInvocationTarget:self] moveToGroup:self.parent atIndex:self.index];
+  self.previousParent = self.parent.uuid;
   [self.parent _removeChild:self];
   [group _addChild:self atIndex:index];
   [self touchMoved];
@@ -353,6 +372,7 @@
 
 - (void)addToGroup:(KPKGroup *)group atIndex:(NSUInteger)index {
   /* setup parent relationship to make undo possible */
+  NSAssert(self.parent == nil, @"Added nodes cannot have a parent. Please use -moveToGroup:atIndex: and moveToGroup: instead");
   self.parent = group;
   [[self.undoManager prepareWithInvocationTarget:self] remove];
   [group _addChild:self atIndex:index];
@@ -445,9 +465,12 @@
     _uuid = [[aDecoder decodeObjectOfClass:NSUUID.class forKey:NSStringFromSelector(@selector(uuid))] copy];
     _iconId = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(iconId))];
     _iconUUID = [[aDecoder decodeObjectOfClass:NSUUID.class forKey:NSStringFromSelector(@selector(iconUUID))] copy];
+    _tags = [[aDecoder decodeObjectOfClass:NSArray.class forKey:NSStringFromSelector(@selector(tags))] copy];
+    _mutableCustomData = [aDecoder decodeObjectOfClass:NSMutableDictionary.class forKey:NSStringFromSelector(@selector(mutableCustomData))];
+    _previousParent = [aDecoder decodeObjectOfClass:NSUUID.class forKey:NSStringFromSelector(@selector(previousParent))];
     /* decode time info at last */
     self.timeInfo = [aDecoder decodeObjectOfClass:KPKTimeInfo.class forKey:NSStringFromSelector(@selector(timeInfo))];
-    _mutableCustomData = [aDecoder decodeObjectOfClass:NSMutableDictionary.class forKey:NSStringFromSelector(@selector(mutableCustomData))];
+    
   }
   return self;
 }
@@ -457,6 +480,8 @@
   [aCoder encodeObject:self.uuid forKey:NSStringFromSelector(@selector(uuid))];
   [aCoder encodeInteger:self.iconId forKey:NSStringFromSelector(@selector(iconId))];
   [aCoder encodeObject:self.iconUUID forKey:NSStringFromSelector(@selector(iconUUID))];
+  [aCoder encodeObject:_tags forKey:NSStringFromSelector(@selector(tags))];
+  [aCoder encodeObject:self.previousParent forKey:NSStringFromSelector(@selector(previousParent))];
   [aCoder encodeObject:self.mutableCustomData forKey:NSStringFromSelector(@selector(mutableCustomData))];
 }
 
@@ -469,6 +494,8 @@
   copy.title = self.title;
   copy.timeInfo = self.timeInfo;
   copy.mutableCustomData = [[NSMutableDictionary alloc] initWithDictionary:self.mutableCustomData copyItems:YES];
+  copy.tags = self.tags;
+  copy.previousParent = self.previousParent;
   KPK_SCOPED_NO_END(copy.updateTiming);
   return copy;
 }

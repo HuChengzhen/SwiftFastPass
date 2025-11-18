@@ -1,27 +1,17 @@
 {
-  "Mac" : [
-    {
-      "name" : "KissXML",
-      "hash" : "7e8f8c598f650b07fa13871a893003803630c2ca818e8b9cd5a15a619f978726"
-    }
-  ],
-  "watchOS" : [
-    {
-      "name" : "KissXML",
-      "hash" : "e5533ccc6dea9d30f5cc0e75bbf0df18eb04914cf59e64b10ebb255016116118"
-    }
-  ],
-  "tvOS" : [
-    {
-      "name" : "KissXML",
-      "hash" : "a7c8fb95e1df792a383dca17f08c60cbfd4ecb079a2dd3dec7c7c5c90b86382b"
-    }
-  ],
-  "commitish" : "5.2.3",
+  "commitish" : "503fc012b73a4507965019720cbf1c157e849657",
   "iOS" : [
     {
-      "name" : "KissXML",
-      "hash" : "d0ba314939ff3addcb068b1b446b3f8d9db2a609eaed3958156e86cf9d66334d"
+      "identifier" : "ios-arm64",
+      "container" : "KissXML.xcframework",
+      "hash" : "acc2d1d0f398c476c0253f601ee5ae21608dce08466e6204bce9b615f4d4911c",
+      "name" : "KissXML"
+    },
+    {
+      "identifier" : "ios-arm64_x86_64-simulator",
+      "container" : "KissXML.xcframework",
+      "hash" : "aa13fb5a4f0650e4bb9643c3e6241ce22e54e8bd68a79ffb0f50789243d18017",
+      "name" : "KissXML"
     }
   ]
 }

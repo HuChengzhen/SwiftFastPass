@@ -21,9 +21,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KPKFormat.h"
-#import "KPKSynchronizationOptions.h"
-#import "KPKNode.h"
+#import <KeePassKit/KPKFormat.h>
+#import <KeePassKit/KPKSynchronizationOptions.h>
+#import <KeePassKit/KPKNode.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -85,7 +85,6 @@ FOUNDATION_EXTERN NSString *const KPKEntryKey;
 - (NSString *)tree:(KPKTree *)tree resolvePlaceholder:(NSString *)placeholder forEntry:(KPKEntry *)entry;
 /* specialized placeholder to speed up lookup */
 - (NSString *)tree:(KPKTree *)tree resolvePickCharsPlaceholderForValue:(NSString *)value options:(NSString *_Nullable)options;
-- (NSString *)tree:(KPKTree *)tree resolveHMACOTPPlaceholderForEntry:(KPKEntry *)entry;
 - (NSString *)tree:(KPKTree *)tree resolvePickFieldPlaceholderForEntry:(KPKEntry *)entry;
 /**
  Allows the Tree to resolve unkown placeholders in the supplied string. Be aware that this string is raw and might still contain
@@ -111,52 +110,52 @@ FOUNDATION_EXTERN NSString *const KPKEntryKey;
 /* Keys used in UserInfo */
 FOUNDATION_EXPORT NSString *const kKPKNodeKey;
 
-@interface KPKTree : NSObject
+@interface KPKTree : NSObject <NSCopying>
 
-@property(nonatomic, weak, nullable) id<KPKTreeDelegate> delegate;
-@property(nonatomic, copy, readonly) NSDictionary<NSUUID *,KPKDeletedNode *> *deletedObjects;
-@property(nonatomic, strong, readonly, nullable) KPKMetaData *metaData;
+@property (nonatomic, weak, nullable) id<KPKTreeDelegate> delegate;
+@property (nonatomic, copy, readonly) NSDictionary<NSUUID *,KPKDeletedNode *> *deletedObjects;
+@property (nonatomic, strong, readonly, nullable) KPKMetaData *metaData;
 
 
-@property(nonatomic, readonly, nullable) NSUndoManager *undoManager;
-@property(nonatomic, readonly) BOOL isEditable;
+@property (nonatomic, readonly, nullable) NSUndoManager *undoManager;
+@property (nonatomic, readonly) BOOL isEditable;
 
-@property(nonatomic, weak, nullable) KPKGroup *trash;
-@property(nonatomic, weak, nullable) KPKGroup *templates;
-@property(nonatomic, strong, nullable) KPKGroup *root;
+@property (nonatomic, weak, nullable) KPKGroup *trash;
+@property (nonatomic, weak, nullable) KPKGroup *templates;
+@property (nonatomic, strong, nullable) KPKGroup *root;
 /**
  Acces to the root group via the groups property
  to offer a bindable interface for a tree
  */
-@property(nonatomic, readonly) NSArray<KPKGroup *> *groups;
+@property (nonatomic, readonly) NSArray<KPKGroup *> *groups;
 /**
  Acces to the root children via the children property
  to offer a bindable interface for a tree
  */
-@property(nonatomic, copy, readonly) NSArray<KPKNode *> *children;
+@property (nonatomic, copy, readonly) NSArray<KPKNode *> *children;
 /**
  *	NSArray of KPKGroup objects. Contains all child groups in a tree.
  *  @note The root group is missing from this array
  */
-@property(nonatomic, readonly) NSArray<KPKGroup *> *allGroups;
+@property (nonatomic, readonly) NSArray<KPKGroup *> *allGroups;
 /**
  *	NSArray of KPKEntries. Contains all entries of the tree
  */
-@property(nonatomic, readonly) NSArray<KPKEntry *> *allEntries;
+@property (nonatomic, readonly) NSArray<KPKEntry *> *allEntries;
 /**
  *  NSArray of KPKEntries that are History elements
  */
-@property(nonatomic, readonly) NSArray<KPKEntry *> *allHistoryEntries;
+@property (nonatomic, readonly) NSArray<KPKEntry *> *allHistoryEntries;
 /**
  Array of all currently known tags.
  */
-@property(nonatomic, readonly, copy) NSArray<NSString *> *availableTags;
+@property (nonatomic, readonly, copy) NSArray<NSString *> *availableTags;
 
 /**
  Returns the minimum database version (tied to the minimum Type) to store the tree without data loss.
  This always returns the maxium supported KDB version for a KDB type, KDBX results depend on data (settings, loaded data, etc.)
  */
-@property(nonatomic, readonly) KPKFileVersion minimumVersion;
+@property (nonatomic, readonly) KPKFileVersion minimumVersion;
 
 - (instancetype)initWithTemplateContents;
 

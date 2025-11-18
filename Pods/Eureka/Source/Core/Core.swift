@@ -392,6 +392,7 @@ public struct InlineRowHideOptions: OptionSet {
 }
 
 /// View controller that shows a form.
+@objc(EurekaFormViewController)
 open class FormViewController: UIViewController, FormViewControllerProtocol, FormDelegate {
 
     @IBOutlet public var tableView: UITableView!
@@ -421,6 +422,9 @@ open class FormViewController: UIViewController, FormViewControllerProtocol, For
 
     /// Enables animated scrolling on row navigation
     open var animateScroll = false
+    
+    /// The default scroll position on the focussed cell when keyboard appears
+    open var defaultScrollPosition = UITableView.ScrollPosition.none
 
     /// Accessory view that is responsible for the navigation between rows
     private var navigationAccessoryView: (UIView & NavigationAccessory)!
@@ -432,7 +436,7 @@ open class FormViewController: UIViewController, FormViewControllerProtocol, For
 
     /// Defines the behaviour of the navigation between rows
     public var navigationOptions: RowNavigationOptions?
-    private var tableViewStyle: UITableView.Style = .grouped
+    public var tableViewStyle: UITableView.Style = .grouped
 
     public init(style: UITableView.Style) {
         super.init(nibName: nil, bundle: nil)
@@ -476,7 +480,13 @@ open class FormViewController: UIViewController, FormViewControllerProtocol, For
         animateTableView = true
         let selectedIndexPaths = tableView.indexPathsForSelectedRows ?? []
         if !selectedIndexPaths.isEmpty {
-            tableView.reloadRows(at: selectedIndexPaths, with: .none)
+            if #available(iOS 13.0, *) {
+                if tableView.window != nil {
+                    tableView.reloadRows(at: selectedIndexPaths, with: .none)
+                }
+            } else {
+                tableView.reloadRows(at: selectedIndexPaths, with: .none)
+            }
         }
         selectedIndexPaths.forEach {
             tableView.selectRow(at: $0, animated: false, scrollPosition: .none)
@@ -822,7 +832,7 @@ extension FormViewController : UITableViewDelegate {
         guard !row.isDisabled else { return false }
 		if row.trailingSwipe.actions.count > 0 { return true }
 		if #available(iOS 11,*), row.leadingSwipe.actions.count > 0 { return true }
-		guard let section = form[indexPath.section] as? MultivaluedSection else { return false }
+		guard let section = form[indexPath.section] as? BaseMultivaluedSection else { return false }
         guard !(indexPath.row == section.count - 1 && section.multivaluedOptions.contains(.Insert) && section.showInsertIconInAddButton) else {
             return true
         }
@@ -841,7 +851,7 @@ extension FormViewController : UITableViewDelegate {
             }
             section.remove(at: indexPath.row)
         } else if editingStyle == .insert {
-            guard var section = form[indexPath.section] as? MultivaluedSection else { return }
+            guard var section = form[indexPath.section] as? BaseMultivaluedSection else { return }
             guard let multivaluedRowToInsertAt = section.multivaluedRowToInsertAt else {
                 fatalError("Multivalued section multivaluedRowToInsertAt property must be set up")
             }
@@ -861,7 +871,7 @@ extension FormViewController : UITableViewDelegate {
     }
 
     open func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        guard let section = form[indexPath.section] as? MultivaluedSection, section.multivaluedOptions.contains(.Reorder) && section.count > 1 else {
+        guard let section = form[indexPath.section] as? BaseMultivaluedSection, section.multivaluedOptions.contains(.Reorder) && section.count > 1 else {
             return false
         }
         if section.multivaluedOptions.contains(.Insert) && (section.count <= 2 || indexPath.row == (section.count - 1)) {
@@ -874,7 +884,7 @@ extension FormViewController : UITableViewDelegate {
     }
 
     open func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
-        guard let section = form[sourceIndexPath.section] as? MultivaluedSection else { return sourceIndexPath }
+        guard let section = form[sourceIndexPath.section] as? BaseMultivaluedSection else { return sourceIndexPath }
         guard sourceIndexPath.section == proposedDestinationIndexPath.section else { return sourceIndexPath }
 
         let destRow = form[proposedDestinationIndexPath]
@@ -896,7 +906,7 @@ extension FormViewController : UITableViewDelegate {
 
     open func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
 
-        guard var section = form[sourceIndexPath.section] as? MultivaluedSection else { return }
+        guard var section = form[sourceIndexPath.section] as? BaseMultivaluedSection else { return }
         if sourceIndexPath.row < section.count && destinationIndexPath.row < section.count && sourceIndexPath.row != destinationIndexPath.row {
 
             let sourceRow = form[sourceIndexPath]
@@ -910,7 +920,7 @@ extension FormViewController : UITableViewDelegate {
     }
 
     open func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        guard let section = form[indexPath.section] as? MultivaluedSection else {
+        guard let section = form[indexPath.section] as? BaseMultivaluedSection else {
 			if form[indexPath].trailingSwipe.actions.count > 0 {
 				return .delete
 			}
@@ -945,6 +955,8 @@ extension FormViewController : UITableViewDelegate {
 		return form[indexPath].trailingSwipe.contextualConfiguration
 	}
 
+    @available(macCatalyst, deprecated: 13.1, message: "UITableViewRowAction is deprecated, use leading/trailingSwipe actions instead")
+    @available(iOS, deprecated: 13, message: "UITableViewRowAction is deprecated, use leading/trailingSwipe actions instead")
 	open func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?{
         guard let actions = form[indexPath].trailingSwipe.contextualActions as? [UITableViewRowAction], !actions.isEmpty else {
             return nil
@@ -1012,7 +1024,10 @@ extension FormViewController {
         let endFrame = keyBoardInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
 
         let keyBoardFrame = table.window!.convert(endFrame.cgRectValue, to: table.superview)
-        let newBottomInset = table.frame.origin.y + table.frame.size.height - keyBoardFrame.origin.y + rowKeyboardSpacing
+        var newBottomInset = table.frame.origin.y + table.frame.size.height - keyBoardFrame.origin.y + rowKeyboardSpacing
+        if #available(iOS 11.0, *) {
+            newBottomInset = newBottomInset - tableView.safeAreaInsets.bottom
+        }
         var tableInsets = table.contentInset
         var scrollIndicatorInsets = table.scrollIndicatorInsets
         oldBottomInset = oldBottomInset ?? tableInsets.bottom
@@ -1029,7 +1044,7 @@ extension FormViewController {
                     let rect = table.rectForRow(at: selectedRow)
                     table.scrollRectToVisible(rect, animated: animateScroll)
                 } else {
-                    table.scrollToRow(at: selectedRow, at: .none, animated: animateScroll)
+                    table.scrollToRow(at: selectedRow, at: defaultScrollPosition, animated: animateScroll)
                 }
             }
             UIView.commitAnimations()
@@ -1074,9 +1089,29 @@ extension FormViewController {
         navigateTo(direction: .down)
     }
 
+    open override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        var didHandleEvent = false
+        for press in presses {
+            guard let key = press.key,
+                key.keyCode == .keyboardTab,
+                !key.modifierFlags.contains(.command) else { continue }
+            if key.modifierFlags.contains(.shift) {
+                navigateTo(direction: .up)
+            } else {
+                navigateTo(direction: .down)
+            }
+            didHandleEvent = true
+        }
+
+        if !didHandleEvent {
+            // Didn't handle this key press, so pass the event to the next responder.
+            super.pressesBegan(presses, with: event)
+        }
+    }
+
     public func navigateTo(direction: Direction) {
         guard let currentCell = tableView?.findFirstResponder()?.formCell() else { return }
-        guard let currentIndexPath = tableView?.indexPath(for: currentCell) else { assertionFailure(); return }
+        guard let currentIndexPath = tableView?.indexPath(for: currentCell) else { return }
         guard let nextRow = nextRow(for: form[currentIndexPath], withDirection: direction) else { return }
         if nextRow.baseCell.cellCanBecomeFirstResponder() {
             tableView?.scrollToRow(at: nextRow.indexPath!, at: .none, animated: animateScroll)

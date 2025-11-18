@@ -25,7 +25,9 @@
 #import "KPKMetaData_Private.h"
 #import "KPKKdbxFormat.h"
 #import "KPKIcon.h"
+#import "KPKIcon_Private.h"
 #import "KPKTree.h"
+#import "KPKTree_Private.h"
 #import "KPKNode_Private.h"
 #import "KPKGroup.h"
 #import "KPKAESCipher.h"
@@ -37,7 +39,7 @@
 
 #define KPK_METADATA_UPDATE_DATE(value) \
 if( self.updateTiming ) { \
-  value = NSDate.date; \
+value = NSDate.date; \
 } \
 
 @interface KPKMetaData () {
@@ -109,6 +111,62 @@ if( self.updateTiming ) { \
   return self;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+  KPKMetaData *copy = [[KPKMetaData alloc] init];
+  
+  KPK_SCOPED_NO_BEGIN(copy.updateTiming)
+  
+  copy.mutableCustomData = [[NSMutableDictionary alloc] initWithDictionary:self.mutableCustomData copyItems:YES];
+  copy.mutableUnknownMetaEntryData = [[NSMutableArray alloc] initWithArray:self.mutableUnknownMetaEntryData copyItems:YES];
+  /* set pulic custom data via setter */
+  for(NSString *key in self.mutableCustomPublicData) {
+    [copy setValue:self.mutableCustomPublicData[key] forPublicCustomDataKey:key];
+  }
+  /* add custom icons via API to ensure updates on icon cache! */
+  for(KPKIcon *icon in self.mutableCustomIcons) {
+    [copy addCustomIcon:[icon copy]];
+  }
+  
+  copy.keyDerivationParameters = self.keyDerivationParameters;
+  copy.cipherUUID = self.cipherUUID;
+  copy.compressionAlgorithm = _compressionAlgorithm;
+  
+  copy.protectNotes = _protectNotes;
+  copy.protectPassword = _protectPassword;
+  copy.protectTitle = _protectTitle;
+  copy.protectUrl = _protectUrl;
+  copy.protectUserName = _protectUserName;
+  copy.generator = _generator;
+  copy.databaseName = _databaseName;
+  copy.databaseNameChanged = _databaseNameChanged;
+  copy.databaseDescription = _databaseDescription;
+  copy.databaseDescriptionChanged = _databaseDescriptionChanged;
+  copy.defaultUserName = _defaultUserName;
+  copy.defaultUserNameChanged = _defaultUserNameChanged;
+  copy.entryTemplatesGroupUuid = _entryTemplatesGroupUuid;
+  copy.entryTemplatesGroupChanged = _entryTemplatesGroupChanged;
+  copy.trashChanged = _trashChanged;
+  copy.settingsChanged = _settingsChanged;
+  copy.trashUuid = _trashUuid;
+  copy.useTrash = _useTrash;
+  copy.lastSelectedGroup = _lastSelectedGroup;
+  copy.lastTopVisibleGroup = _lastTopVisibleGroup;
+  copy.historyMaxItems = _historyMaxItems;
+  copy.historyMaxSize =  _historyMaxSize;
+  copy.maintenanceHistoryDays = _maintenanceHistoryDays;
+  copy.masterKeyChanged = _masterKeyChanged;
+  copy.masterKeyChangeRecommendationInterval = _masterKeyChangeRecommendationInterval;
+  copy.masterKeyChangeEnforcementInterval = _masterKeyChangeEnforcementInterval;
+  copy.enforceMasterKeyChangeOnce = _enforceMasterKeyChangeOnce;
+  
+  KPK_SCOPED_NO_END(copy.updateTiming);
+  
+  /* set timing update at last to ensure correct state */
+  copy.updateTiming = _updateTiming;
+  
+  return copy;
+}
+
 #pragma mark -
 #pragma mark Properties
 - (NSArray *)customIcons {
@@ -132,11 +190,53 @@ if( self.updateTiming ) { \
 }
 
 - (BOOL)enforceMasterKeyChange {
-  return  self.masterKeyChangeEnforcementInterval > -1;
+  return self.masterKeyChangeEnforcementInterval > -1;
 }
 
 - (BOOL)recommendMasterKeyChange {
   return self.masterKeyChangeRecommendationInterval > -1;
+}
+
+- (void)setMasterKeyChangeEnforcementInterval:(NSInteger)masterKeyChangeEnforcementInterval {
+  masterKeyChangeEnforcementInterval = MAX(-1, masterKeyChangeEnforcementInterval);
+  if(_masterKeyChangeEnforcementInterval != masterKeyChangeEnforcementInterval) {
+    _masterKeyChangeEnforcementInterval = masterKeyChangeEnforcementInterval;
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged);
+  }
+}
+
+- (void)setMasterKeyChangeRecommendationInterval:(NSInteger)masterKeyChangeRecommendationInterval {
+  masterKeyChangeRecommendationInterval = MAX(-1, masterKeyChangeRecommendationInterval);
+  if(_masterKeyChangeRecommendationInterval != masterKeyChangeRecommendationInterval) {
+    _masterKeyChangeRecommendationInterval = masterKeyChangeRecommendationInterval;
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged);
+  }
+}
+
+- (void)setEnforceMasterKeyChangeOnce:(BOOL)enforceMasterKeyChangeOnce {
+  if(_enforceMasterKeyChangeOnce != enforceMasterKeyChangeOnce) {
+    _enforceMasterKeyChangeOnce = enforceMasterKeyChangeOnce;
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged);
+  }
+}
+
+- (void)setCipherUUID:(NSUUID *)cipherUUID {
+  if(![_cipherUUID isEqual:cipherUUID]) {
+    _cipherUUID = [cipherUUID copy];
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged);
+  }
+}
+
+- (void)setKeyDerivationParameters:(NSDictionary *)keyDerivationParameters {
+  _keyDerivationParameters = [keyDerivationParameters copy];
+  KPK_METADATA_UPDATE_DATE(self.settingsChanged)
+}
+
+- (void)setCompressionAlgorithm:(uint32_t)compressionAlgorithm {
+  if(compressionAlgorithm != _compressionAlgorithm) {
+    _compressionAlgorithm = compressionAlgorithm;
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged);
+  }
 }
 
 - (void)setColor:(NSUIColor *)color {
@@ -154,6 +254,7 @@ if( self.updateTiming ) { \
   if(![_databaseName isEqualToString:databaseName]) {
     _databaseName = [databaseName copy];
     KPK_METADATA_UPDATE_DATE(self.databaseNameChanged)
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged)
   }
 }
 
@@ -161,13 +262,20 @@ if( self.updateTiming ) { \
   if(![_databaseDescription isEqualToString:databaseDescription]) {
     _databaseDescription = [databaseDescription copy];
     KPK_METADATA_UPDATE_DATE(self.databaseDescriptionChanged)
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged)
   }
+}
+
+- (void)setMaintenanceHistoryDays:(NSInteger)maintenanceHistoryDays {
+  _maintenanceHistoryDays = maintenanceHistoryDays;
+  KPK_METADATA_UPDATE_DATE(self.settingsChanged)
 }
 
 - (void)setDefaultUserName:(NSString *)defaultUserName {
   if(![_defaultUserName isEqualToString:defaultUserName]) {
     _defaultUserName = [defaultUserName copy];
     KPK_METADATA_UPDATE_DATE(self.defaultUserNameChanged)
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged)
   }
 }
 
@@ -175,6 +283,7 @@ if( self.updateTiming ) { \
   if(![_entryTemplatesGroupUuid isEqual:entryTemplatesGroup]) {
     _entryTemplatesGroupUuid = entryTemplatesGroup;
     KPK_METADATA_UPDATE_DATE(self.entryTemplatesGroupChanged)
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged)
   }
 }
 
@@ -182,6 +291,7 @@ if( self.updateTiming ) { \
   if(_useTrash != useTrash) {
     _useTrash = useTrash;
     KPK_METADATA_UPDATE_DATE(self.trashChanged)
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged)
   }
 }
 
@@ -189,6 +299,7 @@ if( self.updateTiming ) { \
   if(![_trashUuid isEqual:trashUuid]) {
     _trashUuid = trashUuid;
     KPK_METADATA_UPDATE_DATE(self.trashChanged)
+    KPK_METADATA_UPDATE_DATE(self.settingsChanged)
   }
 }
 
@@ -212,11 +323,9 @@ if( self.updateTiming ) { \
   [self.defaultUserName isEqualToString:other.defaultUserName] &&
   [self.defaultUserNameChanged isEqualToDate:other.defaultUserNameChanged] &&
   self.maintenanceHistoryDays == other.maintenanceHistoryDays &&
-  [self.color isEqual:other.color] &&
+  ((!self.color && !other.color) || [self.color isEqual:other.color]) &&
   [self.masterKeyChanged isEqualToDate:other.masterKeyChanged] &&
-  self.recommendMasterKeyChange == other.recommendMasterKeyChange &&
   self.masterKeyChangeRecommendationInterval == other.masterKeyChangeRecommendationInterval &&
-  self.enforceMasterKeyChange == other.enforceMasterKeyChange &&
   self.masterKeyChangeEnforcementInterval == other.masterKeyChangeEnforcementInterval &&
   self.enforceMasterKeyChangeOnce == other.enforceMasterKeyChangeOnce &&
   self.protectTitle == other.protectTitle &&
@@ -260,6 +369,9 @@ if( self.updateTiming ) { \
   [self.tree.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"ADD_CUSTOM_ICON", nil, [NSBundle bundleForClass:[self class]], @"Action name for adding a customt icon.")];
   index = MIN(_mutableCustomIcons.count, index);
   [self insertObject:icon inMutableCustomIconsAtIndex:index];
+  /* remove delted node if icon is re-added via undo */
+  self.tree.mutableDeletedObjects[icon.uuid] = nil;
+  icon.tree = self.tree;
   /* trigger a change notification to encourage reavaluation*/
   [self.tree.root _traverseNodesWithBlock:^(KPKNode *node, BOOL *stop) {
     if([node.iconUUID isEqual:icon.uuid]) {
@@ -274,24 +386,59 @@ if( self.updateTiming ) { \
   if(index != NSNotFound) {
     [[self.tree.undoManager prepareWithInvocationTarget:self] addCustomIcon:icon atIndex:index];
     [self.tree.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"DELETE_CUSTOM_ICON", nil, [NSBundle bundleForClass:[self class]], @"Action name for deleting a custom icon")];
-    [self removeObjectFromMutableCustomIconsAtIndex:index];
-    /* trigger a change notification to encourage reavaluation*/
-    [self.tree.root _traverseNodesWithBlock:^(KPKNode *node, BOOL *stop) {
-      if([node.iconUUID isEqual:icon.uuid]) {
-        [node willChangeValueForKey:NSStringFromSelector(@selector(iconUUID))];
-        [node didChangeValueForKey:NSStringFromSelector(@selector(iconUUID))];
-      }
-    }];
+    if(self.tree.mutableDeletedObjects[icon.uuid] != nil) {
+      NSLog(@"Warning. Potential Internal inconsistency. Deleted node should not be present");
+    }
+    self.tree.mutableDeletedObjects[icon.uuid] = [[KPKDeletedNode alloc] initWithUUID:icon.uuid];
+    [self _removeCustomIconAtIndex:index];
   }
 }
 
-- (void)setValue:(NSString *)value forCustomDataKey:(NSString *)key {
+- (void)_removeCustomIconAtIndex:(NSUInteger)index {
+  /* register deleted node for delted icon */
+  KPKIcon *icon = self.mutableCustomIcons[index];
+  NSAssert(icon, @"No valid icon index supplied!");
+  [self removeObjectFromMutableCustomIconsAtIndex:index];
+  icon.tree = nil;
+  /* trigger a change notification to encourage reavaluation*/
+  [self.tree.root _traverseNodesWithBlock:^(KPKNode *node, BOOL *stop) {
+    if([node.iconUUID isEqual:icon.uuid]) {
+      [node willChangeValueForKey:NSStringFromSelector(@selector(iconUUID))];
+      [node didChangeValueForKey:NSStringFromSelector(@selector(iconUUID))];
+    }
+  }];
+  
+}
 
+
+- (NSString *)valueForCustomDataKey:(NSString *)key {
+  KPKModifiedString *string = self.mutableCustomData[key];
+  return string.value;
+}
+
+- (void)setValue:(NSString *)value forCustomDataKey:(NSString *)key {
+  KPKModifiedString *customData = self.mutableCustomData[key];
+  if(nil == customData) {
+    customData = [[KPKModifiedString alloc] init];
+    self.mutableCustomData[key] = customData;
+  }
+  customData.value = value;
+}
+
+- (void)removeCustomDataForKey:(NSString *)key {
+  self.mutableCustomData[key] = nil;
+}
+
+- (id)valueForPublicCustomDataKey:(NSString *)key {
+  return self.mutableCustomPublicData[key];
 }
 
 - (void)setValue:(id)value forPublicCustomDataKey:(NSString *)key {
-  
   self.mutableCustomPublicData[key] = value;
+}
+
+- (void)removePublicCustomDataForKey:(NSString *)key {
+  self.mutableCustomPublicData[key] = nil;
 }
 
 - (KPKIcon *)findIcon:(NSUUID *)uuid {
@@ -332,17 +479,17 @@ if( self.updateTiming ) { \
     self.databaseName = otherMetaData.databaseName;
     self.databaseNameChanged = otherMetaData.databaseNameChanged;
   }
-
+  
   if(forceUpdate || NSOrderedAscending == [self.databaseDescriptionChanged compare:otherMetaData.databaseDescriptionChanged]) {
     self.databaseDescription = otherMetaData.databaseDescription;
     self.databaseDescriptionChanged = otherMetaData.databaseDescriptionChanged;
   }
-
+  
   if(forceUpdate || NSOrderedAscending == [self.defaultUserNameChanged compare:otherMetaData.defaultUserNameChanged]) {
     self.defaultUserName = otherMetaData.defaultUserName;
     self.defaultUserNameChanged = otherMetaData.defaultUserNameChanged;
   }
-
+  
   if(forceUpdate || NSOrderedAscending == [self.trashChanged compare:otherMetaData.trashChanged]) {
     
     self.trashChanged = otherMetaData.trashChanged;
@@ -352,7 +499,7 @@ if( self.updateTiming ) { \
       self.trashUuid = otherMetaData.trashUuid;
     }
     else if(![tree.root groupForUUID:self.trashUuid]) {
-      self.trashUuid = [NSUUID kpk_nullUUID];
+      self.trashUuid = NSUUID.kpk_nullUUID;
     }
     // else keep old uuid!
   }
@@ -364,13 +511,43 @@ if( self.updateTiming ) { \
       self.entryTemplatesGroupUuid = otherMetaData.entryTemplatesGroupUuid;
     }
     else if(![tree.root groupForUUID:self.entryTemplatesGroupUuid]) {
-      self.entryTemplatesGroupUuid = [NSUUID kpk_nullUUID];
+      self.entryTemplatesGroupUuid = NSUUID.kpk_nullUUID;
     }
     // else keep old uuid
   }
   for(NSString *key in otherMetaData.mutableCustomData) {
-    if(otherIsNewer || (nil == self.mutableCustomData[key])) {
-      self.mutableCustomData[key] = otherMetaData.mutableCustomData[key];
+    KPKModifiedString *otherData = otherMetaData.mutableCustomData[key];
+    KPKModifiedString *localData = self.mutableCustomData[key];
+    if(localData == nil) {
+      self.mutableCustomData[key] = [otherData copy];
+      continue;
+    }
+    if([localData isEqualToModifiedString:otherData]) {
+      continue;
+    }
+    if(forceUpdate) {
+      self.mutableCustomData[key] = [otherData copy];
+      continue;
+    }
+    if(localData.modificationDate == nil) {
+      if(otherData.modificationDate != nil) {
+        self.mutableCustomData[key] = [otherData copy]; // other has newer kdbx format
+      }
+      else {
+        if(otherIsNewer) {
+          self.mutableCustomData[key] = [otherData copy]; // device based on settings-changed
+        }
+        continue;
+      }
+    }
+    NSComparisonResult result = [localData.modificationDate compare:otherData.modificationDate];
+    switch(result) {
+      case NSOrderedAscending:
+        self.mutableCustomData[key] = [otherData copy];
+        continue;
+      case NSOrderedSame:
+      case NSOrderedDescending:
+        continue;
     }
   }
   NSDictionary *backup = [[NSDictionary alloc] initWithDictionary:self.mutableCustomPublicData copyItems:YES];
@@ -378,6 +555,51 @@ if( self.updateTiming ) { \
   if(!otherIsNewer) {
     for(NSString *key in backup) {
       self.mutableCustomPublicData[key] = [backup[key] copy];
+    }
+  }
+  /* Merge icons */
+  
+  for(KPKIcon *otherIcon in otherMetaData.mutableCustomIcons) {
+    KPKIcon *localIcon = [self findIcon:otherIcon.uuid];
+    /* no local icon, just import */
+    if(nil == localIcon) {
+      [self addCustomIcon:otherIcon];
+      continue;
+    }
+    /* icons are equal, continue */
+    if([localIcon isEqualToIcon:otherIcon]) {
+      continue;
+    }
+    /* force update - replace exiting icon */
+    if(forceUpdate) {
+      [self removeCustomIcon:localIcon];
+      [self addCustomIcon:otherIcon];
+      continue;
+    }
+    /* merge changes */
+    if(localIcon.modificationDate == nil) {
+      if(otherIcon.modificationDate != nil) {
+        [self removeCustomIcon:localIcon];
+        [self addCustomIcon:otherIcon];
+      }
+      else {
+        /* both icons have no modification date, we cannot decide which one to keep, keep ours? */
+        continue;
+      }
+    }
+    if(otherIcon.modificationDate == nil) {
+      continue; // local is newer or we cannot decide!
+    }
+    NSComparisonResult dateCompare = [localIcon.modificationDate compare:otherIcon.modificationDate];
+    switch(dateCompare) {
+      case NSOrderedAscending:
+        //other is newer
+        [self removeCustomIcon:localIcon];
+        [self addCustomIcon:otherIcon];
+        continue;
+      case NSOrderedSame: // matching icons
+      case NSOrderedDescending: // local is newer
+        continue;
     }
   }
   KPK_SCOPED_NO_END(self.updateTiming)
@@ -411,9 +633,8 @@ if( self.updateTiming ) { \
   return self.mutableCustomData.objectEnumerator;
 }
 
-- (NSString *)memberOfCustomData:(NSString *)object {
+- (KPKModifiedString *)memberOfCustomData:(NSString *)object {
   return self.mutableCustomData[object];
 }
-
 
 @end

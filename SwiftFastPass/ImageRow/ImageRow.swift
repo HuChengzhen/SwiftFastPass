@@ -27,7 +27,7 @@ import Foundation
 
 public struct ImageRowSourceTypes: OptionSet {
     public let rawValue: Int
-    public var imagePickerControllerSourceTypeRawValue: Int { return self.rawValue >> 1 }
+    public var imagePickerControllerSourceTypeRawValue: Int { return rawValue >> 1 }
 
     public init(rawValue: Int) { self.rawValue = rawValue }
     init(_ sourceType: UIImagePickerController.SourceType) { self.init(rawValue: 1 << sourceType.rawValue) }
@@ -42,11 +42,11 @@ public extension ImageRowSourceTypes {
     var localizedString: String {
         switch self {
         case ImageRowSourceTypes.Camera:
-            return NSLocalizedString("Take Photo", comment: "") 
+            return NSLocalizedString("Take Photo", comment: "")
         case ImageRowSourceTypes.PhotoLibrary:
-            return NSLocalizedString("Photo Library", comment: "") 
+            return NSLocalizedString("Photo Library", comment: "")
         case ImageRowSourceTypes.SavedPhotosAlbum:
-            return NSLocalizedString("Saved Photos", comment: "") 
+            return NSLocalizedString("Saved Photos", comment: "")
         default:
             return ""
         }
@@ -63,64 +63,64 @@ public protocol ImageRowProtocol {
     var thumbnailImage: UIImage? { get }
 }
 
-//MARK: Row
+// MARK: Row
 
 open class _ImageRow<Cell: CellType>: OptionsRow<Cell>, PresenterRowType, ImageRowProtocol, ImagePickerProtocol where Cell: BaseCell, Cell.Value == UIImage {
-  public typealias PresenterRow = ImagePickerController
+    public typealias PresenterRow = ImagePickerController
 
-  /// Defines how the view controller will be presented, pushed, etc.
-  open var presentationMode: PresentationMode<PresenterRow>?
+    /// Defines how the view controller will be presented, pushed, etc.
+    open var presentationMode: PresentationMode<PresenterRow>?
 
-  /// Will be called before the presentation occurs.
-  open var onPresentCallback: ((FormViewController, PresenterRow) -> Void)?
+    /// Will be called before the presentation occurs.
+    open var onPresentCallback: ((FormViewController, PresenterRow) -> Void)?
 
-  open var sourceTypes: ImageRowSourceTypes
-  open var imageURL: URL?
-  open var clearAction = ImageClearAction.yes(style: .destructive)
-  open var placeholderImage: UIImage?
-  open var thumbnailImage: UIImage?
-    
-  open var userPickerInfo : [UIImagePickerController.InfoKey:Any]?
-  open var allowEditor : Bool
-  open var useEditedImage : Bool
+    open var sourceTypes: ImageRowSourceTypes
+    open var imageURL: URL?
+    open var clearAction = ImageClearAction.yes(style: .destructive)
+    open var placeholderImage: UIImage?
+    open var thumbnailImage: UIImage?
 
-  private var _sourceType: UIImagePickerController.SourceType = .camera
+    open var userPickerInfo: [UIImagePickerController.InfoKey: Any]?
+    open var allowEditor: Bool
+    open var useEditedImage: Bool
 
-  public required init(tag: String?) {
-    sourceTypes = .All
-    userPickerInfo = nil
-    allowEditor = false
-    useEditedImage = false
-    
-    super.init(tag: tag)
+    private var _sourceType: UIImagePickerController.SourceType = .camera
 
-    presentationMode = .presentModally(controllerProvider: ControllerProvider.callback { return ImagePickerController() }, onDismiss: { [weak self] vc in
-      self?.select()
-      vc.dismiss(animated: true)
-    })
+    public required init(tag: String?) {
+        sourceTypes = .All
+        userPickerInfo = nil
+        allowEditor = false
+        useEditedImage = false
 
-    self.displayValueFor = nil
-  }
+        super.init(tag: tag)
 
-  // copy over the existing logic from the SelectorRow
-    func displayImagePickerController(_ sourceType: UIImagePickerController.SourceType) {
-    if let presentationMode = presentationMode, !isDisabled {
-      if let controller = presentationMode.makeController(){
-        controller.row = self
-        controller.sourceType = sourceType
-        onPresentCallback?(cell.formViewController()!, controller)
-        presentationMode.present(controller, row: self, presentingController: cell.formViewController()!)
-      } else {
-        _sourceType = sourceType
-        presentationMode.present(nil, row: self, presentingController: cell.formViewController()!)
-      }
+        presentationMode = .presentModally(controllerProvider: ControllerProvider.callback { ImagePickerController() }, onDismiss: { [weak self] vc in
+            self?.select()
+            vc.dismiss(animated: true)
+        })
+
+        displayValueFor = nil
     }
-  }
+
+    // copy over the existing logic from the SelectorRow
+    func displayImagePickerController(_ sourceType: UIImagePickerController.SourceType) {
+        if let presentationMode = presentationMode, !isDisabled {
+            if let controller = presentationMode.makeController() {
+                controller.row = self
+                controller.sourceType = sourceType
+                onPresentCallback?(cell.formViewController()!, controller)
+                presentationMode.present(controller, row: self, presentingController: cell.formViewController()!)
+            } else {
+                _sourceType = sourceType
+                presentationMode.present(nil, row: self, presentingController: cell.formViewController()!)
+            }
+        }
+    }
 
     /// Extends `didSelect` method
     /// Selecting the Image Row cell will open a popup to choose where to source the photo from,
     /// based on the `sourceTypes` configured and the available sources.
-    open override func customDidSelect() {
+    override open func customDidSelect() {
         guard !isDisabled else {
             super.customDidSelect()
             return
@@ -134,13 +134,13 @@ open class _ImageRow<Cell: CellType>: OptionsRow<Cell>, PresenterRowType, ImageR
         var availableSources: ImageRowSourceTypes = []
 
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-            let _ = availableSources.insert(.PhotoLibrary)
+            _ = availableSources.insert(.PhotoLibrary)
         }
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            let _ = availableSources.insert(.Camera)
+            _ = availableSources.insert(.Camera)
         }
         if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
-            let _ = availableSources.insert(.SavedPhotosAlbum)
+            _ = availableSources.insert(.SavedPhotosAlbum)
         }
 
         sourceTypes.formIntersection(availableSources)
@@ -153,9 +153,9 @@ open class _ImageRow<Cell: CellType>: OptionsRow<Cell>, PresenterRowType, ImageR
                 controller.row = self
                 controller.title = selectorTitle ?? controller.title
                 onPresentCallback?(cell.formViewController()!, controller)
-                presentationMode.present(controller, row: self, presentingController: self.cell.formViewController()!)
+                presentationMode.present(controller, row: self, presentingController: cell.formViewController()!)
             } else {
-                presentationMode.present(nil, row: self, presentingController: self.cell.formViewController()!)
+                presentationMode.present(nil, row: self, presentingController: cell.formViewController()!)
             }
 
             return
@@ -164,7 +164,7 @@ open class _ImageRow<Cell: CellType>: OptionsRow<Cell>, PresenterRowType, ImageR
         // Now that we know the number of sources aren't empty, let the user select the source
         let sourceActionSheet = UIAlertController(title: nil, message: selectorTitle, preferredStyle: .actionSheet)
 
-        guard let tableView = cell.formViewController()?.tableView  else { fatalError() }
+        guard let tableView = cell.formViewController()?.tableView else { fatalError() }
 
         if let popView = sourceActionSheet.popoverPresentationController {
             popView.sourceView = tableView
@@ -174,7 +174,7 @@ open class _ImageRow<Cell: CellType>: OptionsRow<Cell>, PresenterRowType, ImageR
         createOptionsForAlertController(sourceActionSheet)
 
         // if thumbnail or value is set, offer clear action
-        if case .yes(let style) = clearAction, value != nil || thumbnailImage != nil {
+        if case let .yes(style) = clearAction, value != nil || thumbnailImage != nil {
             let clearPhotoOption = UIAlertAction(title: NSLocalizedString("Clear Photo", comment: ""), style: style) { [weak self] _ in
                 self?.value = nil
                 self?.thumbnailImage = nil
@@ -200,18 +200,18 @@ open class _ImageRow<Cell: CellType>: OptionsRow<Cell>, PresenterRowType, ImageR
         }
     }
 
-  /**
-   Prepares the pushed row setting its title and completion callback.
-   */
-  open override func prepare(for segue: UIStoryboardSegue) {
-    super.prepare(for: segue)
-    guard let rowVC = segue.destination as? PresenterRow else { return }
-    rowVC.title = selectorTitle ?? rowVC.title
-    rowVC.onDismissCallback = presentationMode?.onDismissCallback ?? rowVC.onDismissCallback
-    onPresentCallback?(cell.formViewController()!, rowVC)
-    rowVC.row = self
-    rowVC.sourceType = _sourceType
-  }
+    /**
+     Prepares the pushed row setting its title and completion callback.
+     */
+    override open func prepare(for segue: UIStoryboardSegue) {
+        super.prepare(for: segue)
+        guard let rowVC = segue.destination as? PresenterRow else { return }
+        rowVC.title = selectorTitle ?? rowVC.title
+        rowVC.onDismissCallback = presentationMode?.onDismissCallback ?? rowVC.onDismissCallback
+        onPresentCallback?(cell.formViewController()!, rowVC)
+        rowVC.row = self
+        rowVC.sourceType = _sourceType
+    }
 }
 
 public extension _ImageRow {
@@ -224,7 +224,7 @@ public extension _ImageRow {
 
         alertController.addAction(option)
     }
-    
+
     func createOptionsForAlertController(_ alertController: UIAlertController) {
         createOptionForAlertController(alertController, sourceType: .Camera)
         createOptionForAlertController(alertController, sourceType: .PhotoLibrary)
@@ -234,7 +234,7 @@ public extension _ImageRow {
 
 /// A selector row where the user can pick an image
 public final class ImageRow: _ImageRow<ImageCell>, RowType {
-  public required init(tag: String?) {
-    super.init(tag: tag)
-  }
+    public required init(tag: String?) {
+        super.init(tag: tag)
+    }
 }

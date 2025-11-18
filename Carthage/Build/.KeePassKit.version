@@ -1,9 +1,17 @@
 {
-  "commitish" : "2.4.7",
+  "commitish" : "3.3.2",
   "iOS" : [
     {
-      "name" : "KeePassKit",
-      "hash" : "0abb2fbf46d399154f1892efcfd60bf433fe8f1a73687d746cb4104054592035"
+      "identifier" : "ios-arm64",
+      "container" : "KeePassKit.xcframework",
+      "hash" : "6adc17dc74fc3b8f904533dfae519179b5342cee9e9e2ce98577a5ffe097d6cd",
+      "name" : "KeePassKit"
+    },
+    {
+      "identifier" : "ios-arm64_x86_64-simulator",
+      "container" : "KeePassKit.xcframework",
+      "hash" : "ac4803447105f869b02510aa7ee0488efd554f51c99c8cf052f0a2eb9e405a0c",
+      "name" : "KeePassKit"
     }
   ]
 }

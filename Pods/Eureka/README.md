@@ -1,4 +1,4 @@
-![Eureka: Elegant form builder in Swift](Eureka.jpg)
+![Eureka: Elegant form builder in Swift](Eureka.png)
 
 <p align="center">
 <a href="https://travis-ci.org/xmartlabs/Eureka"><img src="https://travis-ci.org/xmartlabs/Eureka.svg?branch=master" alt="Build status" /></a>
@@ -54,10 +54,10 @@ Made with ❤️ by [XMARTLABS](http://xmartlabs.com). This is the re-creation o
 
 **For more information look at [our blog post] that introduces *Eureka*.**
 
-## Requirements
+## Requirements (for latest release)
 
-* Xcode 10.2+
-* Swift 5.0+ (for latest release)
+* Xcode 11+
+* Swift 5.0+
 
 ### Example project
 
@@ -200,6 +200,50 @@ form += [Section("A"), Section("B"), Section("C")]
 section += [TextRow(), DateRow()]
 ```
 
+### Result builders
+
+Eureka includes result builders to make form creation easy:
+
+#### @SectionBuilder
+```swift
+// Section + Section
+form = (Section("A") +++ {
+    URLRow("UrlRow_f1") { $0.title = "Url" }
+    if something {
+        TwitterRow("TwitterRow_f2") { $0.title = "Twitter" }
+    } else {
+        TwitterRow("TwitterRow_f1") { $0.title = "Twitter" }
+    }
+    AccountRow("AccountRow_f1") { $0.title = "Account" }
+})
+
+// Form + Section
+form +++ {
+    if something {
+        PhoneRow("PhoneRow_f1") { $0.title = "Phone" }
+    } else {
+        PhoneRow("PhoneRow_f2") { $0.title = "Phone" }
+    }
+    PasswordRow("PasswordRow_f1") { $0.title = "Password" }
+}
+```
+
+#### @FormBuilder
+```swift
+@FormBuilder
+var form: Form {
+    Section("Section A") { section in
+        section.tag = "Section_A"
+    }
+    if true {
+        Section("Section B") { section in
+            section.tag = "Section_B"
+        }
+    }
+    NameRow("NameRow_f1") { $0.title = "Name" }
+}
+```
+
 ### Using the callbacks
 
 Eureka includes callbacks to change the appearance and behavior of a row.
@@ -233,7 +277,7 @@ let row  = SwitchRow("SwitchRow") { row in      // initializer
 
 * **onCellSelection()**
 
-	Called each time the user taps on the row and it gets selected.
+	Called each time the user taps on the row and it gets selected. Note that this will also get called for disabled rows so you should start your code inside this callback with something like `guard !row.isDisabled else { return }`
 
 * **cellSetup()**
 
@@ -389,6 +433,9 @@ as `Condition` conforms to `ExpressibleByBooleanLiteral`.
 
 Not setting the `hidden` variable will leave the row always visible.
 
+If you manually set the hidden (or disabled) condition after the form has been displayed you may have to call `row.evaluateHidden()` to force Eureka to reevaluate the new condition.
+See [this FAQ section](https://github.com/xmartlabs/Eureka#row-does-not-update-after-changing-hidden-or-disabled-condition) for more info.
+
 ##### Sections
 For sections this works just the same. That means we can set up section `hidden` property to show/hide it dynamically.
 
@@ -492,6 +539,22 @@ By default Eureka will set the tableView's `isEditing` to true only if there is 
 
 For more information on how to use multivalued sections please take a look at Eureka example project which contains several usage examples.
 
+#### Custom add button
+If you want to use an add button which is not a `ButtonRow` then you can use `GenericMultivaluedSection<AddButtonType>`, where `AddButtonType` is the type of the row you want to use as add button. This is useful if you want to use a custom row to change the UI of the button.
+
+Example:
+
+```swift
+GenericMultivaluedSection<LabelRow>(multivaluedOptions: [.Reorder, .Insert, .Delete], {
+    $0.addButtonProvider = { section in
+        return LabelRow(){
+            $0.title = "A Label row as add button"
+        }
+    }
+    // ...
+}
+```
+
 ### Validations
 
 Eureka 2.0.0 introduces the much requested built-in validations feature.
@@ -533,7 +596,7 @@ override func viewDidLoad() {
             }
             .cellUpdate { cell, row in
                 if !row.isValid {
-                    cell.titleLabel?.textColor = .red
+                    cell.titleLabel?.textColor = .systemRed
                 }
             }
 
@@ -547,7 +610,7 @@ override func viewDidLoad() {
             }
             .cellUpdate { cell, row in
                 if !row.isValid {
-                    cell.titleLabel?.textColor = .red
+                    cell.titleLabel?.textColor = .systemRed
                 }
             }
 
@@ -1052,6 +1115,17 @@ Then run the following command:
 $ pod install
 ```
 
+#### Swift Package Manager
+
+[Swift Package Manager](https://swift.org/package-manager/) is a tool for managing the distribution of Swift code.
+
+After you set up your `Package.swift` manifest file, you can add Eureka as a dependency by adding it to the dependencies value of your `Package.swift`.
+
+dependencies: [
+    .package(url: "https://github.com/xmartlabs/Eureka.git", from: "5.5.0")
+]
+
+
 #### Carthage
 
 [Carthage](https://github.com/Carthage/Carthage) is a simple, decentralized dependency manager for Cocoa.
@@ -1059,7 +1133,7 @@ $ pod install
 Specify Eureka into your project's `Cartfile`:
 
 ```ogdl
-github "xmartlabs/Eureka" ~> 5.0
+github "xmartlabs/Eureka" ~> 5.5
 ```
 
 #### Manually as Embedded Framework

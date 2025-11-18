@@ -6,15 +6,15 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
-import UIKit
 import KeePassKit
+import UIKit
 
 extension KPKNode {
     func image() -> UIImage {
-        if self.icon?.image != nil {
-            return self.icon!.image!
-        } else if Icons.iconNames.indices.contains(self.iconId) {
-            return UIImage(named: Icons.iconNames[self.iconId])!
+        if icon?.image != nil {
+            return icon!.image!
+        } else if Icons.iconNames.indices.contains(iconId) {
+            return UIImage(named: Icons.iconNames[iconId])!
         } else {
             if self is KPKGroup {
                 return UIImage(named: "Directory")!

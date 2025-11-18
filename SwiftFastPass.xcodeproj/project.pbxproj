@@ -3,12 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F1940178F05D9F89AD443EF /* Pods_SwiftFastPass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */; };
 		AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3522A8FC7B0045189E /* FilesViewController.swift */; };
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
+		AE1375BA2ECCCC53005AE0A9 /* KeePassKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE1375962ECCC36F005AE0A9 /* KeePassKit.xcframework */; };
+		AE1375BB2ECCCC53005AE0A9 /* KeePassKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AE1375962ECCC36F005AE0A9 /* KeePassKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AE1375BC2ECCCC53005AE0A9 /* KissXML.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE13759A2ECCC372005AE0A9 /* KissXML.xcframework */; };
+		AE1375BD2ECCCC53005AE0A9 /* KissXML.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AE13759A2ECCC372005AE0A9 /* KissXML.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AE31229D22AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */; };
 		AE3122A022AD8FC000391D84 /* PasswordGenerateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */; };
 		AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */; };
@@ -33,19 +38,58 @@
 		AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */; };
 		AEA1258E22AE2C72003AD579 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259022AE2C72003AD579 /* Localizable.strings */; };
 		AEA1259222AE2C7C003AD579 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259422AE2C7C003AD579 /* InfoPlist.strings */; };
-		AEBF15092347472C00E17E04 /* KeePassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21822A8F71F00C84275 /* KeePassKit.framework */; };
-		AEBF150B2347472C00E17E04 /* KissXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE3BC21922A8F71F00C84275 /* KissXML.framework */; };
 		AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1A222A8EE15007662AD /* AppDelegate.swift */; };
 		AEC6F1AA22A8EE17007662AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1A922A8EE17007662AD /* Assets.xcassets */; };
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
 		AEC6F1B822A8EE17007662AD /* SwiftFastPassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */; };
 		AEC6F1C322A8EE17007662AD /* SwiftFastPassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */; };
-		AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */; };
 		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
 		DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AE1375A62ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 082977F3777A7D434AB35C357B487F83;
+			remoteInfo = Eureka;
+		};
+		AE1375A82ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 40A7BAB8D9CE6A2C83F5858107A4E737;
+			remoteInfo = MenuItemKit;
+		};
+		AE1375AA2ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A6EE4999DE144C33D427AB0D98EAA4A0;
+			remoteInfo = "Pods-SwiftFastPass";
+		};
+		AE1375AC2ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BB456D37A9D3D7A708AD1019D2D4922B;
+			remoteInfo = "Pods-SwiftFastPassTests";
+		};
+		AE1375AE2ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 934A254C61C4E0D8FBCF29D4E40D65A7;
+			remoteInfo = "Pods-SwiftFastPassUITests";
+		};
+		AE1375B02ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 979486118B3E90C08386079D57962701;
+			remoteInfo = SnapKit;
+		};
 		AEC6F1B422A8EE17007662AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AEC6F19722A8EE15007662AD /* Project object */;
@@ -62,6 +106,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		AE1375BE2ECCCC53005AE0A9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				AE1375BB2ECCCC53005AE0A9 /* KeePassKit.xcframework in Embed Frameworks */,
+				AE1375BD2ECCCC53005AE0A9 /* KissXML.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		025FF0D6072556F81FB9C972 /* Pods-SwiftFastPass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.release.xcconfig"; sourceTree = "<group>"; };
 		1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.debug.xcconfig"; sourceTree = "<group>"; };
@@ -76,6 +135,9 @@
 		AE02DE3422A8F2820045189E /* SwiftFastPass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftFastPass.entitlements; sourceTree = "<group>"; };
 		AE02DE3522A8FC7B0045189E /* FilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesViewController.swift; sourceTree = "<group>"; };
 		AE02DE3822A8FF480045189E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		AE1375962ECCC36F005AE0A9 /* KeePassKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KeePassKit.xcframework; path = Carthage/Build/KeePassKit.xcframework; sourceTree = "<group>"; };
+		AE13759A2ECCC372005AE0A9 /* KissXML.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KissXML.xcframework; path = Carthage/Build/KissXML.xcframework; sourceTree = "<group>"; };
+		AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		AE31229922AD8C0E00391D84 /* DejaVuSansMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DejaVuSansMono-Bold.ttf"; sourceTree = "<group>"; };
 		AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordGenerateViewController.swift; sourceTree = "<group>"; };
 		AE3BC21822A8F71F00C84275 /* KeePassKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeePassKit.framework; path = Carthage/Build/iOS/KeePassKit.framework; sourceTree = "<group>"; };
@@ -136,9 +198,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AEBF15092347472C00E17E04 /* KeePassKit.framework in Frameworks */,
-				AEBF150B2347472C00E17E04 /* KissXML.framework in Frameworks */,
-				AF03A3B1506ED591558855A5 /* Pods_SwiftFastPass.framework in Frameworks */,
+				AE1375BC2ECCCC53005AE0A9 /* KissXML.xcframework in Frameworks */,
+				7F1940178F05D9F89AD443EF /* Pods_SwiftFastPass.framework in Frameworks */,
+				AE1375BA2ECCCC53005AE0A9 /* KeePassKit.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +250,19 @@
 				AE9C91EA22AD03FA008C1629 /* Icons.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		AE13759E2ECCC398005AE0A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AE1375A72ECCC398005AE0A9 /* Eureka.framework */,
+				AE1375A92ECCC398005AE0A9 /* MenuItemKit.framework */,
+				AE1375AB2ECCC398005AE0A9 /* Pods_SwiftFastPass.framework */,
+				AE1375AD2ECCC398005AE0A9 /* Pods_SwiftFastPassTests.framework */,
+				AE1375AF2ECCC398005AE0A9 /* Pods_SwiftFastPassUITests.framework */,
+				AE1375B12ECCC398005AE0A9 /* SnapKit.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		AE31229622AD8BF000391D84 /* fonts */ = {
@@ -329,6 +404,9 @@
 		C5B2E5E87A20C8D35870CBF2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */,
+				AE13759A2ECCC372005AE0A9 /* KissXML.xcframework */,
+				AE1375962ECCC36F005AE0A9 /* KeePassKit.xcframework */,
 				AEBF15052347436800E17E04 /* Build */,
 				AEBF150123473FB400E17E04 /* Carthage */,
 				AE99EF5322A998B300C6E13A /* CloudKit.framework */,
@@ -352,9 +430,8 @@
 				AEC6F19B22A8EE15007662AD /* Sources */,
 				AEC6F19C22A8EE15007662AD /* Frameworks */,
 				AEC6F19D22A8EE15007662AD /* Resources */,
-				AE3BC21C22A8F73E00C84275 /* ShellScript */,
 				7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */,
-				AEBF150E2347482200E17E04 /* ShellScript */,
+				AE1375BE2ECCCC53005AE0A9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -437,8 +514,17 @@
 				"zh-Hans",
 			);
 			mainGroup = AEC6F19622A8EE15007662AD;
+			packageReferences = (
+				AE1375B92ECCC89F005AE0A9 /* XCRemoteSwiftPackageReference "KeePassKit" */,
+			);
 			productRefGroup = AEC6F1A022A8EE15007662AD /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = AE13759E2ECCC398005AE0A9 /* Products */;
+					ProjectRef = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				AEC6F19E22A8EE15007662AD /* SwiftFastPass */,
@@ -447,6 +533,51 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		AE1375A72ECCC398005AE0A9 /* Eureka.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Eureka.framework;
+			remoteRef = AE1375A62ECCC398005AE0A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE1375A92ECCC398005AE0A9 /* MenuItemKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MenuItemKit.framework;
+			remoteRef = AE1375A82ECCC398005AE0A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE1375AB2ECCC398005AE0A9 /* Pods_SwiftFastPass.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Pods_SwiftFastPass.framework;
+			remoteRef = AE1375AA2ECCC398005AE0A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE1375AD2ECCC398005AE0A9 /* Pods_SwiftFastPassTests.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Pods_SwiftFastPassTests.framework;
+			remoteRef = AE1375AC2ECCC398005AE0A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE1375AF2ECCC398005AE0A9 /* Pods_SwiftFastPassUITests.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Pods_SwiftFastPassUITests.framework;
+			remoteRef = AE1375AE2ECCC398005AE0A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE1375B12ECCC398005AE0A9 /* SnapKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SnapKit.framework;
+			remoteRef = AE1375B02ECCC398005AE0A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AEC6F19D22A8EE15007662AD /* Resources */ = {
@@ -538,44 +669,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		AE3BC21C22A8F73E00C84275 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/KeePassKit.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/KissXML.framework",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/KeePassKit.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/KissXML.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
-		};
-		AEBF150E2347482200E17E04 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# skip if we run in debug\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\necho \"Skip frameworks cleaning in debug version\"\nexit 0\nfi\n\nAPP_PATH=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n\n# This script loops through the frameworks embedded in the application and\n# removes unused architectures.\nfind \"$APP_PATH\" -name '*.framework' -type d | while read -r FRAMEWORK\ndo\nFRAMEWORK_EXECUTABLE_NAME=$(defaults read \"$FRAMEWORK/Info.plist\" CFBundleExecutable)\nFRAMEWORK_EXECUTABLE_PATH=\"$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME\"\necho \"Executable is $FRAMEWORK_EXECUTABLE_PATH\"\n\nEXTRACTED_ARCHS=()\n\nfor ARCH in $ARCHS\ndo\necho \"Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME\"\nlipo -extract \"$ARCH\" \"$FRAMEWORK_EXECUTABLE_PATH\" -o \"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\"\nEXTRACTED_ARCHS+=(\"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\")\ndone\n\necho \"Merging extracted architectures: ${ARCHS}\"\nlipo -o \"$FRAMEWORK_EXECUTABLE_PATH-merged\" -create \"${EXTRACTED_ARCHS[@]}\"\nrm \"${EXTRACTED_ARCHS[@]}\"\n\necho \"Replacing original executable with thinned version\"\nrm \"$FRAMEWORK_EXECUTABLE_PATH\"\nmv \"$FRAMEWORK_EXECUTABLE_PATH-merged\" \"$FRAMEWORK_EXECUTABLE_PATH\"\n\ndone\n";
 		};
 		C5EAAD3385CA5EC2FD9AA4FD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -823,18 +916,20 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 10;
-				DEVELOPMENT_TEAM = P8GHCFM7HB;
+				DEVELOPMENT_TEAM = E66U2R5373;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = SwiftFastPass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Fast Pass";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SwiftFastPass/SwiftFastPass-Bridging-Header.h";
@@ -853,18 +948,20 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 10;
-				DEVELOPMENT_TEAM = P8GHCFM7HB;
+				DEVELOPMENT_TEAM = E66U2R5373;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = SwiftFastPass/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Fast Pass";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SwiftFastPass/SwiftFastPass-Bridging-Header.h";
@@ -882,6 +979,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				INFOPLIST_FILE = SwiftFastPassTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -904,6 +1002,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				INFOPLIST_FILE = SwiftFastPassTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -925,6 +1024,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				INFOPLIST_FILE = SwiftFastPassUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -946,6 +1046,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				INFOPLIST_FILE = SwiftFastPassUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -999,6 +1100,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AE1375B92ECCC89F005AE0A9 /* XCRemoteSwiftPackageReference "KeePassKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MacPass/KeePassKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.3.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = AEC6F19722A8EE15007662AD /* Project object */;
 }

@@ -10,4 +10,7 @@
 
 @interface KPKIcon ()
 @property (nonatomic, strong) NSUUID *uuid;
+@property (nonatomic, copy) NSDate *modificationDate;
+@property (nonatomic, strong) NSUIImage *image;
+@property (weak) KPKTree *tree;
 @end

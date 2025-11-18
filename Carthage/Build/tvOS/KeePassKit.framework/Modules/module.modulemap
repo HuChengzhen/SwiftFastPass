@@ -1,6 +1,0 @@
-framework module KeePassKit {
-  umbrella header "KeePassKit.h"
-
-  export *
-  module * { export * }
-}

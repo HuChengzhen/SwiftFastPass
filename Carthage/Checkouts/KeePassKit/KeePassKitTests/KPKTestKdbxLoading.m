@@ -28,13 +28,10 @@
   NSBundle *myBundle = [NSBundle bundleForClass:self.class];
   NSURL *url = [myBundle URLForResource:@"Test_Password_1234" withExtension:@"kdbx"];
   _data = [NSData dataWithContentsOfURL:url];
-  _key = [[KPKCompositeKey alloc] initWithPassword:@"1234" keyFileData:nil];
+  _key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"1234"]]];
   
-  _kdbx3.format = KPKDatabaseFormatKdbx;
-  _kdbx3.version = kKPKKdbxFileVersion3;
-
-  _kdbx4.format = KPKDatabaseFormatKdbx;
-  _kdbx4.version = kKPKKdbxFileVersion4;
+  _kdbx3 = KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion3);
+  _kdbx4 = KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion4);
 }
 
 - (void)tearDown {
@@ -44,8 +41,8 @@
 
 - (void)testLoadingAESKDFTwofishCipher {
   NSError *error;
-  NSData *data =  [self _loadTestDataBase:@"TwoFishCipher256bit_test" extension:@"kdbx"];
-  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithPassword:@"test" keyFileData:nil];
+  NSData *data =  [self _loadTestDataFromBundle:@"TwoFishCipher256bit_test" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
   KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
   XCTAssertNotNil(tree, @"Loading should result in a tree object");
   
@@ -54,8 +51,8 @@
 
 - (void)testLoadingArgon2KDFAESCipher {
   NSError *error;
-  NSData *data =  [self _loadTestDataBase:@"Argon2KDF_AES_Cipher_test" extension:@"kdbx"];
-  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithPassword:@"test" keyFileData:nil];
+  NSData *data =  [self _loadTestDataFromBundle:@"Argon2KDF_AES_Cipher_test" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
   KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
   XCTAssertNotNil(tree, @"Loading should result in a tree object");
   
@@ -64,28 +61,54 @@
 
 - (void)testLoadingArgon2KDFChaCha20Cipher {
   NSError *error;
-  NSData *data =  [self _loadTestDataBase:@"Argon2KDF_ChaCha_Cipher_test" extension:@"kdbx"];
-  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithPassword:@"test" keyFileData:nil];
+  NSData *data =  [self _loadTestDataFromBundle:@"Argon2KDF_ChaCha_Cipher_test" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
   KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
   XCTAssertNotNil(tree, @"Loading should result in a tree object");
   
   XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, _kdbx4));
 }
 
-- (void)testLoadingDifferenHeaderFieldOrderStrongBox {
+- (void)testLoadingArong2idKDF {
   NSError *error;
-  NSData *data =  [self _loadTestDataBase:@"Strongbox" extension:@"kdbx"];
-  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithPassword:@"test" keyFileData:nil];
+  NSData *data =  [self _loadTestDataFromBundle:@"Argon2idKDF_123" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"123"]]];
   KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
   XCTAssertNotNil(tree, @"Loading should result in a tree object");
   
   XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, _kdbx4));
+
+}
+
+
+- (void)testLoadingDifferentHeaderFieldOrderStrongBox {
+  NSError *error;
+  NSData *data =  [self _loadTestDataFromBundle:@"Strongbox" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
+  KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
+  XCTAssertNotNil(tree, @"Loading should result in a tree object");
+  
+  XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, _kdbx4));
+}
+
+- (void)testLoadingKeyFileVersion2 {
+  NSError *error;
+  NSData *data =  [self _loadTestDataFromBundle:@"Database_test_keyFileV2" extension:@"kdbx"];
+  NSData *keyData = [self _loadTestDataFromBundle:@"Database_test_keyFileV2" extension:@"keyx"];
+  KPKKey *fileKey = [KPKKey keyWithKeyFileData:keyData error:&error];
+  XCTAssertNotNil(fileKey);
+  XCTAssertNil(error);
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"], fileKey]];
+  KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
+  XCTAssertNotNil(tree, @"Loading should result in a tree object");
+  
+  //XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, _kdbx4));
 }
 
 - (void)testLoadingInnerHeaderBinaries {
   NSError *error;
-  NSData *data =  [self _loadTestDataBase:@"BinaryAttachments_test" extension:@"kdbx"];
-  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithPassword:@"test" keyFileData:nil];
+  NSData *data =  [self _loadTestDataFromBundle:@"BinaryAttachments_test" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
   KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
   XCTAssertNotNil(tree, @"Loading should result in a tree object");
   
@@ -124,6 +147,23 @@
 }
 */
 
+- (void)testLoadingKDBX4_1 {
+  NSData *data = [self _loadTestDataFromBundle:@"Database_test" extension:@"kdbx"];
+  XCTAssertNotNil(data);
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
+  NSError *error;
+  KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
+  XCTAssertNotNil(tree);
+  XCTAssertNil(error);
+  KPKFileVersion kdbx4_1 = KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion4_1);
+  XCTAssertLessThanOrEqual(NSOrderedSame, KPKFileVersionCompare(kdbx4_1,tree.minimumVersion));
+  
+  XCTAssertEqual(tree.metaData.customIcons.count, 1);
+  KPKIcon *icon = tree.metaData.customIcons.firstObject;
+  XCTAssertEqualObjects(icon.name, @"Custom Image");
+  XCTAssertNotNil(icon.modificationDate);
+}
+
 - (void)testLoadingVersion3 {
   NSError *error;
   KPKTree *tree = [[KPKTree alloc] initWithData:_data key:_key error:&error];
@@ -137,11 +177,10 @@
 }
 
 - (void)testAutotypeLoading {
-  NSBundle *myBundle = [NSBundle bundleForClass:self.class];
-  NSURL *url = [myBundle URLForResource:@"Autotype_test" withExtension:@"kdbx"];
-  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithPassword:@"test" keyFileData:nil];
+  NSData *data = [self _loadTestDataFromBundle:@"Autotype_test" extension:@"kdbx"];
+  KPKCompositeKey *key = [[KPKCompositeKey alloc] initWithKeys:@[[KPKKey keyWithPassword:@"test"]]];
   NSError *error;
-  KPKTree *tree = [[KPKTree alloc] initWithContentsOfUrl:url key:key error:&error];
+  KPKTree *tree = [[KPKTree alloc] initWithData:data key:key error:&error];
   XCTAssertNotNil(tree, @"Tree shoud be loaded");
   KPKEntry *entry = tree.root.entries.firstObject;
   XCTAssertNotNil(entry, @"Entry should be there");
@@ -149,7 +188,7 @@
   XCTAssertLessThanOrEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, _kdbx3));
 }
 
-- (NSData *)_loadTestDataBase:(NSString *)name extension:(NSString *)extension {
+- (NSData *)_loadTestDataFromBundle:(NSString *)name extension:(NSString *)extension {
   NSBundle *myBundle = [NSBundle bundleForClass:self.class];
   NSURL *url = [myBundle URLForResource:name withExtension:extension];
   return [NSData dataWithContentsOfURL:url];

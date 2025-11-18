@@ -10,7 +10,7 @@
 #define KPKSynchronizationOptions_h
 
 #import <Foundation/Foundation.h>
-
+// TODO: These flags make the merge algorithms vastly more complicated. Getting rid of them, since only KPKSynchronizationModeSynchronize is used might prove helpfull to reduce code complexity
 typedef NS_ENUM(NSUInteger, KPKSynchronizationMode) {
   KPKSynchronizationModeOverwriteExisting, // Overwrite every node with the external node, this will not remove any entries or groups found in the source
   KPKSynchronizationModeKeepExisting, // Only take new items, but keep the old ones just like they are
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, KPKSynchronizationMode) {
 
 typedef NS_OPTIONS(NSUInteger, KPKSynchronizationOptions) {
   KPKSynchronizationOptionCreateNewUuids          = 1 << 0, // generate new UUIDs in source tree before merging it into target
-  KPKSynchronizationOptionMatchGroupsByTitleOnly  = 1 << 1 // match groups by title not by UUID. This is usefull when trying to merge KDB trees since only entry retain ther UUID after save and load
+  KPKSynchronizationOptionMatchGroupsByTitleOnly  = 1 << 1 // match groups by title not by UUID. This is usefull when trying to merge KDB trees since only entry retain their UUID after save and load
 };
 
 #endif /* KPKSynchronizationOptions_h */

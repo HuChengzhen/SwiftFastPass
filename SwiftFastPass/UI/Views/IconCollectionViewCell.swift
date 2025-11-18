@@ -6,29 +6,30 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 class IconCollectionViewCell: UICollectionViewCell {
     var iconImageView: UIImageView
-    
+
     override init(frame: CGRect) {
         iconImageView = UIImageView()
         super.init(frame: frame)
-        
+
         contentView.addSubview(iconImageView)
         if #available(iOS 13.0, *) {
             iconImageView.tintColor = UIColor.label
         } else {
             iconImageView.tintColor = UIColor.black
         }
-        
-        iconImageView.snp.makeConstraints { (make) in
+
+        iconImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

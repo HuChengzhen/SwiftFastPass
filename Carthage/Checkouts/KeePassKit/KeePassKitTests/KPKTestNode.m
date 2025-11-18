@@ -34,13 +34,27 @@
   XCTAssertEqual(entry.index, subGroupA.mutableEntries.count - 1);
   [entry moveToGroup:subGroupA atIndex:0];
   XCTAssertEqual(entry.parent, subGroupA);
+  XCTAssertEqualObjects(entry.previousParent, subGroupA.uuid);
   XCTAssertEqual(entry.index, 0);
   
   [entry moveToGroup:subGroupB];
   XCTAssertNil([subGroupA entryForUUID:entry.uuid]);
   XCTAssertEqual(entry.index, 0);
+  XCTAssertEqualObjects(entry.previousParent, subGroupA.uuid);
   XCTAssertEqual(entry.parent, subGroupB);
 }
+
+- (void)testAddPresentGroup {
+  KPKGroup *root = [[KPKGroup alloc] init];
+  KPKGroup *subgroupA = [[KPKGroup alloc] init];
+  KPKGroup *subgroupB = [[KPKGroup alloc] init];
+  
+  [subgroupA addToGroup:root];
+  [subgroupB addToGroup:root];
+  
+  XCTAssertThrows([subgroupA addToGroup:subgroupB], "Added groups cannot be part of another group and/or tree");
+}
+
 
 - (void)testMoveGroup {
   KPKGroup *rootGroup = [[KPKGroup alloc] init];
@@ -173,6 +187,28 @@
   XCTAssertNotEqualObjects(group.uuid, groupCopy.uuid);
   XCTAssertEqual(KPKComparsionDifferent, [group compareToGroup:groupCopy]);
   XCTAssertEqual(KPKComparsionEqual, [group _compareToNode:groupCopy options:KPKNodeCompareOptionIgnoreUUID]);
+}
+
+- (void)testTags {
+  KPKGroup *group = [[KPKGroup alloc] init];
+  KPKEntry *entry = [[KPKEntry alloc] init];
+  
+  [entry moveToGroup:group];
+  
+  NSArray *tags = @[@"this", @"is", @"cool"];
+  NSArray *duplicateTags = @[@"this", @"is", @"cool", @"cool", @"cool", @"cool"];
+  NSArray *sortedTags = [tags sortedArrayUsingSelector:@selector(compare:)];
+
+  group.tags = tags;
+  XCTAssertEqualObjects(group.tags, sortedTags);
+  group.tags = duplicateTags;
+  XCTAssertEqualObjects(group.tags, sortedTags);
+  
+  entry.tags = tags;
+  XCTAssertEqualObjects(entry.tags, sortedTags);
+  entry.tags = duplicateTags;
+  XCTAssertEqualObjects(entry.tags, sortedTags);
+  
 }
 
 @end

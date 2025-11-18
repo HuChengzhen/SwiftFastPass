@@ -28,8 +28,10 @@
 #import "KPKFormat.h"
 #import "KPKGroup.h"
 #import "KPKIconTypes.h"
+#import "KPKIcon.h"
 #import "KPKMetaData.h"
 #import "KPKMetaData_Private.h"
+#import "KPKModifiedString.h"
 #import "KPKNode_Private.h"
 #import "KPKTimeInfo.h"
 #import "KPKKeyDerivation.h"
@@ -82,6 +84,17 @@ NSString *const KPKEntryKey       = @"KPKEntryKey";
     self.metaData = [[KPKMetaData alloc] init]; // use setter!
   }
   return self;
+}
+
+- (instancetype)copyWithZone:(NSZone *)zone {
+  KPKTree *copy = [[KPKTree alloc] init];
+  copy.delegate = self.delegate;
+  copy.metaData = [self.metaData copy];
+  copy.mutableDeletedObjects = [[NSMutableDictionary alloc] initWithDictionary:self.mutableDeletedObjects copyItems:YES];
+  copy.mutableDeletedNodes = [[NSMutableDictionary alloc] initWithDictionary:self.mutableDeletedNodes copyItems:YES];
+  copy.root = [self.root copy];
+  
+  return copy;
 }
 
 - (instancetype)initWithTemplateContents {
@@ -141,7 +154,7 @@ NSString *const KPKEntryKey       = @"KPKEntryKey";
 
 - (KPKGroup *)createGroup:(KPKGroup *)parent {
   KPKGroup *group = [[KPKGroup alloc] init];
-  group.parent = parent;
+  //group.parent = parent;
   return group;
 }
 
@@ -157,7 +170,7 @@ NSString *const KPKEntryKey       = @"KPKEntryKey";
     attribute.protect |= [self.metaData protectAttributeWithKey:attribute.key];
   }
   /* set parent at the end to prefent undo registration */
-  entry.parent = parent;
+  //entry.parent = parent; Do not set the parent, since we have not added the entry yet
   return entry;
 }
 
@@ -271,13 +284,39 @@ NSString *const KPKEntryKey       = @"KPKEntryKey";
 }
 
 - (KPKFileVersion)minimumVersion {
-  KPKFileVersion minimum = { KPKDatabaseFormatKdb, kKPKKdbFileVersion };
+  KPKFileVersion minimum = KPKMakeFileVersion(KPKDatabaseFormatKdb, kKPKKdbFileVersion);
+  
   BOOL aesKdf = [self.metaData.keyDerivationParameters[KPKKeyDerivationOptionUUID] isEqual:[KPKAESKeyDerivation uuid].kpk_uuidData];
   BOOL entriesInRoot = self.root.entries.count > 0;
   BOOL publicData = self.metaData.mutableCustomPublicData.count > 0;
-  if( !aesKdf || entriesInRoot || publicData ) {
+  BOOL changedCustomIcon = NO;
+  BOOL changedCustomData = NO;
+  
+  for(KPKIcon *icon in self.metaData.mutableCustomIcons) {
+    if(icon.name.length > 0 || icon.modificationDate != nil) {
+      changedCustomIcon = YES;
+      break;
+    }
+  }
+  
+  for(NSString *key in self.metaData.mutableCustomData) {
+    KPKModifiedString *string = self.metaData.mutableCustomData[key];
+    if(string.modificationDate != nil) {
+      changedCustomData = YES;
+    }
+  }
+
+  BOOL requiresKDBX = !aesKdf || entriesInRoot || publicData || changedCustomIcon || changedCustomData;
+  
+  if(requiresKDBX) {
     minimum.format = KPKDatabaseFormatKdbx;
-    minimum.version = (publicData || !aesKdf) ? kKPKKdbxFileVersion4 : kKPKKdbxFileVersion3;
+    minimum.version = kKPKKdbxFileVersion3;
+    if(changedCustomIcon || changedCustomData) {
+      minimum.version = kKPKKdbxFileVersion4_1;
+    }
+    else if(publicData || !aesKdf) {
+          minimum.version = kKPKKdbxFileVersion4;
+    }
   }
   if(!self.root) {
     return minimum;
@@ -293,18 +332,19 @@ NSString *const KPKEntryKey       = @"KPKEntryKey";
 }
 
 - (NSArray<NSString *> *)availableTags {
-  
   return _tags.allObjects;
 }
 
 
 - (void)_registerTags:(NSArray<NSString *> *)tags {
+  // _tags is NSCountedSet
   for(NSString *tag in tags) {
     [_tags addObject:tag];
   }
 }
 
 - (void)_unregisterTags:(NSArray<NSString *> *)tags  {
+  // _tags is NSCountedSet
   for(NSString *tag in tags) {
     [_tags removeObject:tag];
   }

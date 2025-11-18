@@ -52,7 +52,21 @@ open class DatePickerCell: Cell<Date>, CellType {
         editingAccessoryType =  .none
         height = { UITableView.automaticDimension }
         datePicker.datePickerMode = datePickerMode()
-        datePicker.addTarget(self, action: #selector(DatePickerCell.datePickerValueChanged(_:)), for: .valueChanged)
+        datePicker.addTarget(self, action: #selector(DatePickerCell.datePickerValueDidChange(_:)), for: .valueChanged)
+
+        if datePicker.datePickerMode != .countDownTimer {
+            #if swift(>=5.2)
+                if #available(iOS 14.0, *) {
+                    #if swift(>=5.3) && !(os(OSX) || (os(iOS) && targetEnvironment(macCatalyst)))
+                        datePicker.preferredDatePickerStyle = .inline
+                    #else
+                        datePicker.preferredDatePickerStyle = .wheels
+                    #endif
+                } else if #available(iOS 13.4, *) {
+                    datePicker.preferredDatePickerStyle = .wheels
+                }
+             #endif
+        }
     }
 
     deinit {
@@ -73,7 +87,7 @@ open class DatePickerCell: Cell<Date>, CellType {
         }
     }
 
-    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+    @objc(datePickerValueDidChange:) func datePickerValueDidChange(_ sender: UIDatePicker) {
         row?.value = sender.date
         
         // workaround for UIDatePicker bug when it doesn't trigger "value changed" event after trying to pick 00:00 value

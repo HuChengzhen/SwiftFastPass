@@ -58,9 +58,9 @@
 @property (strong, readwrite) KPKTree *tree;
 @property (readonly, copy) NSData *headerHash;
 @property (readonly, strong) KPKRandomStream *randomStream;
-//@property (strong) NSDateFormatter *dateFormatter;
 @property BOOL useRelativeDate;
 @property (nonatomic, readonly, copy) NSArray<KPKData *> *binaryData;
+@property KPKFileVersion fileVersion;
 
 @property (nonatomic, readonly) BOOL encrypted;
 
@@ -76,6 +76,7 @@
     _delegate = delegate;
     _tree = tree;
     _useRelativeDate = YES;
+    _fileVersion = KPKFileVersionMax(KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion3), tree.minimumVersion);
   }
   return self;
 }
@@ -128,11 +129,11 @@
   DDXMLElement *metaElement = [DDXMLNode elementWithName:kKPKXmlMeta];
   KPKAddXmlElement(metaElement, kKPKXmlGenerator, metaData.generator);
   
-  if(self.headerHash) {
+  if(self.headerHash.length > 0) {
     KPKAddXmlElement(metaElement, kKPKXmlHeaderHash, [self.headerHash base64EncodedStringWithOptions:0]);
   }
-  
-  if(!self.randomStream || kKPKKdbxFileVersion4 > [self.delegate fileVersionForWriter:self]) {
+
+  if(!self.randomStream || kKPKKdbxFileVersion4 > self.fileVersion.version) {
     self.useRelativeDate = NO;
     /*
      self.dateFormatter = [[NSDateFormatter alloc] init];
@@ -150,7 +151,7 @@
   KPKAddXmlElement(metaElement, kKPKXmlMaintenanceHistoryDays, KPKStringFromLong(metaData.maintenanceHistoryDays));
   KPKAddXmlElement(metaElement, kKPKXmlColor, metaData.color.kpk_hexString);
   /* Settings changed only in KDBX4 */
-  if(kKPKKdbxFileVersion4 <= [self.delegate fileVersionForWriter:self]) {
+  if(kKPKKdbxFileVersion4 <= self.fileVersion.version) {
     KPKAddXmlElement(metaElement, kKPKXmlSettingsChanged, KPKStringFromDate(metaData.settingsChanged, self.useRelativeDate));
   }
   KPKAddXmlElement(metaElement, kKPKXmlMasterKeyChanged, KPKStringFromDate(metaData.masterKeyChanged, self.useRelativeDate));
@@ -184,13 +185,13 @@
   KPKAddXmlElement(metaElement, kKPKXmlLastTopVisibleGroup, metaData.lastTopVisibleGroup.kpk_encodedString);
   
   /* only add binaries if we actuall should, ask the delegate! */
-  if(!self.randomStream || kKPKKdbxFileVersion4 > [self.delegate fileVersionForWriter:self]) {
+  if(!self.randomStream || kKPKKdbxFileVersion4 > self.fileVersion.version) {
     if(self.binaryData) {
       [metaElement addChild:[self _xmlBinaries]];
     }
   }
   
-  DDXMLElement *customDataElement = [self _xmlCustomData:metaData.mutableCustomData addEmptyElement:YES];
+  DDXMLElement *customDataElement = [self _xmlMetaCustomData:metaData.mutableCustomData];
   NSAssert(customDataElement, @"Unexspected nil value!");
   [metaElement addChild:customDataElement];
   /* Add meta Element to XML root */
@@ -238,7 +239,14 @@
   KPKAddXmlElement(groupElement, kKPKXmlEnableSearching, stringFromInheritBool(group.isSearchEnabled));
   KPKAddXmlElement(groupElement, kKPKXmlLastTopVisibleEntry, group.lastTopVisibleEntry.kpk_encodedString);
   
-  DDXMLElement *customDataElement = [self _xmlCustomData:group.mutableCustomData addEmptyElement:NO];
+  if(group.tags.count > 0) {
+    NSAssert(self.fileVersion.version >= kKPKKdbxFileVersion4_1, @"Internal inconsitency with minimum required version");
+    KPKAddXmlElement(groupElement, kKPKXmlTags, [group.tags componentsJoinedByString:@";"].kpk_xmlCompatibleString);
+  }
+  
+  KPKAddXmlElement(groupElement, kKPKXmlPreviousParentGroup, group.previousParent.kpk_encodedString);
+  
+  DDXMLElement *customDataElement = [self _xmlCustomData:group.mutableCustomData];
   if(customDataElement) {
     [groupElement addChild:customDataElement];
   }
@@ -268,10 +276,14 @@
   KPKAddXmlElement(entryElement, kKPKXmlOverrideURL, entry.overrideURL.kpk_xmlCompatibleString);
   KPKAddXmlElement(entryElement, kKPKXmlTags, [entry.tags componentsJoinedByString:@";"].kpk_xmlCompatibleString);
   
+  if(!entry.checkPasswordQuality) {
+    KPKAddXmlElement(entryElement, kKPKXmlQualityCheck, kKPKXmlFalse);
+  }
+  
   DDXMLElement *timesElement = [self _xmlTimeinfo:entry.timeInfo];
   [entryElement addChild:timesElement];
   
-  DDXMLElement *customDataElement = [self _xmlCustomData:entry.mutableCustomData addEmptyElement:NO];
+  DDXMLElement *customDataElement = [self _xmlCustomData:entry.mutableCustomData];
   if(customDataElement) {
     [entryElement addChild:customDataElement];
   }
@@ -394,14 +406,23 @@
     DDXMLElement *iconElement = [DDXMLNode elementWithName:kKPKXmlIcon];
     KPKAddXmlElement(iconElement, kKPKXmlUUID, icon.uuid.kpk_encodedString);
     KPKAddXmlElement(iconElement, kKPKXmlData, icon.encodedString);
+    
+    if(icon.name.length > 0) {
+      NSAssert( self.fileVersion.version >= kKPKKdbxFileVersion4_1, @"Icon names require KDBX 4.1");
+      KPKAddXmlElement(iconElement, kKPKXmlName, icon.name.kpk_xmlCompatibleString);
+    }
+    if(icon.modificationDate != nil) {
+      NSAssert( self.fileVersion.version >= kKPKKdbxFileVersion4_1, @"Icon modificiation dates require KDBX 4.1");
+      KPKAddXmlElement(iconElement, kKPKXmlLastModificationDate, KPKStringFromDate(icon.modificationDate, YES));
+    }
     [customIconsElements addChild:iconElement];
   }
   return customIconsElements;
 }
 
-- (DDXMLElement *)_xmlCustomData:(NSDictionary<NSString *, NSString*> *)customData addEmptyElement:(BOOL)addEmpty{
+- (DDXMLElement *)_xmlCustomData:(NSDictionary<NSString *, NSString*> *)customData {
   DDXMLElement *customDataElement;
-  if(addEmpty || customData.count > 0) {
+  if(customData.count > 0) {
     customDataElement = [DDXMLElement elementWithName:kKPKXmlCustomData];
     for(NSString *key in customData) {
       DDXMLElement *itemElement = [DDXMLElement elementWithName:kKPKXmlCustomDataItem];
@@ -412,6 +433,25 @@
   }
   return customDataElement;
 }
+
+- (DDXMLElement *)_xmlMetaCustomData:(NSDictionary<NSString *, KPKModifiedString*> *)customData {
+  DDXMLElement *customDataElement;
+  
+  customDataElement = [DDXMLElement elementWithName:kKPKXmlCustomData];
+  for(NSString *key in customData) {
+    DDXMLElement *itemElement = [DDXMLElement elementWithName:kKPKXmlCustomDataItem];
+    KPKModifiedString *string = customData[key];
+    KPKAddXmlElement(itemElement, kKPKXmlKey, key.kpk_xmlCompatibleString);
+    KPKAddXmlElement(itemElement, kKPKXmlValue, string.value.kpk_xmlCompatibleString);
+    if(string.modificationDate != nil) {
+      NSAssert( self.fileVersion.version >= kKPKKdbxFileVersion4_1, @"Custom data modificiation dates require KDBX 4.1");
+      KPKAddXmlElement(itemElement, kKPKXmlLastModificationDate, KPKStringFromDate(string.modificationDate, self.useRelativeDate));
+    }
+    [customDataElement addChild:itemElement];
+  }
+  return customDataElement;
+}
+
 
 - (DDXMLElement *)_xmlDeletedObjects {
   DDXMLElement *deletedObjectsElement = [DDXMLElement elementWithName:kKPKXmlDeletedObjects];

@@ -21,25 +21,64 @@
 //
 
 #import "KPKEntry.h"
-#import "KPKEntry_Private.h"
-#import "KPKNode_Private.h"
 #import "KPKGroup.h"
-#import "KPKGroup_Private.h"
 #import "KPKBinary.h"
-#import "KPKBinary_Private.h"
 #import "KPKAttribute.h"
-#import "KPKAttribute_Private.h"
 #import "KPKAutotype.h"
-#import "KPKAutotype_Private.h"
-#import "KPKWindowAssociation.h"
 #import "KPKFormat.h"
 #import "KPKTimeInfo.h"
 #import "KPKUTIs.h"
 #import "KPKReferenceBuilder.h"
+#import "KPKWindowAssociation.h"
+#import "KPKOTPGenerator.h"
+#import "KPKHmacOTPGenerator.h"
+#import "KPKTimeOTPGenerator.h"
+
+#import "KPKAttribute_Private.h"
+#import "KPKAutotype_Private.h"
+#import "KPKBinary_Private.h"
+#import "KPKEntry_Private.h"
+#import "KPKGroup_Private.h"
+#import "KPKNode_Private.h"
 #import "KPKTree_Private.h"
 
 #import "KPKScopedSet.h"
 
+// UserInfo Keys
+NSString *const KPKAttributeKeyKey                    = @"KPKAttributeKeyKey";
+NSString *const KPKBinaryKey                          = @"KPKBinaryKey";
+NSString *const KPKBinaryIndexKey                     = @"KPKBinaryIndexKey";
+NSString *const KPKWindowAssociationKey               = @"KPKWindowAssociationKey";
+NSString *const KPKWindowAssociationIndexKey          = @"KPKWindowAssociationIndexKey";
+
+// Notifications
+NSString *const KPKWillChangeEntryNotification        = @"KPKWillChangeEntryNotification";
+NSString *const KPKDidChangeEntryNotification         = @"KPKDidChangeEntryNotification";
+
+NSString *const KPKWillAddAttributeNotification       = @"KPKWillAddAttributeNotification";
+NSString *const KPKDidAddAttributeNotification        = @"KPKDidAddAttributeNotification";
+NSString *const KPKWillRemoveAttributeNotification    = @"KPKWillRemoveAttributeNotification";
+NSString *const KPKDidRemoveAttributeNotification     = @"KPKDidRemoveAttributeNotification";
+NSString *const KPKWillChangeAttributeNotification    = @"KPKWillChangeAttributeNotification";
+NSString *const KPKDidChangeAttributeNotification     = @"KPKDidChangeAttributeNotification";
+
+NSString *const KPKWillChangeBinaryNotification       = @"KPKWillChangeBinaryNotification";
+NSString *const KPKDidChangeBinaryNotification        = @"KPKDidChangeBinaryNotification";
+NSString *const KPKWillAddBinaryNotification          = @"KPKWillAddBinaryNotification";
+NSString *const KPKDidAddBinaryNotification           = @"KPKDidAddBinaryNotification";
+NSString *const KPKWillRemoveBinaryNotification       = @"KPKWillRemoveBinaryNotification";
+NSString *const KPKDidRemoveBinaryNotification        = @"KPKDidRemoveBinaryNotification";
+
+NSString *const KPKWillChangeAutotypeNotification           = @"KPKWillChangeAutotypeNotification";
+NSString *const KPKDidChangeAutotypeNotification            = @"KPKDidChangeAutotypeNotification";
+NSString *const KPKWillAddWindowAssociationNotification     = @"KPKWillAddWindowAssociationNotification";
+NSString *const KPKDidAddWindowAssociationNotification      = @"KPKDidAddWindowAssociationNotification";
+NSString *const KPKWillRemoveWindowAssociationNotification  = @"KPKWillRemoveWindowAssociationNotification";
+NSString *const KPKDidRemoveWindowAssociationNotification   = @"KPKDidRemoveWindowAssociationNotification";
+NSString *const KPKWillChangeWindowAssociationNotification  = @"KPKWillChangeWindowAssociationNotification";
+NSString *const KPKDidChangeWindowAssociationNotification   = @"KPKDidChangeWindowAssociationNotification";
+
+// Magic constants for Meta Entries
 NSString *const KPKMetaEntryBinaryDescription   = @"bin-stream";
 NSString *const KPKMetaEntryTitle               = @"Meta-Info";
 NSString *const KPKMetaEntryUsername            = @"SYSTEM";
@@ -150,6 +189,14 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   return [NSSet setWithObject:NSStringFromSelector(@selector(mutableAttributes))];
 }
 
++ (NSSet<NSString *> *)keyPathsForValuesAffectingHmacOTP {
+  return [NSSet setWithObject:NSStringFromSelector(@selector(mutableAttributes))];
+}
+
++ (NSSet<NSString *> *)keyPathsForValuesAffectingTimeOTP {
+  return [NSSet setWithObject:NSStringFromSelector(@selector(mutableAttributes))];
+}
+
 + (NSSet<NSString *> *)keyPathsForValuesAffectingIndex {
   return [NSSet setWithArray:@[NSStringFromSelector(@selector(parent)), [NSString stringWithFormat:@"%@.%@",NSStringFromSelector(@selector(parent)), NSStringFromSelector(@selector(mutableEntries))]]];
 }
@@ -188,6 +235,7 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
     
     _autotype.entry = self;
     _isHistory = NO;
+    _checkPasswordQuality = YES;
   }
   return self;
 }
@@ -210,7 +258,6 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   
   copy.mutableBinaries = [[NSMutableArray alloc] initWithArray:self.mutableBinaries copyItems:YES];
   copy.mutableAttributes = [[NSMutableArray alloc] initWithArray:self.mutableAttributes copyItems:YES];
-  copy.tags = self.tags;
   copy.autotype = self.autotype;
   /* Shallow copy skipps history */
   copy.isHistory = NO;
@@ -218,6 +265,9 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   /* Color */
   copy.foregroundColor = self.foregroundColor;
   copy.backgroundColor = self.backgroundColor;
+  
+  /* Quality estimation */
+  copy.checkPasswordQuality = self.checkPasswordQuality;
   
   /* History */
   copy.mutableHistory = [[NSMutableArray alloc] initWithArray:self.mutableHistory copyItems:YES];
@@ -241,10 +291,10 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
                                                    forKey:NSStringFromSelector(@selector(mutableHistory))];
     self.mutableBinaries = [aDecoder decodeObjectOfClasses:[NSSet setWithArray:@[NSMutableArray.class, KPKBinary.class]]
                                                     forKey:NSStringFromSelector(@selector(mutableBinaries))];
-    _tags = [[aDecoder decodeObjectOfClass:NSArray.class forKey:NSStringFromSelector(@selector(tags))] copy];
     _foregroundColor = [[aDecoder decodeObjectOfClass:NSUIColor.class forKey:NSStringFromSelector(@selector(foregroundColor))] copy];
     _backgroundColor = [[aDecoder decodeObjectOfClass:NSUIColor.class forKey:NSStringFromSelector(@selector(backgroundColor))] copy];
     _overrideURL = [[aDecoder decodeObjectOfClass:NSString.class forKey:NSStringFromSelector(@selector(overrideURL))] copy];
+    _checkPasswordQuality = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(checkPasswordQuality))];
     self.autotype = [aDecoder decodeObjectOfClass:KPKAutotype.class forKey:NSStringFromSelector(@selector(autotype))];
     _isHistory = [aDecoder decodeBoolForKey:NSStringFromSelector(@selector(isHistory))];
     
@@ -257,10 +307,10 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   [super _encodeWithCoder:aCoder];
   [aCoder encodeObject:_mutableAttributes forKey:NSStringFromSelector(@selector(mutableAttributes))];
   [aCoder encodeObject:_mutableBinaries forKey:NSStringFromSelector(@selector(mutableBinaries))];
-  [aCoder encodeObject:_tags forKey:NSStringFromSelector(@selector(tags))];
   [aCoder encodeObject:_foregroundColor forKey:NSStringFromSelector(@selector(foregroundColor))];
   [aCoder encodeObject:_backgroundColor forKey:NSStringFromSelector(@selector(backgroundColor))];
   [aCoder encodeObject:_overrideURL forKey:NSStringFromSelector(@selector(overrideURL))];
+  [aCoder encodeBool:_checkPasswordQuality forKey:NSStringFromSelector(@selector(checkPasswordQuality))];
   [aCoder encodeObject:_mutableHistory forKey:NSStringFromSelector(@selector(mutableHistory))];
   [aCoder encodeObject:_autotype forKey:NSStringFromSelector(@selector(autotype))];
   [aCoder encodeBool:_isHistory forKey:NSStringFromSelector(@selector(isHistory))];
@@ -333,6 +383,9 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
 
 - (KPKComparsionResult)_compareToNode:(KPKNode *)aNode options:(KPKNodeCompareOptions)options {
   KPKEntry *entry = aNode.asEntry;
+  if(aNode == nil) {
+    return NO;
+  }
   NSAssert([entry isKindOfClass:KPKEntry.class], @"Test only allowed with KPKEntry classes");
   
   if(KPKComparsionDifferent == [super _compareToNode:aNode options:options]) {
@@ -350,11 +403,6 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
       return KPKComparsionDifferent;
     }
   }
-  if(self.tags.count != entry.tags.count) {
-    if(![self.tags isEqualToArray:entry.tags]) {
-      return KPKComparsionDifferent;
-    }
-  }
   if(self.foregroundColor != entry.foregroundColor) {
     if(![self.foregroundColor isEqual:entry.foregroundColor]) {
       return KPKComparsionDifferent;
@@ -364,6 +412,16 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
     if(![self.backgroundColor isEqual:entry.backgroundColor]) {
       return KPKComparsionDifferent;
     }
+  }
+  /* FIXME: correctly check override URL in comparsion
+  if(self.overrideURL != entry.overrideURL) {
+    if([self.overrideURL isEqual:entry.overrideURL]) {
+      return KPKComparsionDifferent;
+    }
+  }
+   */
+  if(self.checkPasswordQuality != entry.checkPasswordQuality) {
+    return KPKComparsionDifferent;
   }
   
   /* Compare History - order has to match! */
@@ -468,8 +526,19 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   return [self attributeWithKey:key].evaluatedValue;
 }
 
-- (void)_setValue:(NSString *)value forAttributeWithKey:(NSString *)key {
-  [self attributeWithKey:key].value = value;
+- (void)_setValue:(NSString *)value forAttributeWithKey:(NSString *)key {  
+  [self _setValue:value forAttributeWithKey:key sendChanges:YES];
+}
+
+- (void)_setValue:(NSString *)value forAttributeWithKey:(NSString *)key sendChanges:(BOOL)sendChanges {
+  KPKAttribute *attribute = [self attributeWithKey:key];
+  if(sendChanges) {
+    [self willChangeValueForKey:key.lowercaseString];
+  }
+  attribute.value = value;
+  if(sendChanges) {
+    [self didChangeValueForKey:key.lowercaseString];
+  }
 }
 
 #pragma mark -
@@ -479,7 +548,7 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
 }
 
 - (BOOL)protectPassword {
-  return  [self _protectValueForKey:kKPKPasswordKey];
+  return [self _protectValueForKey:kKPKPasswordKey];
 }
 
 - (BOOL)protectTitle {
@@ -560,31 +629,45 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   if(self.binaries.count > 1 ||
      self.customAttributes.count > 0 ||
      self.mutableHistory.count > 0  ||
-     self.mutableCustomData.count > 0) {
+     self.mutableCustomData.count > 0 ||
+     self.checkPasswordQuality == NO) {
     
     version.format = KPKDatabaseFormatKdbx;
-    version.version = self.mutableCustomData.count > 0 ? kKPKKdbxFileVersion4 : kKPKKdbxFileVersion3;
+    version.version = kKPKKdbxFileVersion3;
+    /* Entry based custom data was requries version 4 */
+    if(self.mutableCustomData.count > 0) {
+      version.version = MAX(version.version, kKPKKdbxFileVersion4);
+    }
+    /* Password quality estimation disabling requires version 4.1 */
+    if(!self.checkPasswordQuality) {
+      version.version = MAX(version.version, kKPKKdbxFileVersion4_1);
+    }
   }
   return version;
 }
 
 - (void)setMutableAttributes:(NSMutableArray<KPKAttribute *> *)mutableAttributes {
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
   _mutableAttributes = mutableAttributes;
   [_attributeMap removeAllObjects];
   for(KPKAttribute *attribute in self.mutableAttributes) {
     attribute.entry = self;
     [_attributeMap setObject:attribute forKey:attribute.key];
   }
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)setMutableHistory:(NSMutableArray<KPKEntry *> *)mutableHistory {
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
   _mutableHistory = mutableHistory;
   for(KPKEntry *entry in self.mutableHistory) {
     entry.parent = self.parent;
   }
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)setParent:(KPKGroup *)parent {
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
   super.parent = parent;
   if(self.isHistory) {
     return;
@@ -592,6 +675,7 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   for(KPKEntry *entry in self.mutableHistory) {
     entry.parent = parent;
   }
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)setProtectNotes:(BOOL)protectNotes {
@@ -615,65 +699,144 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
 }
 
 - (void)setAutotype:(KPKAutotype *)autotype {
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
   if(autotype == _autotype) {
     return;
   }
   _autotype = [autotype copy];
   _autotype.entry = self;
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)setTitle:(NSString *)title {
   [[self.undoManager prepareWithInvocationTarget:self] setTitle:self.title];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_TITLE", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the title of an enty")];
-  [self _setValue:title forAttributeWithKey:kKPKTitleKey];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_TITLE", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the title of an enty")];
+  [self _setValue:title forAttributeWithKey:kKPKTitleKey sendChanges:NO];
 }
 
 - (void)setUsername:(NSString *)username {
   [[self.undoManager prepareWithInvocationTarget:self] setUsername:self.username];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_USERNAME", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the username of an enty")];
-  [self _setValue:username forAttributeWithKey:kKPKUsernameKey];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_USERNAME", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the username of an enty")];
+  [self _setValue:username forAttributeWithKey:kKPKUsernameKey sendChanges:NO];
 }
 
 - (void)setPassword:(NSString *)password {
   [[self.undoManager prepareWithInvocationTarget:self] setPassword:self.password];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_PASSWORD", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the password of an enty")];
-  [self _setValue:password forAttributeWithKey:kKPKPasswordKey];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_PASSWORD", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the password of an enty")];
+  [self _setValue:password forAttributeWithKey:kKPKPasswordKey sendChanges:NO];
 }
 
 - (void)setNotes:(NSString *)notes {
   [[self.undoManager prepareWithInvocationTarget:self] setNotes:self.notes];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_NOTES", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the notes of an enty")];
-  [self _setValue:notes forAttributeWithKey:kKPKNotesKey];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_NOTES", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the notes of an enty")];
+  [self _setValue:notes forAttributeWithKey:kKPKNotesKey sendChanges:NO];
 }
 
 - (void)setUrl:(NSString *)url {
   [[self.undoManager prepareWithInvocationTarget:self] setUrl:self.url];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_URL", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the url of an enty")];
-  [self _setValue:url forAttributeWithKey:kKPKURLKey];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_URL", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the url of an enty")];
+  [self _setValue:url forAttributeWithKey:kKPKURLKey sendChanges:NO];
 }
 
-- (void)setTags:(NSArray<NSString *> *)tags {
-  [[self.undoManager prepareWithInvocationTarget:self] setTags:self.tags];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_TAGS", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the tags of an enty")];
-  [self.tree _unregisterTags:_tags];
-  _tags = tags ? [[NSArray alloc] initWithArray:tags copyItems:YES] : nil;
-  [self.tree _registerTags:_tags];
+- (void)setOverrideURL:(NSString *)overrideURL {
+  [[self.undoManager prepareWithInvocationTarget:self] setOverrideURL:self.overrideURL];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_OVERRIDE_URL", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the overridel url of an entry")];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+  _overrideURL = [overrideURL copy];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)setForegroundColor:(NSUIColor *)foregroundColor {
   [[self.undoManager prepareWithInvocationTarget:self] setForegroundColor:self.foregroundColor];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_FOREGROUND_COLOR", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the foreground color of an enty")];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_FOREGROUND_COLOR", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the foreground color of an enty")];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
   _foregroundColor = foregroundColor;
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)setBackgroundColor:(NSUIColor *)backgroundColor {
   [[self.undoManager prepareWithInvocationTarget:self] setBackgroundColor:self.backgroundColor];
-  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_BACKGROUND_COLOR", nil, [NSBundle bundleForClass:[self class]], @"Action name for setting the background color of an enty")];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_BACKGROUND_COLOR", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the background color of an enty")];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
   _backgroundColor = backgroundColor;
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
+}
+
+- (void)setCheckPasswordQuality:(BOOL)checkPasswordQuality {
+  [[self.undoManager prepareWithInvocationTarget:self] setCheckPasswordQuality:self.checkPasswordQuality];
+  [self.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_CHECK_PASSWORD_QUALITY", nil,[NSBundle bundleForClass:self.class] , @"Action name for enabling or disabling the password quality estimation display")];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+  _checkPasswordQuality = checkPasswordQuality;
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (KPKEntry *)asEntry {
   return self;
+}
+
+- (NSString *)hmacOTP {
+  return [self generateHmacOTPUpdateCounter:NO];
+}
+
+- (NSString *)timeOTP {
+  if(!self.hasTimeOTP) {
+    return @"";
+  }
+  KPKTimeOTPGenerator *generator = [[KPKTimeOTPGenerator alloc] initWithAttributes:self.mutableAttributes];
+  generator.time = NSDate.date.timeIntervalSince1970;
+  return generator ? generator.string : @"";
+}
+
+- (BOOL)hasTimeOTP {
+  KPKAttribute *otpURL = [self attributeWithKey:kKPKAttributeKeyOTPOAuthURL];
+  if(otpURL) {
+    NSURL *url = [NSURL URLWithString:otpURL.evaluatedValue];
+    if(url.isTimeOTPURL) {
+      return YES;
+    }
+  }
+  NSArray *keys = @[kKPKAttributeKeyTimeOTPSeed, kKPKAttributeKeyTimeOTPSecret, kKPKAttributeKeyTimeOTPSecretHex, kKPKAttributeKeyTimeOTPSecretBase32, kKPKAttributeKeyTimeOTPSecretBase64];
+  
+  for(NSString *key in keys) {
+    if([self hasAttributeWithKey:key]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (BOOL)hasHmacOTP {
+  KPKAttribute *otpURL = [self attributeWithKey:kKPKAttributeKeyOTPOAuthURL];
+  if(otpURL) {
+    NSURL *url = [[NSURL alloc] initWithString:otpURL.evaluatedValue];
+    if(url.isHmacOTPURL) {
+      return YES;
+    }
+  }
+  NSArray *keys = @[kKPKAttributeKeyHmacOTPSecret, kKPKAttributeKeyHmacOTPSecretHex, kKPKAttributeKeyHmacOTPSecretBase32, kKPKAttributeKeyHmacOTPSecretBase64];
+  for(NSString *key in keys) {
+    if([self hasAttributeWithKey:key]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (NSString *)generateHmacOTPUpdateCounter:(BOOL)update {
+  if(!self.hasHmacOTP) {
+    return @"";
+  }
+  KPKHmacOTPGenerator *generator = [[KPKHmacOTPGenerator alloc] initWithAttributes:self.mutableAttributes];
+  if(!generator) {
+    return @"";
+  }
+  
+  NSString *value = generator.string;
+  if(update) {
+    generator.counter += 1;
+    [generator saveCounterToEntry:self];
+  }
+  return value;
 }
 
 #pragma mark CustomAttributes
@@ -712,18 +875,26 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
     NSLog(@"Warning. Attribute with key %@ already present! Changing key to %@", duplicate.key, attribute.key);
   }
   [[self.undoManager prepareWithInvocationTarget:self] removeCustomAttribute:attribute];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillAddAttributeNotification object:self userInfo:@{KPKAttributeKeyKey: attribute.key}];
   [self touchModified];
   [self insertObject:attribute inMutableAttributesAtIndex:index];
   attribute.entry = self;
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidAddAttributeNotification object:self userInfo:@{KPKAttributeKeyKey: attribute.key}];
 }
 
 - (void)removeCustomAttribute:(KPKAttribute *)attribute {
   NSUInteger index = [self.mutableAttributes indexOfObjectIdenticalTo:attribute];
   if(NSNotFound != index) {
     [[self.undoManager prepareWithInvocationTarget:self] _addCustomAttribute:attribute atIndex:index];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKWillRemoveAttributeNotification object:self userInfo:@{ KPKAttributeKeyKey: attribute.key}];
     [self touchModified];
     attribute.entry = nil;
     [self removeObjectFromMutableAttributesAtIndex:index];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKDidRemoveAttributeNotification object:self userInfo:@{ KPKAttributeKeyKey: attribute.key}];
   }
 }
 #pragma mark Attachments
@@ -756,8 +927,12 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
     binary.name = [self _proposedNameForBinaryName:duplicate.name];
   }
   [[self.undoManager prepareWithInvocationTarget:self] removeBinary:binary];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillAddBinaryNotification object:@{KPKBinaryKey: binary, KPKBinaryIndexKey: @(index)}];
   [self touchModified];
   [self insertObject:binary inMutableBinariesAtIndex:index];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidAddBinaryNotification object:@{KPKBinaryKey: binary, KPKBinaryIndexKey: @(index)}];
   
 }
 
@@ -771,8 +946,12 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   NSUInteger index = [self.mutableBinaries indexOfObjectIdenticalTo:binary];
   if(index != NSNotFound) {
     [[self.undoManager prepareWithInvocationTarget:self] addBinary:binary];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKWillRemoveBinaryNotification object:@{KPKBinaryKey: binary, KPKBinaryIndexKey: @(index)}];
     [self touchModified];
     [self removeObjectFromMutableBinariesAtIndex:index];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
+    [NSNotificationCenter.defaultCenter postNotificationName:KPKDidRemoveBinaryNotification object:@{KPKBinaryKey: binary, KPKBinaryIndexKey: @(index)}];
   }
 }
 
@@ -895,6 +1074,7 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   self.foregroundColor = entry.foregroundColor;
   self.backgroundColor = entry.backgroundColor;
   self.overrideURL = entry.overrideURL;
+  self.checkPasswordQuality = entry.checkPasswordQuality;
   
   self.autotype = entry.autotype;
   
@@ -923,7 +1103,7 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   if(removeCount > 0) {
     [self removeMutableHistoryAtIndexes:[[NSIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, removeCount)]];
   }
-  /* remove items if size it to big */
+  /* remove items if size is too big */
   NSUInteger historySize = 0;
   NSInteger removeIndex = -1;
   NSEnumerator *enumerator = self.mutableHistory.reverseObjectEnumerator;
@@ -940,9 +1120,8 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   }
 }
 
-
 - (NSUInteger)estimatedByteSize {
-  
+  // FIXME: This assumes old structures and KeePass states to calculate process memory, so this needs to be evaluated for Obj-C
   NSUInteger __block size = 128; // KeePass suggest this as the inital size
   
   /* Attributes */
@@ -991,14 +1170,20 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
 /* Binaries */
 - (void)insertObject:(KPKBinary *)binary inMutableBinariesAtIndex:(NSUInteger)index {
   /* Clamp the index to make sure we do not add at wrong places */
-  index = MIN([self.mutableBinaries count], index);
+  // FIXME: add fine grain notifications for binaries
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+  index = MIN(self.mutableBinaries.count, index);
   [self.mutableBinaries insertObject:binary atIndex:index];
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 - (void)removeObjectFromMutableBinariesAtIndex:(NSUInteger)index {
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKWillChangeEntryNotification object:self];
+  // FIXME: add fine grain notifications for binaries
   if(index < self.mutableBinaries.count) {
     [self.mutableBinaries removeObjectAtIndex:index];
   }
+  [NSNotificationCenter.defaultCenter postNotificationName:KPKDidChangeEntryNotification object:self];
 }
 
 /* History */
@@ -1024,10 +1209,5 @@ NSSet *_protectedKeyPathForAttribute(SEL aSelector) {
   }];
   [self.mutableHistory removeObjectsAtIndexes:indexes];
 }
-
-#pragma mark -
-#pragma mark Private Helper
-
-
 
 @end

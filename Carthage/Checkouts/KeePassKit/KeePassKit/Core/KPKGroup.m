@@ -35,6 +35,7 @@
 #import "KPKTree_Private.h"
 #import "KPKTimeInfo.h"
 #import "KPKUTIs.h"
+#import "KPKFormat.h"
 
 #import "NSUUID+KPKAdditions.h"
 
@@ -112,7 +113,7 @@ static NSSet *_observedKeyPathsSet;
     _mutableEntries = [@[] mutableCopy];
     _isAutoTypeEnabled = KPKInherit;
     _isSearchEnabled = KPKInherit;
-    _lastTopVisibleEntry = [NSUUID kpk_nullUUID];
+    _lastTopVisibleEntry = NSUUID.kpk_nullUUID;
     //self.updateTiming = YES;
     if(!_observedKeyPathsSet) {
       _observedKeyPathsSet = [NSSet setWithArray:@[NSStringFromSelector(@selector(children)), NSStringFromSelector(@selector(childEntries))]];
@@ -176,7 +177,7 @@ static NSSet *_observedKeyPathsSet;
   KPKGroup *copy = [super _copyWithUUID:uuid];
   KPK_SCOPED_NO_BEGIN(copy.updateTiming);
   copy.isAutoTypeEnabled = self.isAutoTypeEnabled;
-  copy.defaultAutoTypeSequence = self.defaultAutoTypeSequence;
+  copy.defaultAutoTypeSequence = self->_defaultAutoTypeSequence; // direct access to member to prevent parent lookup!
   copy.isSearchEnabled = self.isSearchEnabled;
   copy.isExpanded = self.isExpanded;
   copy.lastTopVisibleEntry = self.lastTopVisibleEntry;
@@ -419,7 +420,7 @@ static NSSet *_observedKeyPathsSet;
 - (void)setDefaultAutoTypeSequence:(NSString *)defaultAutoTypeSequence {
   [[self.undoManager prepareWithInvocationTarget:self] setDefaultAutoTypeSequence:_defaultAutoTypeSequence];
   [self touchModified];
-  _defaultAutoTypeSequence = defaultAutoTypeSequence;
+  _defaultAutoTypeSequence = [defaultAutoTypeSequence copy];
 }
 
 - (BOOL)hasDefaultAutotypeSequence {
@@ -440,20 +441,34 @@ static NSSet *_observedKeyPathsSet;
 
 - (KPKFileVersion)minimumVersion {
   KPKFileVersion minimum = { KPKDatabaseFormatKdb, kKPKKdbFileVersion };
-  if(self.customData.count > 0 ) {
-    minimum.format = KPKDatabaseFormatKdbx;
-    minimum.version = kKPKKdbxFileVersion4;
-  }
-  if( self.isSearchEnabled != KPKInherit || self.isAutoTypeEnabled != KPKInherit) {
+  
+  BOOL requiresKDBX = (self.customData.count > 0 ||
+                       self.isSearchEnabled != KPKInherit ||
+                       self.isAutoTypeEnabled != KPKInherit ||
+                       self.tags.count > 0);
+  
+  if(requiresKDBX) {
     minimum.format = KPKDatabaseFormatKdbx;
     minimum.version = kKPKKdbxFileVersion3;
+    
+    if(self.customData.count > 0) {
+      KPKFileVersion required = {KPKDatabaseFormatKdbx, kKPKKdbxFileVersion4 };
+      minimum = KPKFileVersionMax(minimum, required);
+    }
+    
+    if(self.tags.count > 0) {
+      KPKFileVersion required = { KPKDatabaseFormatKdbx, kKPKKdbxFileVersion4_1 };
+      minimum = KPKFileVersionMax(minimum, required);
+    }
   }
+  
   for(KPKGroup *group in self.mutableGroups) {
     minimum = KPKFileVersionMax(minimum, group.minimumVersion);
   }
   for(KPKEntry *entry in self.mutableEntries) {
     minimum = KPKFileVersionMax(minimum, entry.minimumVersion);
   }
+  
   return minimum;
 }
 

@@ -7,25 +7,22 @@
 //
 
 #import "KPKTree.h"
-#import "KPKTree_Private.h"
-
-#import "KPKNode.h"
-#import "KPKNode_Private.h"
-
-#import "KPKGroup.h"
-#import "KPKGroup_Private.h"
-
-#import "KPKEntry.h"
-#import "KPKEntry_Private.h"
-
-#import "KPKMetaData.h"
-#import "KPKMetaData_Private.h"
-
-#import "KPKDeletedNode.h"
-
-#import "KPKTimeInfo.h"
 
 #import "KPKScopedSet.h"
+#import "KPKTimeInfo.h"
+#import "KPKDeletedNode.h"
+#import "KPKEntry.h"
+#import "KPKEntry_Private.h"
+#import "KPKGroup.h"
+#import "KPKGroup_Private.h"
+#import "KPKIcon.h"
+#import "KPKMetaData.h"
+#import "KPKMetaData_Private.h"
+#import "KPKNode.h"
+#import "KPKNode_Private.h"
+#import "KPKScopedSet.h"
+#import "KPKTimeInfo.h"
+#import "KPKTree_Private.h"
 
 KPKNode *_findNodeInGroup(KPKNode *node, KPKGroup *group, KPKSynchronizationOptions options) {
   __block KPKNode *localNode = nil;
@@ -65,10 +62,12 @@ KPKNode *_findNodeInGroup(KPKNode *node, KPKGroup *group, KPKSynchronizationOpti
   [self _mergeLocationFromNodes:tree.allEntries options:options];
   [self _mergeLocationFromNodes:tree.allGroups options:options];
   [self _mergeDeletedObjects:tree.mutableDeletedObjects];
-  if(mode == KPKSynchronizationModeSynchronize) {
-    [self _reapplyDeletions:self.root];
-  }
   [self.metaData _mergeWithMetaDataFromTree:tree mode:mode];
+  if(mode == KPKSynchronizationModeSynchronize) {
+    [self _reapplyNodeDeletions:self.root];
+    [self _reapplyIconDeletions];
+  }
+  
   ;
   /* clear undo stack since merge is not supposed to be undoable */
   [self.undoManager removeAllActions];
@@ -240,10 +239,10 @@ KPKNode *_findNodeInGroup(KPKNode *node, KPKGroup *group, KPKSynchronizationOpti
   }
 }
 
-- (void)_reapplyDeletions:(KPKGroup *)group {
+- (void)_reapplyNodeDeletions:(KPKGroup *)group {
   
   for(KPKGroup *subGroup in group.mutableGroups.reverseObjectEnumerator) {
-    [self _reapplyDeletions:subGroup];
+    [self _reapplyNodeDeletions:subGroup];
   }
   
   for(KPKEntry *entry in group.mutableEntries.reverseObjectEnumerator) {
@@ -279,6 +278,30 @@ KPKNode *_findNodeInGroup(KPKNode *node, KPKGroup *group, KPKSynchronizationOpti
       default:
         /* undelete to prevent data loss! */
         self.mutableDeletedObjects[group.uuid] = nil;
+    }
+  }
+}
+
+- (void)_reapplyIconDeletions {
+  for(NSUInteger index = 0; index < self.metaData.mutableCustomIcons.count; index++) {
+    KPKIcon *icon = self.metaData.mutableCustomIcons[index];
+    KPKDeletedNode *deletedNode = self.mutableDeletedObjects[icon.uuid];
+    if(!deletedNode) {
+      continue;
+    }
+    if(!icon.modificationDate) {
+      [self.metaData _removeCustomIconAtIndex:index];
+      continue;
+    }
+    NSComparisonResult result = [icon.modificationDate compare:deletedNode.deletionDate];
+    switch(result) {
+      case NSOrderedAscending:
+      case NSOrderedSame:
+        [self.metaData _removeCustomIconAtIndex:index];
+        break;
+      case NSOrderedDescending:
+        /* revert deletions since icon was modified later */
+        self.mutableDeletedObjects[icon.uuid] = nil;
     }
   }
 }

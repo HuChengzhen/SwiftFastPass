@@ -14,6 +14,7 @@
   KPKFileVersion kdb;
   KPKFileVersion kdbx3;
   KPKFileVersion kdbx4;
+  KPKFileVersion kdbx4_1;
   KPKTree *tree;
   NSMutableDictionary *kdfParams;
 }
@@ -24,14 +25,10 @@
 - (void)setUp {
   [super setUp];
   
-  kdb.format = KPKDatabaseFormatKdb;
-  kdb.version = kKPKKdbFileVersion;
-  
-  kdbx3.format = KPKDatabaseFormatKdbx;
-  kdbx3.version = kKPKKdbxFileVersion3;
-  
-  kdbx4.format = KPKDatabaseFormatKdbx;
-  kdbx4.version = kKPKKdbxFileVersion4;
+  kdb = KPKMakeFileVersion(KPKDatabaseFormatKdb, kKPKKdbFileVersion);
+  kdbx3 = KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion3);
+  kdbx4 = KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion4);
+  kdbx4_1 = KPKMakeFileVersion(KPKDatabaseFormatKdbx, kKPKKdbxFileVersion4_1);
   
   tree = [[KPKTree alloc] init];
   tree.root = [[KPKGroup alloc] init];
@@ -46,7 +43,7 @@
   /* empty tree does not require KDBX */
   XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(kdb, tree.minimumVersion));
   
-  kdfParams[KPKKeyDerivationOptionUUID] = [KPKArgon2KeyDerivation uuid].kpk_uuidData;
+  kdfParams[KPKKeyDerivationOptionUUID] = [KPKArgon2DKeyDerivation uuid].kpk_uuidData;
   tree.metaData.keyDerivationParameters = [kdfParams copy];
   
   XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(kdbx4, tree.minimumVersion));
@@ -61,6 +58,25 @@
   KPKEntry *entry = [[KPKEntry alloc] init];
   [entry addToGroup:group];
   XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(kdb, tree.minimumVersion));
+}
+
+- (void)testMinimumVersionForNamedIcons {
+  KPKIcon *icon = [[KPKIcon alloc] initWithImage:[NSImage imageNamed:NSImageNameCaution]];
+  XCTAssertEqual(0,icon.name.length);
+  XCTAssertNil(icon.modificationDate);
+  
+  [tree.metaData addCustomIcon:icon];
+  
+  XCTAssertEqual(0,icon.name.length);
+  XCTAssertNil(icon.modificationDate);
+  XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, kdb));
+  
+  icon.name = @"New Icon Name";
+  
+  XCTAssertTrue(0 < icon.name.length);
+  XCTAssertNotNil(icon.modificationDate);
+  
+  XCTAssertEqual(NSOrderedSame, KPKFileVersionCompare(tree.minimumVersion, kdbx4_1));
 }
 
 - (void)testMinimumVersionForCustomPublicData {

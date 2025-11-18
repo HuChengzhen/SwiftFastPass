@@ -6,8 +6,9 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
-import UIKit
 import KeePassKit
+import UIKit
+
 enum DocumentError: Error {
     case load
     case noKey
@@ -17,16 +18,16 @@ enum DocumentError: Error {
 class Document: UIDocument {
     var tree: KPKTree?
     var key: KPKCompositeKey?
-    
-    override func contents(forType typeName: String) throws -> Any {
+
+    override func contents(forType _: String) throws -> Any {
         guard key != nil else {
             throw DocumentError.noKey
         }
-        
+
         guard tree != nil else {
             throw DocumentError.noTree
         }
-        
+
         let data: Data
         do {
             try data = tree!.encrypt(with: key, format: .kdbx)
@@ -35,12 +36,12 @@ class Document: UIDocument {
         }
         return data
     }
-    
-    override func load(fromContents contents: Any, ofType typeName: String?) throws {
+
+    override func load(fromContents contents: Any, ofType _: String?) throws {
         guard key != nil else {
             throw DocumentError.noKey
         }
-        
+
         guard let contents = contents as? Data else {
             throw DocumentError.load
         }

@@ -26,6 +26,7 @@ import Foundation
 import UIKit
 
 /// Base class for the Eureka cells
+@objc(EurekaBaseCell)
 open class BaseCell: UITableViewCell, BaseCellType {
 
     /// Untyped row associated to this cell.
@@ -46,7 +47,7 @@ open class BaseCell: UITableViewCell, BaseCellType {
      Function that returns the FormViewController this cell belongs to.
      */
     public func formViewController() -> FormViewController? {
-        var responder: AnyObject? = self
+        var responder: UIResponder? = self
         while responder != nil {
             if let formVC = responder as? FormViewController {
               return formVC
@@ -124,7 +125,11 @@ open class Cell<T>: BaseCell, TypedCellType where T: Equatable {
     open override func update() {
         super.update()
         textLabel?.text = row.title
-        textLabel?.textColor = row.isDisabled ? .gray : .black
+        if #available(iOS 13.0, *) {
+            textLabel?.textColor = row.isDisabled ? .tertiaryLabel : .label
+        } else {
+            textLabel?.textColor = row.isDisabled ? .gray : .black
+        }
         detailTextLabel?.text = row.displayValueFor?(row.value) ?? (row as? NoValueDisplayTextConformance)?.noValueDisplayText
     }
 

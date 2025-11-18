@@ -1,5 +1,6 @@
 # OS X
 .DS_Store
+KissXML.framework.zip
 
 # Xcode
 build/
@@ -18,6 +19,11 @@ profile
 DerivedData
 *.hmap
 *.ipa
+
+Package.pins
+Package.resolved
+.swiftpm
+.build
 
 # Bundler
 .bundle

@@ -32,37 +32,36 @@ public protocol ImagePickerProtocol: class {
 
     var useEditedImage: Bool { get set }
 
-    var userPickerInfo: [UIImagePickerController.InfoKey:Any]? { get set }
+    var userPickerInfo: [UIImagePickerController.InfoKey: Any]? { get set }
 }
 
 /// Selector Controller used to pick an image
 open class ImagePickerController: UIImagePickerController, TypedRowControllerType, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
     /// The row that pushed or presented this controller
     public var row: RowOf<UIImage>!
-    
+
     /// A closure to be called when the controller disappears.
-    public var onDismissCallback: ((UIViewController) -> ())?
+    public var onDismissCallback: ((UIViewController) -> Void)?
 
     override open var preferredStatusBarStyle: UIStatusBarStyle {
         return .default
     }
-    
-    open override func viewDidLoad() {
+
+    override open func viewDidLoad() {
         super.viewDidLoad()
         allowsEditing = (row as? ImagePickerProtocol)?.allowEditor ?? false
         delegate = self
     }
-    
-    open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
+    open func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         (row as? ImagePickerProtocol)?.imageURL = info[UIImagePickerController.InfoKey.referenceURL] as? URL
 
-        row.value = info[ (row as? ImagePickerProtocol)?.useEditedImage ?? false ? UIImagePickerController.InfoKey.editedImage : UIImagePickerController.InfoKey.originalImage] as? UIImage
+        row.value = info[(row as? ImagePickerProtocol)?.useEditedImage ?? false ? UIImagePickerController.InfoKey.editedImage : UIImagePickerController.InfoKey.originalImage] as? UIImage
         (row as? ImagePickerProtocol)?.userPickerInfo = info
         onDismissCallback?(self)
     }
-    
-    open func imagePickerControllerDidCancel(_ picker: UIImagePickerController){
+
+    open func imagePickerControllerDidCancel(_: UIImagePickerController) {
         onDismissCallback?(self)
     }
 }

@@ -1,0 +1,50 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on: [ push, pull_request, workflow_dispatch ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  test:
+    runs-on: macos-10.15
+    strategy:
+      matrix:
+        include:
+#          - setup: iOS
+#            os: iOS
+#            scheme: "KeePassKit iOS"
+#            sdk: iphonesimulator
+#            destination: "platform=iOS Simulator,name=iPhone 8"
+          - setup: macOS
+            os: macOS
+            scheme: "KeePassKit macOS"
+            sdk: macosx
+            destination: "platform=OS X"
+#          - setup: tvOS
+#            os: tvOS
+#            scheme: "KeePassKit tvOS"
+#            sdk: appletvsimulator
+#            destination: "platform=tvOS Simulator,name=Apple TV"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      
+      - name: Install xcpretty
+        run: gem install xcpretty --no-document --quiet
+      
+      - name: Bootstrap Carthage
+        run: carthage bootstrap --platform ${{ matrix.os }}
+
+      - name: Build and Test
+        env:
+          SCHEME: ${{ matrix.scheme }}
+          SDK: ${{ matrix.sdk }}
+          DESTINATION: ${{ matrix.destination }}
+        run: |
+            set -o pipefail
+            xcodebuild test -scheme "${SCHEME}" -sdk "${SDK}" -destination "${DESTINATION}" | xcpretty -c   

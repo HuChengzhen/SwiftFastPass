@@ -6,8 +6,8 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 protocol CardCollectionViewCellDelegate: class {
     func cardCollectionViewCellDeleteButtonTapped(cell: CardCollectionViewCell)
@@ -17,9 +17,9 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
     let scrollView: SendEventScrollView
     let cardView: UIView
     let deleteButton: UIButton
-    
+
     weak var delegate: CardCollectionViewCellDelegate?
-    
+
     override init(frame: CGRect) {
         scrollView = SendEventScrollView()
         cardView = UIView()
@@ -30,16 +30,16 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
         } else {
             contentView.backgroundColor = UIColor.white
         }
-    
+
         contentView.addSubview(scrollView)
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
         scrollView.clipsToBounds = false
-        scrollView.snp.makeConstraints { (make) in
+        scrollView.snp.makeConstraints { make in
             make.edges.equalTo(contentView)
         }
-        
+
         scrollView.addSubview(cardView)
         if #available(iOS 13.0, *) {
             cardView.backgroundColor = UIColor.secondarySystemGroupedBackground
@@ -53,69 +53,70 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
         cardView.layer.shadowRadius = 10
         cardView.clipsToBounds = false
         cardView.layer.masksToBounds = false
-        cardView.snp.makeConstraints { (make) in
+        cardView.snp.makeConstraints { make in
             make.left.equalTo(self.scrollView).offset(10)
             make.top.bottom.equalTo(self.scrollView)
             make.height.equalTo(self.contentView)
             make.width.equalTo(self.contentView).offset(-20)
         }
-        
+
         scrollView.addSubview(deleteButton)
         deleteButton.backgroundColor = UIColor.red
         deleteButton.tintColor = UIColor.white
         deleteButton.layer.cornerRadius = 22
         deleteButton.setImage(UIImage(named: "Delete"), for: .normal)
         deleteButton.addTarget(self, action: #selector(deleteButtonTapped(sender:)), for: .touchUpInside)
-        deleteButton.snp.makeConstraints { (make) in
+        deleteButton.snp.makeConstraints { make in
             make.left.equalTo(cardView.snp.right).offset(32)
             make.right.equalTo(scrollView).offset(-20)
             make.centerY.equalTo(scrollView)
             make.width.height.equalTo(44)
         }
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    @objc func deleteButtonTapped(sender: Any) {
+
+    @objc func deleteButtonTapped(sender _: Any) {
         delegate?.cardCollectionViewCellDeleteButtonTapped(cell: self)
     }
-    
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity _: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         if targetContentOffset.pointee.x > 30 {
             targetContentOffset.pointee.x = scrollView.contentSize.width - UIScreen.main.bounds.width
         } else {
             targetContentOffset.pointee.x = 0
         }
     }
-    
+
     func didHighlight() {
         if scrollView.contentOffset.x == 0 {
             UIView.animate(withDuration: 0.3) {
                 self.cardView.transform = CGAffineTransform(scaleX: 0.99, y: 0.9)
             }
-            
+
             cardView.layer.removeAnimation(forKey: "shadowAnimation")
-            
+
             let animation = CABasicAnimation(keyPath: "shadowRadius")
             animation.fromValue = cardView.layer.presentation()?.shadowRadius
             animation.toValue = 30
             animation.fillMode = .forwards
             animation.isRemovedOnCompletion = false
             animation.duration = 0.3
-            
+
             cardView.layer.add(animation, forKey: "shadowAnimation")
         }
     }
-    
+
     func didUnhighlight() {
-        if (scrollView.contentOffset.x == 0) {
+        if scrollView.contentOffset.x == 0 {
             UIView.animate(withDuration: 0.3) {
                 self.cardView.transform = .identity
             }
             cardView.layer.removeAnimation(forKey: "shadowAnimation")
-            
+
             cardView.layer.removeAllAnimations()
             let animation = CABasicAnimation(keyPath: "shadowRadius")
             animation.fromValue = cardView.layer.presentation()?.shadowRadius
@@ -123,7 +124,7 @@ class CardCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
             animation.fillMode = .forwards
             animation.isRemovedOnCompletion = false
             animation.duration = 0.3
-            
+
             cardView.layer.add(animation, forKey: "shadowAnimation")
         }
     }

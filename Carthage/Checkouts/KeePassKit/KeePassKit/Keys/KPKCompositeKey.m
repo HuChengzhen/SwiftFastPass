@@ -30,6 +30,10 @@
 #import "KPKAESKeyDerivation.h"
 #import "KPKCipher.h"
 
+#import "KPKKey.h"
+#import "KPKPasswordKey.h"
+#import "KPKFileKey.h"
+
 #import "KPKErrors.h"
 
 #import "NSData+KPKKeyfile.h"
@@ -40,53 +44,108 @@
 
 @interface KPKCompositeKey ()
 
-@property (copy) KPKData *kdbKeyData;
-@property (copy) KPKData *kdbxKeyData;
-
-@property (nonatomic) BOOL hasKeyFile;
-@property (nonatomic) BOOL hasPassword;
+@property (strong) NSMutableArray *keys;
 
 @end
 
 @implementation KPKCompositeKey
 
-- (instancetype)initWithPassword:(NSString *)password keyFileData:(NSData *)keyFileData {
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (instancetype)init {
   self = [super init];
   if(self) {
-    [self setPassword:password andKeyFileData:keyFileData];
+    _keys = [[NSMutableArray alloc] init];
   }
   return self;
 }
 
-#pragma mark Properties
-- (BOOL)hasPasswordOrKeyFile {
-  return (self.hasPassword || self.hasKeyFile);
-}
-
-- (void)setPassword:(NSString *)password andKeyFileData:(NSData *)keyFileData {
-  self.hasPassword = (password.length > 0);
-  self.hasKeyFile = (keyFileData.length > 0);
-  self.kdbKeyData = [[KPKData alloc] initWithProtectedData:[self _createKdbDataWithPassword:password keyFileData:keyFileData]];
-  self.kdbxKeyData = [[KPKData alloc] initWithProtectedData:[self _createKdbxDataWithPassword:password keyFileData:keyFileData]];
-}
-
-- (BOOL)testPassword:(NSString *)password keyFileData:(NSData *)keyFileData forVersion:(KPKDatabaseFormat)version {
-  NSData *data;
-  switch(version) {
-    case KPKDatabaseFormatKdb:
-      data = [self _createKdbDataWithPassword:password keyFileData:keyFileData];
-      break;
-    case KPKDatabaseFormatKdbx:
-      data = [self _createKdbxDataWithPassword:password keyFileData:keyFileData];
-      break;
-    default:
-      return NO;
+- (instancetype)initWithKeys:(NSArray<KPKKey *> *)keys {
+  self = [self init];
+  if(self) {
+    for(KPKKey *key in keys) {
+      BOOL added = [self addKey:key];
+      if(!added) {
+        NSLog(@"Did not add key %@", key);
+      }
+    }
   }
-  if(data) {
-    KPKData *compare = (version == KPKDatabaseFormatKdb) ? self.kdbKeyData : self.kdbxKeyData;
-    return [data isEqualToData:compare.data];
+  return self;
+}
+
+- (void)encodeWithCoder:(nonnull NSCoder *)coder {
+  [coder encodeObject:self.keys forKey:NSStringFromSelector(@selector(keys))];
+}
+
+- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
+  NSMutableArray *keys = [coder decodeObjectOfClasses:[NSSet setWithArray:@[NSMutableArray.class, KPKKey.class]] forKey:NSStringFromSelector(@selector(keys))];
+  self = [self initWithKeys:keys];
+  return self;
+}
+
+- (BOOL)isEqual:(id)object {
+  if(self == object) {
+    return YES;
+  }
+  if([object isKindOfClass:self.class]) {
+    return [self isEqualToKey:object];
   }
   return NO;
+}
+
+- (BOOL)isEqualToKey:(KPKCompositeKey *)key {
+  if(self == key) {
+    return YES;
+  }
+  NSAssert([key isKindOfClass:KPKCompositeKey.class], @"Unsupported class for key");
+  if(self.keys.count != key.keys.count) {
+    return NO;
+  }
+  /* Keys matches if single keys are the same and the key order is the same */
+  for(NSUInteger index = 0; index < self.keys.count; index++) {
+    KPKKey *myKey = self.keys[index];
+    KPKKey *otherKey = key.keys[index];
+    
+    NSData *myKdbData = [myKey dataForFormat:KPKDatabaseFormatKdb];
+    NSData *otherKdbData = [otherKey dataForFormat:KPKDatabaseFormatKdb];
+    if(![myKdbData isEqualToData:otherKdbData]) {
+      return NO;
+    }
+    NSData *myKdbxData = [myKey dataForFormat:KPKDatabaseFormatKdbx];
+    NSData *otherKdbxData = [otherKey dataForFormat:KPKDatabaseFormatKdbx];
+    if(![myKdbxData isEqualToData:otherKdbxData]) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+#pragma mark Properties
+- (BOOL)hasKeys {
+  return self.keys.count > 0;
+}
+
+- (BOOL)hasKeyOfClass:(Class)keyClass {
+  return (nil != [self _keyOfClass:keyClass]);
+}
+
+- (BOOL)addKey:(KPKKey *)key {
+  NSAssert([key.class supportsSecureCoding], @"Keys need to be securely codable!");
+  if(nil == key) {
+    return NO;
+  }
+  if([self.keys containsObject:key]) {
+    return NO;
+  }
+  
+  [self.keys addObject:key];
+  return YES;
+}
+
+- (void)_clearKeys {
+  [self.keys removeAllObjects];
 }
 
 - (NSData *)computeKeyDataForFormat:(KPKDatabaseFormat)format masterseed:(NSData *)seed cipher:(KPKCipher *)cipher keyDerivation:(KPKKeyDerivation *)keyDerivation hmacKey:(NSData **)hmacKey error:(NSError *__autoreleasing *)error {
@@ -96,7 +155,8 @@
     KPKCreateError(error, KPKErrorUnknownFileFormat);
     return nil;
   }
-  NSData *derivedData = (format == KPKDatabaseFormatKdb) ? [keyDerivation deriveData:self.kdbKeyData.data] : [keyDerivation deriveData:self.kdbxKeyData.data];
+  NSData *keyData = [self _createKeyDataForFormat:format];
+  NSData *derivedData = [keyDerivation deriveData:keyData];
   if(!derivedData) {
     KPKCreateError(error, KPKErrorKeyDerivationFailed);
     return nil;
@@ -105,7 +165,7 @@
   NSMutableData *workingData = [seed mutableCopy];
   [workingData appendData:derivedData];
   
-  /* add 1 null byte for Hmac */
+  /* add 1 byte for Hmac */
   uint8_t oneByte = 0x01;
   [workingData appendBytes:&oneByte length:1];
   if(hmacKey) {
@@ -114,91 +174,55 @@
     CC_SHA512(workingData.bytes, (CC_LONG)workingData.length, hmacBuffer);
     *hmacKey = [NSData dataWithBytes:hmacBuffer length:64];
   }
-  /* do not use last 0-byte for key computation */
+  /* do not use last 1-byte for key computation */
   return [workingData kpk_resizeKeyDataRange:NSMakeRange(0, workingData.length - 1) toLength:cipher.keyLength];
 }
 
-- (NSData *)_createKdbDataWithPassword:(NSString *)password keyFileData:(NSData *)keyFileData {
-  if(!password && !keyFileData) {
-    return nil;
-  }
-  uint8_t masterKey[ kKPKKeyFileLength];
-  if(password && !keyFileData) {
-    /* Hash the password into the master key FIXME: PasswordEncoding! */
-    NSData *passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];
-    CC_SHA256(passwordData.bytes, (CC_LONG)passwordData.length, masterKey);
-  }
-  else if(!password && keyFileData) {
-    /* Get the bytes from the keyfile */
-    NSError *error = nil;
-    NSData *keyData = [NSData kpk_keyDataForData:keyFileData version:KPKDatabaseFormatKdb error:&error];
-    if(!keyData) {
-      NSLog(@"Error while trying to load keyfile:%@", error.localizedDescription);
-      return nil;
-    }
-    [keyData getBytes:masterKey length:32];
-  }
-  else {
-    /* Hash the password */
-    uint8_t passwordHash[32];
-    NSData *passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];
-    CC_SHA256(passwordData.bytes, (CC_LONG)passwordData.length, passwordHash);
-    
-    /* Get the bytes from the keyfile */
-    NSError *error = nil;
-    NSData *keyData = [NSData kpk_keyDataForData:keyFileData version:KPKDatabaseFormatKdb error:&error];
-    if( keyData == nil) {
-      return nil;
-    }
-    
-    /* Hash the password and keyfile into the master key */
-    CC_SHA256_CTX ctx;
-    CC_SHA256_Init(&ctx);
-    CC_SHA256_Update(&ctx, passwordHash, 32);
-    CC_SHA256_Update(&ctx, keyData.bytes, 32);
-    CC_SHA256_Final(masterKey, &ctx);
-  }
-  return [NSData dataWithBytes:masterKey length:kKPKKeyFileLength];
-}
-
-- (NSData *)_createKdbxDataWithPassword:(NSString *)password keyFileData:(NSData *)keyFileData {
-  if(!password && !keyFileData) {
-    return nil;
+- (NSData *)_createKeyDataForFormat:(KPKDatabaseFormat)format {
+  if(format == KPKDatabaseFormatUnknown) {
+    return nil; // unkown format, nothing to do
   }
   
-  // Initialize the master hash
+  if(self.keys.count == 0) {
+    return nil; // no keys, nothing to do
+  }
+  /* KDB uses the password or file hash directly without re-hashing */
+  if(format == KPKDatabaseFormatKdb) {
+    KPKKey *passwordKey = [self _keyOfClass:KPKPasswordKey.class];
+    KPKKey *fileKey = [self _keyOfClass:KPKFileKey.class];
+    
+    if(passwordKey && !fileKey) {
+      return [passwordKey dataForFormat:KPKDatabaseFormatKdb];
+    }
+    else if(!passwordKey && fileKey) {
+      return [fileKey dataForFormat:KPKDatabaseFormatKdb];
+    }
+  }
+  /* KDBX re-hashes the single keys again, even if only one key is present */
   CC_SHA256_CTX ctx;
   CC_SHA256_Init(&ctx);
   
-  // Add the password to the master key if it was supplied
-  if(password) {
-    // Get the bytes from the password using the supplied encoding
-    NSData *passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];
-    
-    // Hash the password
-    uint8_t hash[32];
-    CC_SHA256(passwordData.bytes, (CC_LONG)passwordData.length, hash);
-    
-    // Add the password hash to the master hash
-    CC_SHA256_Update(&ctx, hash, 32);
-  }
-  
-  // Add the keyfile to the master key if it was supplied
-  if (keyFileData) {
-    // Transform the keydata to the correct format
-    NSError *error = nil;
-    NSData *keyData = [NSData kpk_keyDataForData:keyFileData version:KPKDatabaseFormatKdbx error:&error];
-    if(!keyData) {
-      return nil;
+  for(KPKKey *key in self.keys) {
+    NSData *keyData = [key dataForFormat:KPKDatabaseFormatKdbx];
+    if(keyData.length == 0) {
+      continue;
     }
-    // Add the keyfile hash to the master hash
+    NSAssert(keyData.length == kKPKKeyFileLength, @"Unexpected key size");
     CC_SHA256_Update(&ctx, keyData.bytes, (CC_LONG)keyData.length);
   }
-  
   // Finish the hash into the master key
-  uint8_t masterKey[kKPKKeyFileLength];
+  uint8_t masterKey[ kKPKKeyFileLength];
   CC_SHA256_Final(masterKey, &ctx);
   return [NSData dataWithBytes:masterKey length:kKPKKeyFileLength];
+}
+
+- (KPKKey *)_keyOfClass:(Class)keyClass {
+  for(KPKKey *key in self.keys) {
+    if([key isKindOfClass:keyClass]) {
+      return key;
+    }
+  }
+  return nil;
 }
 
 @end

@@ -6,16 +6,14 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
-import UIKit
 import SnapKit
-
+import UIKit
 
 class SelectIconViewController: UIViewController {
-
     var didSelectAction: ((_ controller: SelectIconViewController, _ iconId: Int) -> Void)?
-    
+
     var collectionView: UICollectionView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -37,27 +35,25 @@ class SelectIconViewController: UIViewController {
         collectionView.register(IconCollectionViewCell.self, forCellWithReuseIdentifier: "IconCollectionViewCell")
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.snp.makeConstraints { (make) in
+        collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-
 }
 
 extension SelectIconViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         return Icons.iconNames.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "IconCollectionViewCell", for: indexPath) as! IconCollectionViewCell
         cell.iconImageView.image = UIImage(named: Icons.iconNames[indexPath.row])
         return cell
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         didSelectAction?(self, indexPath.row)
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
-    
 }

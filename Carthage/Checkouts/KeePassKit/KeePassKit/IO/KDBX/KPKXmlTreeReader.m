@@ -38,8 +38,10 @@
 #import "KPKFormat.h"
 #import "KPKGroup.h"
 #import "KPKIcon.h"
+#import "KPKIcon_Private.h"
 #import "KPKMetaData.h"
 #import "KPKMetaData_Private.h"
+#import "KPKModifiedString.h"
 #import "KPKNode.h"
 #import "KPKNode_Private.h"
 #import "KPKRandomStream.h"
@@ -60,7 +62,6 @@
 
 @property (strong) DDXMLDocument *document;
 @property (nonatomic, strong) KPKRandomStream *randomStream;
-//@property (strong) NSDateFormatter *dateFormatter;
 @property (assign) BOOL useRelativeDates;
 @property (strong) NSMutableDictionary<NSNumber *, KPKData *> *binaryDataMap;
 @property (strong) NSMutableDictionary *iconMap;
@@ -94,11 +95,6 @@
   
   if(!self.randomStream || (kKPKKdbxFileVersion4 > [self.delegate fileVersionForReader:self])) {
     self.useRelativeDates = NO;
-    /*
-    self.dateFormatter = [[NSDateFormatter alloc] init];
-    self.dateFormatter.dateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
-    self.dateFormatter.timeZone = [NSTimeZone timeZoneWithName:@"GMT"];
-   */
   }
   
   if(!self.document) {
@@ -155,7 +151,7 @@
   
   tree.root = [self _parseGroup:rootGroup];
   [self _parseDeletedObjects:root tree:tree];
-  
+
   tree.metaData.updateTiming = YES;
   
   return tree;
@@ -218,7 +214,7 @@
   data.historyMaxSize = KPKXmlInteger(metaElement, kKPKXmlHistoryMaxSize);
   
   /* Settings changed might not be supported */
-  if([metaElement elementsForName:kKPKXmlSettingsChanged]) {
+  if([metaElement elementForName:kKPKXmlSettingsChanged]) {
     data.settingsChanged = KPKXmlDate(metaElement, kKPKXmlSettingsChanged, self.useRelativeDates);
   }
   
@@ -242,7 +238,7 @@
   
   [self _parseCustomIcons:metaElement meta:data];
   [self _parseBinaries:metaElement meta:data];
-  [self _parseCustomData:metaElement intoDictionary:data.mutableCustomData];
+  [self _parseMetaCustomData:metaElement intoDictionary:data.mutableCustomData];
 }
 
 - (KPKGroup *)_parseGroup:(DDXMLElement *)groupElement {
@@ -258,8 +254,13 @@
   group.iconId = KPKXmlInteger(groupElement, kKPKXmlIconId);
   
   DDXMLElement *customIconUuidElement = [groupElement elementForName:kKPKXmlCustomIconUUID];
-  if (customIconUuidElement != nil) {
-    group.iconUUID = [NSUUID kpk_uuidWithEncodedString:[customIconUuidElement stringValue]];
+  if(customIconUuidElement != nil) {
+    group.iconUUID = [NSUUID kpk_uuidWithEncodedString:customIconUuidElement.stringValue];
+  }
+  
+  DDXMLElement *previousParentGroupElement = [groupElement elementForName:kKPKXmlPreviousParentGroup];
+  if(previousParentGroupElement != nil) {
+    group.previousParent = [NSUUID kpk_uuidWithEncodedString:previousParentGroupElement.stringValue];
   }
   
   DDXMLElement *timesElement = [groupElement elementForName:kKPKXmlTimes];
@@ -268,6 +269,11 @@
   group.isExpanded =  KPKXmlBool(groupElement, kKPKXmlIsExpanded);
   
   group.defaultAutoTypeSequence = KPKXmlNonEmptyString(groupElement, kKPKXmlDefaultAutoTypeSequence);
+  
+  NSString *tags = KPKXmlString(groupElement, kKPKXmlTags);
+  if(tags.length > 0) {
+    group.tags = [tags componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",;"]];
+  }
   
   group.isAutoTypeEnabled = parseInheritBool(groupElement, kKPKXmlEnableAutoType);
   group.isSearchEnabled = parseInheritBool(groupElement, kKPKXmlEnableSearching);
@@ -305,12 +311,20 @@
     entry.iconUUID = [NSUUID kpk_uuidWithEncodedString:[customIconUuidElement stringValue]];
   }
   
+  DDXMLElement *previousParentGroupElement = [entryElement elementForName:kKPKXmlPreviousParentGroup];
+  if(previousParentGroupElement != nil) {
+    entry.previousParent = [NSUUID kpk_uuidWithEncodedString:previousParentGroupElement.stringValue];
+  }
+  
   entry.foregroundColor =  [NSUIColor kpk_colorWithHexString:KPKXmlString(entryElement, kKPKXmlForegroundColor)];
   entry.backgroundColor = [NSUIColor kpk_colorWithHexString:KPKXmlString(entryElement, kKPKXmlBackgroundColor)];
   entry.overrideURL = KPKXmlString(entryElement, kKPKXmlOverrideURL );
   NSString *tags = KPKXmlString(entryElement, kKPKXmlTags);
   if(tags.length > 0) {
     entry.tags = [tags componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@",;"]];
+  }
+  if(KPKXmlHasElement(entryElement, kKPKXmlQualityCheck)) {
+    entry.checkPasswordQuality = KPKXmlBool(entryElement, kKPKXmlQualityCheck);
   }
   
   DDXMLElement *timesElement = [entryElement elementForName:kKPKXmlTimes];
@@ -359,6 +373,8 @@
    <CustomIcons>
    <Icon>
    <UUID></UUID>
+   <Name></Name> <!-- KDBX 4.1 -->
+   <LastModificationTime></LastModificationTime> <!-- KDBX 4.1 -->
    <Data></Data>
    </Icon>
    </CustomIcons>
@@ -368,6 +384,14 @@
   for (DDXMLElement *iconElement in [customIconsElement elementsForName:kKPKXmlIcon]) {
     NSUUID *uuid = [NSUUID kpk_uuidWithEncodedString:KPKXmlString(iconElement, kKPKXmlUUID)];
     KPKIcon *icon = [[KPKIcon alloc] initWithUUID:uuid encodedString:KPKXmlString(iconElement, kKPKXmlData)];
+    
+    if(KPKXmlHasElement(iconElement, kKPKXmlName)) {
+      icon.name = KPKXmlString(iconElement, kKPKXmlName);
+    }
+    if(KPKXmlHasElement(iconElement, kKPKXmlLastModificationDate)) {
+      icon.modificationDate = KPKXmlDate(iconElement, kKPKXmlLastModificationDate, YES);
+    }
+    
     [metaData addCustomIcon:icon];
     self.iconMap[ icon.uuid ] = icon;
   }
@@ -430,6 +454,27 @@
   }
 }
 
+- (void)_parseMetaCustomData:(DDXMLElement *)root intoDictionary:(NSMutableDictionary<NSString *, KPKModifiedString *> *)dict {
+  DDXMLElement *customDataElement = [root elementForName:kKPKXmlCustomData];
+  for(DDXMLElement *dataElement in [customDataElement elementsForName:kKPKXmlCustomDataItem]) {
+    /*
+     <CustomData>
+     <Item>
+     <Key></Key> - plain string
+     <Value></Value> - plain string
+     <LastModificationTime></LastModificationTime> - time format according to medium (xml, kdbx)
+     </Item>
+     </CustomData>
+     */
+    NSString *key = KPKXmlString(dataElement, kKPKXmlKey);
+    NSString *value = KPKXmlString(dataElement, kKPKXmlValue);
+    NSDate *date = KPKXmlDate(dataElement, kKPKXmlLastModificationDate, self.useRelativeDates);
+    if((key.length > 0) && value) {
+      dict[key] = [[KPKModifiedString alloc] initWithValue:value modificationDate:date];
+    }
+  }
+}
+
 - (void)_parseCustomData:(DDXMLElement *)root intoDictionary:(NSMutableDictionary<NSString *, NSString *> *)dict{
   DDXMLElement *customDataElement = [root elementForName:kKPKXmlCustomData];
   for(DDXMLElement *dataElement in [customDataElement elementsForName:kKPKXmlCustomDataItem]) {
@@ -438,6 +483,7 @@
      <Item>
      <Key></Key> - plain string
      <Value></Value> - plain string
+     <LastModificationTime></LastModificationTime> - time format according to medium (xml, kdbx)
      </Item>
      </CustomData>
      */

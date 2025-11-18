@@ -1,6 +1,0 @@
-framework module KissXML {
-  umbrella header "KissXML.h"
-
-  export *
-  module * { export * }
-}

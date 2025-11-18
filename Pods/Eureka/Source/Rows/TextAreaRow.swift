@@ -73,20 +73,30 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
 
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let textView = UITextView()
+        let textView: UITextView
+        if #available(iOS 16, *) {
+            textView = UITextView(usingTextLayoutManager: false)
+        } else {
+            textView = UITextView()
+        }
         self.textView = textView
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.keyboardType = .default
         textView.font = .preferredFont(forTextStyle: .body)
         textView.textContainer.lineFragmentPadding = 0
         textView.textContainerInset = UIEdgeInsets.zero
+        textView.backgroundColor = .clear
         contentView.addSubview(textView)
 
         let placeholderLabel = UILabel()
         self.placeholderLabel = placeholderLabel
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         placeholderLabel.numberOfLines = 0
-        placeholderLabel.textColor = UIColor(white: 0, alpha: 0.22)
+        if #available(iOS 13.0, *) {
+            placeholderLabel.textColor = UIColor.tertiaryLabel
+        } else {
+            placeholderLabel.textColor = UIColor(white: 0, alpha: 0.22)
+        }
         placeholderLabel.font = textView.font
         contentView.addSubview(placeholderLabel)
     }
@@ -133,7 +143,11 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
         textLabel?.text = nil
         detailTextLabel?.text = nil
         textView.isEditable = !row.isDisabled
-        textView.textColor = row.isDisabled ? .gray : .black
+        if #available(iOS 13.0, *) {
+            textView.textColor = row.isDisabled ? .tertiaryLabel : .label
+        } else {
+            textView.textColor = row.isDisabled ? .gray : .black
+        }
         textView.text = row.displayValueFor?(row.value)
         placeholderLabel?.text = (row as? TextAreaConformance)?.placeholder
         placeholderLabel?.isHidden = textView.text.count != 0

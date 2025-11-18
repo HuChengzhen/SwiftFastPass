@@ -23,6 +23,7 @@
   CGImageDestinationAddImage(imageDestinationRef, imageRef, NULL);
   if(!CGImageDestinationFinalize(imageDestinationRef)) {
     NSLog(@"Error while trying to store PNG image files");
+    CFRelease(imageDestinationRef);
     return nil;
   }
   CFRelease(imageDestinationRef);
@@ -34,7 +35,7 @@
     return UIImagePNGRepresentation(self);
   }
   return nil;
-  /* no bitmap data is present, we need to render it first */
+  /* TODO: no bitmap data is present, we need to render it first */
 #endif
 }
 

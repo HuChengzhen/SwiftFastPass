@@ -84,6 +84,8 @@
   if(self) {
     _image = [aDecoder decodeObjectOfClass:NSUIImage.class forKey:NSStringFromSelector(@selector(image))];
     _uuid = [aDecoder decodeObjectOfClass:NSUUID.class forKey:NSStringFromSelector(@selector(uuid))];
+    _name = [aDecoder decodeObjectOfClass:NSString.class forKey:NSStringFromSelector(@selector(name))];
+    _modificationDate = [aDecoder decodeObjectOfClass:NSDate.class forKey:NSStringFromSelector(@selector(modificationDate))];
   }
   return self;
 }
@@ -92,6 +94,8 @@
   if([aCoder isKindOfClass:NSKeyedArchiver.class]) {
     [aCoder encodeObject:self.image forKey:NSStringFromSelector(@selector(image))];
     [aCoder encodeObject:self.uuid forKey:NSStringFromSelector(@selector(uuid))];
+    [aCoder encodeObject:self.name forKey:NSStringFromSelector(@selector(name))];
+    [aCoder encodeObject:self.modificationDate forKey:NSStringFromSelector(@selector(modificationDate))];
   }
 }
 
@@ -105,6 +109,8 @@
   copy.image = self.image;
 #endif
   copy.uuid = [self.uuid copyWithZone:zone];
+  copy.name = self.name;
+  copy.modificationDate = self.modificationDate;
   return copy;
 }
 
@@ -125,11 +131,22 @@
     return YES; // Pointers match, should be the same object
   }
   NSAssert([icon isKindOfClass:KPKIcon.class], @"icon needs to be of class KPKIcon");
-  BOOL equal = [self.uuid isEqual:icon.uuid] && [self.encodedString isEqualToString:icon.encodedString];
+  /* modification date and name might be nil */
+  BOOL equal = ([self.uuid isEqual:icon.uuid]
+                && [self.encodedString isEqualToString:icon.encodedString]
+                && (self.modificationDate == icon.modificationDate || [self.modificationDate isEqualToDate:icon.modificationDate])
+                && (self.name == icon.name || [self.name isEqualToString:icon.name]));
   return equal;
 }
 
 #pragma mark Properties
+
+- (void)setName:(NSString *)name {
+  [self.tree.undoManager registerUndoWithTarget:self selector:@selector(setName:) object:self.name];
+  [self.tree.undoManager setActionName:NSLocalizedStringFromTableInBundle(@"SET_ICON_NAME", nil, [NSBundle bundleForClass:self.class], @"Action name for setting the icons name")];
+  _name = [name copy];
+  self.modificationDate = [NSDate date];
+}
 
 - (NSUInteger)hash {
   return (self.uuid.hash ^ self.encodedString.hash);
