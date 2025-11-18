@@ -15,12 +15,19 @@ class FilesViewController: UIViewController {
     var collectionView: UICollectionView!
 
     lazy var emptyView: UIView = {
-        let emptyView = UIView(frame: view.bounds)
+        let emptyView = UIView()
         let label = UILabel()
         label.text = NSLocalizedString("Press + to add database", comment: "")
-        label.sizeToFit()
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+
         emptyView.addSubview(label)
-        label.center = emptyView.center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor),
+        ])
+
         return emptyView
     }()
 
@@ -61,10 +68,21 @@ class FilesViewController: UIViewController {
         }
 
         view.addSubview(emptyView)
+        emptyView.snp.makeConstraints { make in
+            make.edges.equalTo(view)
+        }
     }
 
     func showEmptyViewIfNeeded() {
         emptyView.isHidden = !File.files.isEmpty
+    }
+
+    private func appendFileAndReload(_ file: File) {
+        File.files.append(file)
+        File.save()
+        let indexPath = IndexPath(row: File.files.endIndex - 1, section: 0)
+        collectionView.insertItems(at: [indexPath])
+        showEmptyViewIfNeeded()
     }
 
     @objc func addButtonTapped(sender _: Any) {
@@ -81,22 +99,23 @@ class FilesViewController: UIViewController {
         alertViewController.addAction(newDataBase)
 
         let importDataBase = UIAlertAction(title: NSLocalizedString("Import Database", comment: ""), style: .default) { _ in
-            let kdbxType = UTType(filenameExtension: "kdbx")
-            let kdbType  = UTType(filenameExtension: "kdb")
-
-            let types = [kdbxType, kdbType].compactMap { $0 }
+            let types: [UTType] = [
+                .keepassDatabaseV2,
+                .keepassDatabaseV1
+            ]
 
             let documentPicker = UIDocumentPickerViewController(
                 forOpeningContentTypes: types
             )
-            
+
             // 1. App 沙盒里的 Documents 目录
             if let docsURL = FileManager.default.urls(for: .documentDirectory,
-                                                      in: .userDomainMask).first {
+                                                      in: .userDomainMask).first
+            {
                 // 2. 告诉 Document Picker 初始目录
                 documentPicker.directoryURL = docsURL
             }
-            
+
             documentPicker.delegate = self
             self.present(documentPicker, animated: true, completion: nil)
         }
@@ -115,7 +134,12 @@ extension FilesViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FileCollectionViewCell", for: indexPath) as! FileCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FileCollectionViewCell",
+                                                            for: indexPath) as? FileCollectionViewCell
+        else {
+            return UICollectionViewCell()
+        }
+
         if cell.scrollView.contentOffset.x > 0 {
             cell.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
         }
@@ -167,22 +191,16 @@ extension FilesViewController: UIDocumentPickerDelegate {
                 url.stopAccessingSecurityScopedResource()
 
                 let file = File(name: name, bookmark: bookmark)
-                File.files.append(file)
-
-                let indexPath = IndexPath(row: File.files.endIndex - 1, section: 0)
-                collectionView.insertItems(at: [indexPath])
-                showEmptyViewIfNeeded()
+                appendFileAndReload(file)
             }
         }
     }
 }
 
 extension FilesViewController: NewDatabaseDelegate {
-    func newDatabase(viewController _: NewDatabaseViewController, didNewDatabase file: File) {
-        File.files.append(file)
-        let indexPath = IndexPath(row: File.files.endIndex - 1, section: 0)
-        collectionView.insertItems(at: [indexPath])
-        showEmptyViewIfNeeded()
+    func newDatabase(viewController: NewDatabaseViewController, didNewDatabase file: File) {
+        appendFileAndReload(file)
+        viewController.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -195,6 +213,7 @@ extension FilesViewController: CardCollectionViewCellDelegate {
         let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: ""), style: .destructive) { _ in
             if let indexPath = self.collectionView.indexPath(for: cell) {
                 File.files.remove(at: indexPath.row)
+                File.save()
                 self.collectionView.deleteItems(at: [indexPath])
                 self.showEmptyViewIfNeeded()
             }

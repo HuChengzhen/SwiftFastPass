@@ -25,7 +25,7 @@
 import Eureka
 import Foundation
 
-public protocol ImagePickerProtocol: class {
+public protocol ImagePickerProtocol: AnyObject {
     var allowEditor: Bool { get set }
 
     var imageURL: URL? { get set }

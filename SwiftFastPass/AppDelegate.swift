@@ -6,91 +6,46 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
+//
+//  AppDelegate.swift
+//  SwiftFastPass
+//
+
 import KeePassKit
 import UIKit
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
+    // 如果你最低支持 iOS 13+ 或 15+，这里就不需要 window 属性了
+    // UIWindow 交给 SceneDelegate 管
 
-    lazy var blurView: UIVisualEffectView = {
-        let view = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        view.frame = UIScreen.main.bounds
-        return view
-    }()
-
-    private func setupWindow() {
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        let filesViewController = FilesViewController()
-        let navigationViewController = UINavigationController(rootViewController: filesViewController)
-        window.rootViewController = navigationViewController
-        self.window = window
-        self.window?.makeKeyAndVisible()
-    }
-
-    private func setupICloudDocumentsDirectory() -> Bool {
-        let documentsURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
-        if let URL = documentsURL {
-            if !FileManager.default.fileExists(atPath: URL.path) {
-                do {
-                    try FileManager.default.createDirectory(at: URL, withIntermediateDirectories: true, attributes: nil)
-                } catch {
-                    print("setupICloudDocumentsDirectory error: \(error)")
-                }
-            }
-            return true
-        }
-        return false
-    }
-
-    private func showICloudSupportInfo() {
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        self.window = window
-        let viewController = UIViewController()
-        if #available(iOS 13.0, *) {
-            viewController.view.backgroundColor = UIColor.systemBackground
-        } else {
-            viewController.view.backgroundColor = UIColor.white
-        }
-        window.rootViewController = viewController
-
-        let alertController = UIAlertController(title: NSLocalizedString("Please open iCloud in system settings", comment: ""), message: NSLocalizedString("This app does not work without iCloud", comment: ""), preferredStyle: .alert)
-
-        window.makeKeyAndVisible()
-        window.rootViewController?.present(alertController, animated: true, completion: nil)
-    }
-
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if setupICloudDocumentsDirectory() {
-            setupWindow()
-        } else {
-            showICloudSupportInfo()
-        }
-
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        // 全局初始化写这里（日志、统计、KeePass 初始化之类的）
         return true
     }
 
-    func applicationWillResignActive(_: UIApplication) {
-        UIView.transition(with: window!, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.window?.addSubview(self.blurView)
-        }, completion: nil)
+    // MARK: - UISceneSession Lifecycle
+
+    func application(
+        _: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options _: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(
+            name: "Default Configuration",
+            sessionRole: connectingSceneSession.role
+        )
+        configuration.delegateClass = SceneDelegate.self
+        return configuration
     }
 
-    func applicationDidEnterBackground(_: UIApplication) {
-        File.save()
-    }
-
-    func applicationWillEnterForeground(_: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    }
-
-    func applicationDidBecomeActive(_: UIApplication) {
-        UIView.transition(with: window!, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.blurView.removeFromSuperview()
-        }, completion: nil)
-    }
-
-    func applicationWillTerminate(_: UIApplication) {
-        File.save()
+    func application(
+        _: UIApplication,
+        didDiscardSceneSessions _: Set<UISceneSession>
+    ) {
+        // 可以忽略，除非你要对被丢弃的场景做统计
     }
 }

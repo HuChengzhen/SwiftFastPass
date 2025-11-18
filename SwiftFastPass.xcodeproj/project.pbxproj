@@ -43,11 +43,21 @@
 		AEC6F1AD22A8EE17007662AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6F1AB22A8EE17007662AD /* LaunchScreen.storyboard */; };
 		AEC6F1B822A8EE17007662AD /* SwiftFastPassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */; };
 		AEC6F1C322A8EE17007662AD /* SwiftFastPassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */; };
+		AEFD3E962ECD0D1B000E8FCD /* BiometricsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */; };
+		AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */; };
+		AEFD3E9A2ECD1AEF000E8FCD /* UTType+KeePass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */; };
 		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
 		DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AE0EB1B82ECD02E70099D76F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B9DCB5EC0B1CDADD221717CADDF62359;
+			remoteInfo = "SnapKit-SnapKit_Privacy";
+		};
 		AE1375A62ECCC398005AE0A9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AE13759D2ECCC398005AE0A9 /* Pods.xcodeproj */;
@@ -187,6 +197,9 @@
 		AEC6F1BE22A8EE17007662AD /* SwiftFastPassUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftFastPassUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFastPassUITests.swift; sourceTree = "<group>"; };
 		AEC6F1C422A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsUtil.swift; sourceTree = "<group>"; };
+		AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UTType+KeePass.swift"; sourceTree = "<group>"; };
 		C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFC10FB97654DD633DAF0723 /* Pods-SwiftFastPassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassUITests.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassUITests/Pods-SwiftFastPassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D643FE8B58BD6E9058D5B4E4 /* Pods-SwiftFastPassTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -261,6 +274,7 @@
 				AE1375AD2ECCC398005AE0A9 /* Pods_SwiftFastPassTests.framework */,
 				AE1375AF2ECCC398005AE0A9 /* Pods_SwiftFastPassUITests.framework */,
 				AE1375B12ECCC398005AE0A9 /* SnapKit.framework */,
+				AE0EB1B92ECD02E70099D76F /* SnapKit_Privacy.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -336,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */,
+				AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -365,6 +380,8 @@
 		AEC6F1A122A8EE15007662AD /* SwiftFastPass */ = {
 			isa = PBXGroup;
 			children = (
+				AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */,
+				AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */,
 				AE31229622AD8BF000391D84 /* fonts */,
 				AE519A0F22AD549D002F3BA9 /* PasswordCreator */,
 				AE519A0E22AD5486002F3BA9 /* SwiftFastPass-Bridging-Header.h */,
@@ -535,6 +552,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		AE0EB1B92ECD02E70099D76F /* SnapKit_Privacy.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SnapKit_Privacy.bundle;
+			remoteRef = AE0EB1B82ECD02E70099D76F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		AE1375A72ECCC398005AE0A9 /* Eureka.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -661,9 +685,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -699,6 +727,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEFD3E962ECD0D1B000E8FCD /* BiometricsUtil.swift in Sources */,
 				AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */,
 				AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */,
 				AE519A1E22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.m in Sources */,
@@ -708,6 +737,7 @@
 				AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */,
 				AE9C91E922ACF961008C1629 /* NodeTableViewCell.swift in Sources */,
 				AE5199FE22AD49CD002F3BA9 /* SelectIconViewController.swift in Sources */,
+				AEFD3E9A2ECD1AEF000E8FCD /* UTType+KeePass.swift in Sources */,
 				AE9C91ED22AD2130008C1629 /* AddGroupViewController.swift in Sources */,
 				AE3BC22322A9095B00C84275 /* FileCollectionViewCell.swift in Sources */,
 				AE02DE3922A8FF480045189E /* File.swift in Sources */,
@@ -719,6 +749,7 @@
 				AE5199FA22AD431E002F3BA9 /* ImageRow.swift in Sources */,
 				AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */,
 				AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */,
+				AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */,
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 				AE9C91E722AA8B5F008C1629 /* DatabaseViewController.swift in Sources */,
@@ -916,7 +947,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 10;
-				DEVELOPMENT_TEAM = E66U2R5373;
+				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -948,7 +979,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 10;
-				DEVELOPMENT_TEAM = E66U2R5373;
+				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",

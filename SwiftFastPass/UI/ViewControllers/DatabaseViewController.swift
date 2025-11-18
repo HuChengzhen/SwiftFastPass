@@ -56,7 +56,7 @@ class DatabaseViewController: UIViewController {
 
         let itemAction = UIAlertAction(title: NSLocalizedString("Add Item", comment: ""), style: .default) { _ in
             let entryViewController = EntryViewController()
-            entryViewController.delegate = self
+            entryViewController.attach(delegate: self)
             self.navigationController?.pushViewController(entryViewController, animated: true)
         }
         alertController.addAction(itemAction)
@@ -123,8 +123,8 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
             navigationController?.pushViewController(databaseViewController, animated: true)
         case 1:
             let entryViewController = EntryViewController()
-            entryViewController.entry = group.entries[indexPath.row]
-            entryViewController.delegate = self
+            entryViewController.configure(with: group.entries[indexPath.row])
+            entryViewController.attach(delegate: self)
             navigationController?.pushViewController(entryViewController, animated: true)
         default:
             fatalError()

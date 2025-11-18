@@ -24,78 +24,108 @@ class LockViewController: FormViewController {
 
     private func openDatabaseIfHasPassword() {
         if file.password != nil || file.keyFileContent != nil {
-            let context = LAContext()
-            var error: NSError? = nil
-            let success = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
-            guard error == nil else {
-                print("LockViewController.openDatabaseIfHasPassword error: \(error!)")
-                return
+            biometrics {
+                self.openDatabase(password: self.file.password, keyFileContent: self.file.keyFileContent, updateFile: false)
             }
+        }
+    }
 
-            if success {
-                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NSLocalizedString("Verify identity to open password database", comment: "")) { success, error in
-                    if error != nil {
-                        print("LockViewController.openDatabaseIfHasPassword error: \(error!)")
-                        return
+    // MARK: - Public
+
+    func openDatabase(password: String?, keyFileContent: Data?, updateFile: Bool) {
+        guard let url = resolveBookmarkURL() else {
+            return
+        }
+
+        let document = Document(fileURL: url)
+        document.key = buildCompositeKey(password: password, keyFileContent: keyFileContent)
+
+        document.open { [weak self] success in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                if success {
+                    if updateFile {
+                        self.file.attach(password: password, keyFileContent: keyFileContent)
+                        self.file.image = document.tree?.root?.image()
                     }
-                    if success {
-                        self.openDatabase(password: self.file.password, keyFileContent: self.file.keyFileContent, updateFile: false)
+
+                    let databaseViewController = DatabaseViewController()
+                    databaseViewController.document = document
+                    databaseViewController.group = document.tree?.root
+
+                    if let navigationController = self.navigationController {
+                        navigationController.pushViewController(databaseViewController, animated: true)
+                        if let index = navigationController.viewControllers.firstIndex(of: self) {
+                            navigationController.viewControllers.remove(at: index)
+                        }
                     }
+                } else {
+                    self.presentInvalidKeyAlert()
                 }
             }
         }
     }
 
-    func openDatabase(password: String?, keyFileContent: Data?, updateFile: Bool) {
-        var isStale = false
-        let url: URL
-        do {
-            url = try URL(resolvingBookmarkData: file.bookmark, bookmarkDataIsStale: &isStale)
-        } catch {
-            print("LockViewController.openDatabaseIfHasPassword error: \(error)")
-            return
-        }
-        if isStale {
-            do {
-                try file.updateBookmark(url.bookmarkData(options: .suitableForBookmarkFile))
-            } catch {
-                print("LockViewController.openDatabaseIfHasPassword error: \(error)")
-            }
-        }
+    // MARK: - Private helpers
 
-        let document = Document(fileURL: url)
+    private func resolveBookmarkURL() -> URL? {
+        var isStale = false
+
+        do {
+            let url = try URL(resolvingBookmarkData: file.bookmark,
+                              bookmarkDataIsStale: &isStale)
+
+            if isStale {
+                do {
+                    let newBookmark = try url.bookmarkData(options: .suitableForBookmarkFile)
+                    file.updateBookmark(newBookmark)
+                } catch {
+                    print("LockViewController.openDatabase bookmark update error: \(error)")
+                    // 这里选择继续使用旧 url，视需求可以 return nil
+                }
+            }
+
+            return url
+        } catch {
+            print("LockViewController.openDatabase bookmark resolve error: \(error)")
+            return nil
+        }
+    }
+
+    private func buildCompositeKey(password: String?, keyFileContent: Data?) -> KPKCompositeKey {
         let compositeKey = KPKCompositeKey()
-        if let password = password, !password.isEmpty, let passwordKey = KPKPasswordKey(password: password) {
+
+        if let password = password,
+           !password.isEmpty,
+           let passwordKey = KPKPasswordKey(password: password)
+        {
             compositeKey.add(passwordKey)
         }
-        if let keyFileContent = keyFileContent, let fileKey = try? KPKFileKey(keyFileData: keyFileContent) {
+
+        if let keyFileContent = keyFileContent,
+           let fileKey = try? KPKFileKey(keyFileData: keyFileContent)
+        {
             compositeKey.add(fileKey)
         }
-        document.key = compositeKey
-        document.open { success in
-            if success {
-                if updateFile {
-                    self.file.attach(password: password, keyFileContent: keyFileContent)
-                    self.file.image = document.tree?.root?.image()
-                }
-                DispatchQueue.main.async {
-                    let databaseViewController = DatabaseViewController()
-                    databaseViewController.document = document
-                    databaseViewController.group = document.tree?.root
-                    self.navigationController?.pushViewController(databaseViewController, animated: true)
-                    let index = self.navigationController!.viewControllers.firstIndex(of: self)!
-                    self.navigationController?.viewControllers.remove(at: index)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    let alertController = UIAlertController(title: NSLocalizedString("Password or key file is not correct", comment: ""), message: NSLocalizedString("Please check password and key file", comment: ""), preferredStyle: .alert)
-                    let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
-                    alertController.addAction(cancel)
 
-                    self.present(alertController, animated: true, completion: nil)
-                }
-            }
-        }
+        return compositeKey
+    }
+
+    private func presentInvalidKeyAlert() {
+        let title = NSLocalizedString("Password or key file is not correct", comment: "")
+        let message = NSLocalizedString("Please check password and key file", comment: "")
+
+        let alertController = UIAlertController(title: title,
+                                                message: message,
+                                                preferredStyle: .alert)
+
+        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""),
+                                   style: .cancel,
+                                   handler: nil)
+        alertController.addAction(cancel)
+
+        present(alertController, animated: true, completion: nil)
     }
 
     private func setupUI() {
