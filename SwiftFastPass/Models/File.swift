@@ -8,7 +8,35 @@
 
 import UIKit
 
-class File: NSObject, NSCoding {
+final class File: NSObject, NSCoding {
+    enum SecurityLevel: Int, CaseIterable {
+        case paranoid
+        case balanced
+        case convenience
+
+        var cachesCredentials: Bool {
+            switch self {
+            case .paranoid:
+                return false
+            case .balanced, .convenience:
+                return true
+            }
+        }
+
+        var allowsBiometricUnlock: Bool {
+            switch self {
+            case .paranoid:
+                return false
+            case .balanced, .convenience:
+                return true
+            }
+        }
+
+        var requiresBiometricEnrollment: Bool {
+            return allowsBiometricUnlock
+        }
+    }
+
     let name: String
     private(set) var bookmark: Data
     var image: UIImage?
@@ -16,29 +44,51 @@ class File: NSObject, NSCoding {
     private(set) var keyFileContent: Data?
     /// Track whether this database needs a companion key file, even if we are not storing the content.
     var requiresKeyFileContent: Bool = false
-    var allowBiometricUnlock: Bool = false
+    private(set) var securityLevel: SecurityLevel
 
     static var files = loadFiles()
 
-    init(name: String, bookmark: Data, requiresKeyFileContent: Bool = false) {
+    init(name: String,
+         bookmark: Data,
+         requiresKeyFileContent: Bool = false,
+         securityLevel: SecurityLevel = .paranoid)
+    {
         self.name = name
         self.bookmark = bookmark
         self.requiresKeyFileContent = requiresKeyFileContent
+        self.securityLevel = securityLevel
     }
 
     func updateBookmark(_ bookmark: Data) {
         self.bookmark = bookmark
     }
 
-    func attach(password: String?, keyFileContent: Data?, requiresKeyFileContent: Bool? = nil) {
-        self.password = password
-        self.keyFileContent = keyFileContent
+    func attach(password: String?,
+                keyFileContent: Data?,
+                requiresKeyFileContent: Bool? = nil,
+                securityLevel: SecurityLevel? = nil)
+    {
+        if let securityLevel = securityLevel {
+            self.securityLevel = securityLevel
+        }
+
+        if self.securityLevel.cachesCredentials {
+            self.password = password
+            self.keyFileContent = keyFileContent
+        } else {
+            self.password = nil
+            self.keyFileContent = nil
+        }
 
         if let requiresKeyFileContent = requiresKeyFileContent {
             self.requiresKeyFileContent = requiresKeyFileContent
         } else if keyFileContent != nil {
             self.requiresKeyFileContent = true
         }
+    }
+
+    var hasCachedCredentials: Bool {
+        return password != nil || keyFileContent != nil
     }
 
     func encode(with coder: NSCoder) {
@@ -48,7 +98,7 @@ class File: NSObject, NSCoding {
         coder.encode(password, forKey: "password")
         coder.encode(keyFileContent, forKey: "keyFileContent")
         coder.encode(requiresKeyFileContent, forKey: "requiresKeyFileContent")
-        coder.encode(allowBiometricUnlock, forKey: "allowBiometricUnlock")
+        coder.encode(securityLevel.rawValue, forKey: "securityLevel")
     }
 
     required convenience init?(coder: NSCoder) {
@@ -63,16 +113,33 @@ class File: NSObject, NSCoding {
         } else {
             requiresKeyFileContent = keyFileContent != nil
         }
-        self.init(name: name, bookmark: bookmark, requiresKeyFileContent: requiresKeyFileContent)
-        self.image = image
-        attach(password: password, keyFileContent: keyFileContent, requiresKeyFileContent: requiresKeyFileContent)
-
-        // 新增：兼容性非常重要！
-        if coder.containsValue(forKey: "allowBiometricUnlock") {
-            allowBiometricUnlock = coder.decodeBool(forKey: "allowBiometricUnlock")
+        let securityLevel: SecurityLevel
+        if coder.containsValue(forKey: "securityLevel") {
+            let rawValue = coder.decodeInteger(forKey: "securityLevel")
+            securityLevel = SecurityLevel(rawValue: rawValue) ?? .balanced
+        } else if coder.containsValue(forKey: "allowBiometricUnlock") {
+            let legacyBiometricFlag = coder.decodeBool(forKey: "allowBiometricUnlock")
+            if legacyBiometricFlag {
+                securityLevel = .convenience
+            } else if password != nil || keyFileContent != nil {
+                securityLevel = .balanced
+            } else {
+                securityLevel = .paranoid
+            }
+        } else if password != nil || keyFileContent != nil {
+            securityLevel = .balanced
         } else {
-            allowBiometricUnlock = false // 老版本存档里没有，默认 false
+            securityLevel = .paranoid
         }
+
+        self.init(name: name,
+                  bookmark: bookmark,
+                  requiresKeyFileContent: requiresKeyFileContent,
+                  securityLevel: securityLevel)
+        self.image = image
+        attach(password: password,
+               keyFileContent: keyFileContent,
+               requiresKeyFileContent: requiresKeyFileContent)
     }
 
     private static let archiveURL: URL = {

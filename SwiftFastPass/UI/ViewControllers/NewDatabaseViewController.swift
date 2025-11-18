@@ -17,6 +17,11 @@ protocol NewDatabaseDelegate: AnyObject {
 class NewDatabaseViewController: FormViewController {
     var keyFileContent: Data?
     weak var delegate: NewDatabaseDelegate?
+    private enum FormTag {
+        static let securityLevel = "security_level_row"
+        static let securityDescription = "security_level_detail_row"
+    }
+    private var selectedSecurityLevel: File.SecurityLevel = .balanced
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +55,7 @@ class NewDatabaseViewController: FormViewController {
                 row.add(rule: RuleClosure(closure: { value -> ValidationError? in
                     let passwordRow: PasswordRow? = self.form.rowBy(tag: "password")
                     if passwordRow?.value != value {
-                        return ValidationError(msg: "Passwords are diffrent.")
+                        return ValidationError(msg: NSLocalizedString("Passwords are different.", comment: ""))
                     }
                     return nil
                 }))
@@ -63,97 +68,86 @@ class NewDatabaseViewController: FormViewController {
                 row.title = NSLocalizedString("New Key File", comment: "")
 
             }.onCellSelection(keyFileButtonTapped)
-            <<< SwitchRow("rememberCredentials_switch") { row in
-                row.title = NSLocalizedString("Remember password & key file", comment: "")
-                row.value = true
-                row.cellStyle = .subtitle
+            +++ Section(NSLocalizedString("Security Level", comment: ""))
+            <<< SegmentedRow<File.SecurityLevel>(FormTag.securityLevel) { [weak self] row in
+                row.title = NSLocalizedString("Protection", comment: "")
+                row.options = File.SecurityLevel.allCases
+                row.value = self?.selectedSecurityLevel ?? .balanced
+                row.displayValueFor = { $0?.localizedTitle }
+            }.onChange { [weak self] row in
+                guard let level = row.value else { return }
+                self?.handleSecurityLevelSelection(level)
+            }
+            <<< TextAreaRow(FormTag.securityDescription) { [weak self] row in
+                row.disabled = true
+                row.textAreaHeight = .fixed(cellHeight: 120)
+                row.value = self?.selectedSecurityLevel.localizedDescription
             }.cellUpdate { cell, _ in
-                cell.detailTextLabel?.text = NSLocalizedString("Disable to enter them manually every time.", comment: "")
-            }.onChange { [weak self] row in
-                let remember = row.value ?? true
-                self?.updateBiometricAvailability(rememberCredentials: remember)
-            }
-            <<< LabelRow("useBiometrics_title") { row in
-                row.title = "使用生物识别自动解锁"
-                row.cell.imageView?.image = UIImage(systemName: "faceid")
-            }
-            <<< SwitchRow("useBiometrics_switch") { row in
-                row.value = false
-                row.cellStyle = .subtitle
-            }.cellUpdate { [weak self] cell, _ in
-                let rememberRow: SwitchRow? = self?.form.rowBy(tag: "rememberCredentials_switch")
-                let rememberCredentials = rememberRow?.value ?? true
-                if rememberCredentials {
-                    cell.detailTextLabel?.text = "使用 Face ID / Touch ID 快速解锁密码库"
+                cell.textView.backgroundColor = .clear
+                if #available(iOS 13.0, *) {
+                    cell.textView.textColor = .secondaryLabel
                 } else {
-                    cell.detailTextLabel?.text = NSLocalizedString("Biometrics require saved credentials.", comment: "")
-                }
-                cell.isUserInteractionEnabled = rememberCredentials
-                cell.textLabel?.isEnabled = rememberCredentials
-                cell.detailTextLabel?.isEnabled = rememberCredentials
-            }.onChange { [weak self] row in
-                if row.value == true {
-                    self?.requestBiometricAuthorization()
-                } else {
-                    self?.disableBiometricUnlock()
+                    cell.textView.textColor = .darkGray
                 }
             }
-        updateBiometricAvailability(rememberCredentials: true)
+        updateSecurityDetailRow(for: selectedSecurityLevel)
     }
 
-    func requestBiometricAuthorization() {
+    private func handleSecurityLevelSelection(_ level: File.SecurityLevel) {
+        guard level != selectedSecurityLevel else {
+            return
+        }
+        if level.requiresBiometricEnrollment {
+            requestBiometricAuthorization(for: level)
+        } else {
+            applySecurityLevel(level)
+        }
+    }
+
+    private func applySecurityLevel(_ level: File.SecurityLevel) {
+        selectedSecurityLevel = level
+        updateSecurityDetailRow(for: level)
+    }
+
+    private func revertSecurityLevelSelection() {
+        if let row: SegmentedRow<File.SecurityLevel> = form.rowBy(tag: FormTag.securityLevel) {
+            row.value = selectedSecurityLevel
+            row.updateCell()
+        }
+        updateSecurityDetailRow(for: selectedSecurityLevel)
+    }
+
+    private func updateSecurityDetailRow(for level: File.SecurityLevel) {
+        if let row: TextAreaRow = form.rowBy(tag: FormTag.securityDescription) {
+            row.value = level.localizedDescription
+            row.updateCell()
+        }
+    }
+
+    private func requestBiometricAuthorization(for level: File.SecurityLevel) {
         biometrics(onSuccess: { [weak self] in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                // 确保开关是打开状态
-                if let row: SwitchRow = self.form.rowBy(tag: "useBiometrics_switch") {
-                    row.value = true
-                    row.updateCell()
-                }
-            }
+            self?.applySecurityLevel(level)
         }, onFailure: { [weak self] error in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                // 认证失败或取消 → 关掉开关
-                if let row: SwitchRow = self.form.rowBy(tag: "useBiometrics_switch") {
-                    row.value = false
-                    row.updateCell()
-                }
-
-                // 可选：给个提示
-                let title = NSLocalizedString("Unable to enable biometric unlock", comment: "")
-                let message: String
-                if let error = error {
-                    message = error.localizedDescription
-                } else {
-                    message = NSLocalizedString("Biometric authentication failed. You can enable it later in database settings.", comment: "")
-                }
-
-                let alert = UIAlertController(title: title,
-                                              message: message,
-                                              preferredStyle: .alert)
-                let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil)
-                alert.addAction(ok)
-                self.present(alert, animated: true, completion: nil)
-            }
+            self?.presentBiometricFailureAlert(error: error)
+            self?.revertSecurityLevelSelection()
         })
     }
 
-    func disableBiometricUnlock() {
-        if let row: SwitchRow = form.rowBy(tag: "useBiometrics_switch") {
-            row.value = false
-            row.updateCell()
+    private func presentBiometricFailureAlert(error: Error?) {
+        let title = NSLocalizedString("Unable to enable biometric unlock", comment: "")
+        let message: String
+        if let error = error {
+            message = error.localizedDescription
+        } else {
+            message = NSLocalizedString("Biometric authentication failed. You can enable it later in database settings.", comment: "")
         }
-        // 如果将来你有全局设置或临时状态，也可以在这里顺便清理
-    }
 
-    private func updateBiometricAvailability(rememberCredentials: Bool) {
-        if !rememberCredentials {
-            disableBiometricUnlock()
-        }
-        if let biometricsRow: SwitchRow = form.rowBy(tag: "useBiometrics_switch") {
-            biometricsRow.updateCell()
-        }
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
+        let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil)
+        alert.addAction(ok)
+        present(alert, animated: true, completion: nil)
     }
 
     func keyFileButtonTapped(cell: ButtonCellOf<String>, row: ButtonRow) {
@@ -228,23 +222,20 @@ class NewDatabaseViewController: FormViewController {
             if success {
                 do {
                     let bookmark = try document.fileURL.bookmarkData(options: .suitableForBookmarkFile)
-                    let rememberCredentialsRow: SwitchRow? = self.form.rowBy(tag: "rememberCredentials_switch")
-                    let rememberCredentials = rememberCredentialsRow?.value ?? true
-
-                    let file = File(name: fileName, bookmark: bookmark, requiresKeyFileContent: self.keyFileContent != nil)
-                    let storedPassword = rememberCredentials ? password : nil
-                    let storedKeyFileContent = rememberCredentials ? self.keyFileContent : nil
+                    let securityRow: SegmentedRow<File.SecurityLevel>? = self.form.rowBy(tag: FormTag.securityLevel)
+                    let securityLevel = securityRow?.value ?? self.selectedSecurityLevel
+                    let file = File(name: fileName,
+                                    bookmark: bookmark,
+                                    requiresKeyFileContent: self.keyFileContent != nil,
+                                    securityLevel: securityLevel)
+                    let shouldCacheCredentials = securityLevel.cachesCredentials
+                    let storedPassword = shouldCacheCredentials ? password : nil
+                    let storedKeyFileContent = shouldCacheCredentials ? self.keyFileContent : nil
                     file.attach(password: storedPassword,
                                 keyFileContent: storedKeyFileContent,
-                                requiresKeyFileContent: self.keyFileContent != nil)
+                                requiresKeyFileContent: self.keyFileContent != nil,
+                                securityLevel: securityLevel)
                     file.image = document.tree?.root?.image()
-
-                    let useBiometricsRow: SwitchRow? = self.form.rowBy(tag: "useBiometrics_switch")
-                    if rememberCredentials {
-                        file.allowBiometricUnlock = useBiometricsRow?.value ?? false
-                    } else {
-                        file.allowBiometricUnlock = false
-                    }
 
                     self.delegate?.newDatabase(viewController: self, didNewDatabase: file)
                     return
@@ -253,6 +244,30 @@ class NewDatabaseViewController: FormViewController {
                 }
             }
             sender.isEnabled = true
+        }
+    }
+}
+
+private extension File.SecurityLevel {
+    var localizedTitle: String {
+        switch self {
+        case .paranoid:
+            return NSLocalizedString("Lockdown", comment: "Security level option")
+        case .balanced:
+            return NSLocalizedString("Balanced", comment: "Security level option")
+        case .convenience:
+            return NSLocalizedString("Quick Unlock", comment: "Security level option")
+        }
+    }
+
+    var localizedDescription: String {
+        switch self {
+        case .paranoid:
+            return NSLocalizedString("Every unlock requires the master password plus the key file. Nothing is cached and biometrics stay off.", comment: "Security level description")
+        case .balanced:
+            return NSLocalizedString("Enter the master password after a reboot or long break, but Face ID / Touch ID can reopen the vault for a short period. The key file selection is stored only on this device and is not uploaded or synced.", comment: "Security level description")
+        case .convenience:
+            return NSLocalizedString("Store a derived master key inside iOS Keychain so biometrics always unlock this database. If someone can unlock your device, they can open the vault too.", comment: "Security level description")
         }
     }
 }

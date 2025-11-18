@@ -61,6 +61,17 @@
 "Photo Library" = "Photo Library";
 "Saved Photos" = "Saved Photos";
 "Clear Photo" = "Clear Photo";
+"Security Level" = "Security Level";
+"Protection" = "Protection";
+"Lockdown" = "Lockdown";
+"Balanced" = "Balanced";
+"Quick Unlock" = "Quick Unlock";
+"Every unlock requires the master password plus the key file. Nothing is cached and biometrics stay off." = "Every unlock requires the master password plus the key file. Nothing is cached and biometrics stay off.";
+"Enter the master password after a reboot or long break, but Face ID / Touch ID can reopen the vault for a short period. The key file selection is stored only on this device and is not uploaded or synced." = "Enter the master password after a reboot or long break, but Face ID / Touch ID can reopen the vault for a short period. The key file selection is stored only on this device and is not uploaded or synced.";
+"Store a derived master key inside iOS Keychain so biometrics always unlock this database. If someone can unlock your device, they can open the vault too." = "Store a derived master key inside iOS Keychain so biometrics always unlock this database. If someone can unlock your device, they can open the vault too.";
 "Remember password & key file" = "Remember password & key file";
 "Disable to enter them manually every time." = "Disable to enter them manually every time.";
 "Biometrics require saved credentials." = "Biometrics require saved credentials.";
+"Passwords are different." = "Passwords are different.";
+"Use biometrics to unlock automatically" = "Use biometrics to unlock automatically";
+"Use Face ID / Touch ID to unlock quickly" = "Use Face ID / Touch ID to unlock quickly";

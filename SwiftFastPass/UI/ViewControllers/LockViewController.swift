@@ -23,10 +23,14 @@ class LockViewController: FormViewController {
     }
 
     private func openDatabaseIfHasPassword() {
-        if file.password != nil || file.keyFileContent != nil {
-            biometrics {
-                self.openDatabase(password: self.file.password, keyFileContent: self.file.keyFileContent, updateFile: false)
-            }
+        guard file.securityLevel.allowsBiometricUnlock,
+              file.hasCachedCredentials
+        else {
+            return
+        }
+
+        biometrics {
+            self.openDatabase(password: self.file.password, keyFileContent: self.file.keyFileContent, updateFile: false)
         }
     }
 
