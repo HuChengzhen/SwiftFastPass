@@ -1,0 +1,99 @@
+# =====================================
+# macOS 系统文件
+# =====================================
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+
+# 可能出现的其他系统缓存
+Icon?
+._*
+
+# =====================================
+# Xcode
+# =====================================
+# 用户相关文件（不要提交）
+xcuserdata/
+*.xcuserstate
+
+# 构建输出
+build/
+DerivedData/
+DerivedData*/
+
+
+# =====================================
+# Swift Package Manager
+# =====================================
+.swiftpm/
+.build/
+
+
+# =====================================
+# CocoaPods
+# =====================================
+# Pods 目录一般不提交，由 Podfile.lock 控制版本
+Pods/
+# 防止误提交旧的 workspace
+*.xcworkspace
+
+# Pod 构建缓存
+# 使用 frameworks 模式时会产生
+Frameworks/
+# 如果你使用 use_frameworks! 则这些也避免提交
+Pods/Manifest.lock
+
+
+# =====================================
+# Carthage (如果你未使用，可忽略)
+# =====================================
+Carthage/Build/
+
+
+# =====================================
+# fastlane (如果你使用了)
+# =====================================
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/*.png
+fastlane/test_output
+
+
+# =====================================
+# SwiftLint / SwiftFormat 临时文件
+# =====================================
+.swiftlint.tmp
+.swiftformat.tmp
+
+
+# =====================================
+# Xcode 自动生成的临时文件
+# =====================================
+*.moved-aside
+*.xccheckout
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+
+# =====================================
+# Other
+# =====================================
+# 编译缓存
+*.o
+*.dia
+
+# Playground 临时文件
+timeline.xctimeline
+playground.xcworkspace
+
+# Firebase / GoogleService-info 隐私文件
+GoogleService-Info.plist
+GoogleService-Info*.plist
+
+# 包含密码或密钥的文件（按需开启）
+*.key
+*.pem
+*.p12
+*.mobileprovision
+
