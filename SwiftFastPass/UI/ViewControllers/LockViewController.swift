@@ -27,16 +27,27 @@ class LockViewController: FormViewController {
             return
         }
 
-        if file.password == nil && file.keyFileContent == nil {
-            _ = file.loadCachedCredentials()
+        var hasCredentials = file.password != nil || file.keyFileContent != nil
+        var loadedFromKeychain = false
+        if !hasCredentials {
+            loadedFromKeychain = file.loadCachedCredentials()
+            hasCredentials = loadedFromKeychain
         }
 
-        guard file.password != nil || file.keyFileContent != nil else {
+        guard hasCredentials else {
             return
         }
 
-        biometrics {
-            self.openDatabase(password: self.file.password, keyFileContent: self.file.keyFileContent, updateFile: false)
+        let openBlock = {
+            self.openDatabase(password: self.file.password,
+                              keyFileContent: self.file.keyFileContent,
+                              updateFile: false)
+        }
+
+        if loadedFromKeychain && file.securityLevel.keychainRequiresUserPresence {
+            openBlock()
+        } else {
+            biometrics(onSuccess: openBlock)
         }
     }
 

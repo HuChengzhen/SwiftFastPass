@@ -70,6 +70,17 @@ final class File: NSObject, NSSecureCoding {
                 return true   // 主密码 + keyfile 内容都可以缓存
             }
         }
+
+        /// Balanced 模式的 Keychain 读写需要 Face ID / Touch ID
+        /// 以避免后续重复弹窗。
+        var keychainRequiresUserPresence: Bool {
+            switch self {
+            case .balanced:
+                return true
+            case .paranoid, .convenience:
+                return false
+            }
+        }
     }
 
     let name: String
