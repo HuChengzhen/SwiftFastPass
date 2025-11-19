@@ -97,7 +97,7 @@ class NewDatabaseViewController: FormViewController {
         guard level != selectedSecurityLevel else {
             return
         }
-        if level.requiresBiometricEnrollment {
+        if level.usesBiometrics {
             requestBiometricAuthorization(for: level)
         } else {
             applySecurityLevel(level)

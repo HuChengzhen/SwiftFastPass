@@ -44,6 +44,7 @@
 		AEC6F1B822A8EE17007662AD /* SwiftFastPassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */; };
 		AEC6F1C322A8EE17007662AD /* SwiftFastPassUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */; };
 		AEFD3E962ECD0D1B000E8FCD /* BiometricsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */; };
+		AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */; };
 		AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */; };
 		AEFD3E9A2ECD1AEF000E8FCD /* UTType+KeePass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */; };
 		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
@@ -198,6 +199,7 @@
 		AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFastPassUITests.swift; sourceTree = "<group>"; };
 		AEC6F1C422A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsUtil.swift; sourceTree = "<group>"; };
+		AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSecretStore.swift; sourceTree = "<group>"; };
 		AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UTType+KeePass.swift"; sourceTree = "<group>"; };
 		C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -351,6 +353,7 @@
 			children = (
 				AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */,
 				AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */,
+				AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -749,6 +752,7 @@
 				AE5199FA22AD431E002F3BA9 /* ImageRow.swift in Sources */,
 				AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */,
 				AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */,
+				AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */,
 				AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */,
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
