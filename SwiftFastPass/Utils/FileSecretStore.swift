@@ -85,7 +85,7 @@ enum FileSecretStore {
 
     static func deleteSecrets(for file: File) {
         let status = SecItemDelete(baseQuery(for: file) as CFDictionary)
-        if status != errSecSuccess && status != errSecItemNotFound {
+        if status != errSecSuccess, status != errSecItemNotFound {
             print("FileSecretStore.deleteSecrets error: \(status)")
         }
     }
@@ -102,7 +102,7 @@ enum FileSecretStore {
             return SecAccessControlCreateWithFlags(
                 nil,
                 kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-                [.userPresence],  // or [.biometryCurrentSet] 只允许当前录入的生物信息
+                [.userPresence], // or [.biometryCurrentSet] 只允许当前录入的生物信息
                 nil
             )
 
@@ -111,10 +111,9 @@ enum FileSecretStore {
             return SecAccessControlCreateWithFlags(
                 nil,
                 kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-                [],               // 不强制每次弹生物识别（真正的“偏方便”）
+                [], // 不强制每次弹生物识别（真正的“偏方便”）
                 nil
             )
         }
     }
-
 }

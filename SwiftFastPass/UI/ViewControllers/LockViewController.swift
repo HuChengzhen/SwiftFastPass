@@ -44,7 +44,7 @@ class LockViewController: FormViewController {
                               updateFile: false)
         }
 
-        if loadedFromKeychain && file.securityLevel.keychainRequiresUserPresence {
+        if loadedFromKeychain, file.securityLevel.keychainRequiresUserPresence {
             openBlock()
         } else {
             biometrics(onSuccess: openBlock)
