@@ -46,11 +46,9 @@ class NewDatabaseViewController: FormViewController {
                 row.add(rule: RuleRequired())
                 row.validationOptions = .validatesOnChange
             }.cellSetup { cell, _ in
-                if #available(iOS 12.0, *) {
-                    cell.textField.textContentType = .oneTimeCode // prevent iOS from suggesting saving this password
-                } else {
-                    cell.textField.textContentType = nil
-                }
+                cell.textField.disablePasswordAutoFill()
+            }.cellUpdate { cell, _ in
+                cell.textField.disablePasswordAutoFill()
             }.onChange { _ in
                 self.validateInputUpdateAddButtonState()
             }
@@ -67,11 +65,9 @@ class NewDatabaseViewController: FormViewController {
                 }))
                 row.validationOptions = .validatesOnChange
             }.cellSetup { cell, _ in
-                if #available(iOS 12.0, *) {
-                    cell.textField.textContentType = .oneTimeCode
-                } else {
-                    cell.textField.textContentType = nil
-                }
+                cell.textField.disablePasswordAutoFill()
+            }.cellUpdate { cell, _ in
+                cell.textField.disablePasswordAutoFill()
             }.onChange { _ in
                 self.validateInputUpdateAddButtonState()
             }

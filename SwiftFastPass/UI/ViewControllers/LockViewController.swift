@@ -157,6 +157,12 @@ class LockViewController: FormViewController {
                 row.title = NSLocalizedString("Password", comment: "")
                 row.placeholder = NSLocalizedString("Enter password here", comment: "")
             }
+            .cellSetup { cell, _ in
+                cell.textField.disablePasswordAutoFill()
+            }
+            .cellUpdate { cell, _ in
+                cell.textField.disablePasswordAutoFill()
+            }
             +++ Section()
             <<< ButtonRow("keyFile") { row in
                 row.title = NSLocalizedString("Select Key File", comment: "")

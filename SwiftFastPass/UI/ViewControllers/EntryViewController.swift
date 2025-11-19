@@ -139,6 +139,7 @@ final class EntryViewController: FormViewController {
 
     private func configurePasswordCell(_ cell: PasswordCell) {
         cell.textField.isSecureTextEntry = !isPasswordVisible
+        cell.textField.disablePasswordAutoFill()
         guard let row = cell.row as? PasswordRow else {
             cell.textField.rightView = nil
             cell.textField.rightViewMode = .never
