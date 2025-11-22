@@ -39,6 +39,7 @@
 		AE6C422F2ED13D150082000D /* SwiftFastPassAutoFillExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AE6C42222ED13D150082000D /* SwiftFastPassAutoFillExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AE6C43152ED17D120082000D /* OldIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE6C43142ED17D120082000D /* OldIcons.swift */; };
 		AE6C43172ED182070082000D /* KPKNode+IconColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE6C43162ED182030082000D /* KPKNode+IconColor.swift */; };
+		AE6C43292ED26C750082000D /* IconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE6C43212ED26C720082000D /* IconRow.swift */; };
 		AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */; };
 		AE99EF5022A95AA700C6E13A /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4F22A95AA700C6E13A /* Document.swift */; };
 		AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */; };
@@ -214,6 +215,7 @@
 		AE6C42232ED13D150082000D /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		AE6C43142ED17D120082000D /* OldIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldIcons.swift; sourceTree = "<group>"; };
 		AE6C43162ED182030082000D /* KPKNode+IconColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KPKNode+IconColor.swift"; sourceTree = "<group>"; };
+		AE6C43212ED26C720082000D /* IconRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconRow.swift; sourceTree = "<group>"; };
 		AE6E1DB122AE28A8001F99F9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		AE6E1DB522AE28B6001F99F9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendEventScrollView.swift; sourceTree = "<group>"; };
@@ -391,6 +393,7 @@
 		AE3BC21F22A9088300C84275 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AE6C43212ED26C720082000D /* IconRow.swift */,
 				AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */,
 				AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */,
 				AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */,
@@ -912,6 +915,7 @@
 				AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */,
 				AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */,
 				AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */,
+				AE6C43292ED26C750082000D /* IconRow.swift in Sources */,
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 				AE9C91E722AA8B5F008C1629 /* DatabaseViewController.swift in Sources */,

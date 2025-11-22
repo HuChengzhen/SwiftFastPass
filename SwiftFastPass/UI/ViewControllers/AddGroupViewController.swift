@@ -116,10 +116,10 @@ class AddGroupViewController: FormViewController {
     private func updateIconAccessoryView(for cell: ImageCell) {
         if #available(iOS 13.0, *) {
             let iconIndex = iconId ?? 0
-            let colorIndex = iconColorId ?? 0
+            let colorIndex = IconColors.normalizedIndex(iconColorId)
 
             let symbolName = Icons.sfSymbolNames[safe: iconIndex] ?? "folder"
-            let tint = IconColors.palette[safe: colorIndex] ?? .label
+            let tint = IconColors.resolvedColor(for: colorIndex)
 
             cell.accessoryView = makeIconAccessoryView(
                 symbolName: symbolName,
@@ -187,7 +187,7 @@ class AddGroupViewController: FormViewController {
             guard let self = self, let cell = cell else { return }
 
             self.iconId = iconIndex
-            self.iconColorId = colorIndex
+            self.iconColorId = IconColors.normalizedIndex(colorIndex)
 
             self.updateIconAccessoryView(for: cell)
             cell.setNeedsLayout()
@@ -201,7 +201,7 @@ class AddGroupViewController: FormViewController {
     @objc func doneButtonTapped(sender _: Any) {
         let titleValue = (form.rowBy(tag: FormTag.title) as? TextRow)?.value
         let updatedIconId = iconId ?? 0
-        let updatedIconColorId = iconColorId ?? 0
+        let updatedIconColorId = IconColors.normalizedIndex(iconColorId)
 
         switch mode {
         case .create:

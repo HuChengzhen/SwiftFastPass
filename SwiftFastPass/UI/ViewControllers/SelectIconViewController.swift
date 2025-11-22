@@ -94,6 +94,20 @@ enum IconColors {
         .systemBrown,
         .systemGray
     ]
+
+    /// Clamp incoming index to a valid palette slot (skip 0, default to .label).
+    static func normalizedIndex(_ index: Int?) -> Int {
+        guard let index = index,
+              (1 ..< palette.count).contains(index) else {
+            return 1
+        }
+        return index
+    }
+
+    /// Returns a color for a given palette index, falling back to a safe default.
+    static func resolvedColor(for index: Int?) -> UIColor {
+        return palette[normalizedIndex(index)]
+    }
 }
 
 // MARK: - 底部颜色 cell
@@ -165,7 +179,8 @@ class SelectIconViewController: UIViewController {
         super.viewDidLoad()
 
         selectedIconIndex = initialIconIndex
-        selectedColorIndex = initialColorIndex
+        selectedColorIndex = IconColors.normalizedIndex(initialColorIndex)
+        initialColorIndex = selectedColorIndex
 
         setupUI()
     }
@@ -224,7 +239,7 @@ class SelectIconViewController: UIViewController {
 
     /// 选中某个图标后，回调并返回上一页
     private func finishSelection() {
-        didSelectAction?(self, selectedIconIndex, selectedColorIndex)
+        didSelectAction?(self, selectedIconIndex, IconColors.normalizedIndex(selectedColorIndex))
         navigationController?.popViewController(animated: true)
     }
 }
@@ -252,7 +267,7 @@ extension SelectIconViewController: UICollectionViewDataSource, UICollectionView
             ) as! IconCollectionViewCell
 
             let symbolName = Icons.sfSymbolNames[indexPath.item]
-            let tintColor = IconColors.palette[selectedColorIndex ]
+            let tintColor = IconColors.resolvedColor(for: selectedColorIndex)
             let isSelected = (indexPath.item == selectedIconIndex)
 
             cell.configure(symbolName: symbolName, color: tintColor, selected: isSelected)

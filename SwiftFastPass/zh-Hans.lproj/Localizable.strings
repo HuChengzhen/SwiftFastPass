@@ -101,3 +101,8 @@
 "Create as many databases as you need across iPhone and iPad." = "在 iPhone 和 iPad 上不限数量地创建和使用不同密码库。";
 "Priority support & roadmap" = "优先支持与新功能";
 "Get direct email help and early access to upcoming Pro tools." = "获得优先邮件支持，并率先体验即将上线的 Pro 工具。";
+"Save Changes?" = "保存更改？";
+"update_item_warning_message" = "您即将更新此项目。保存后，之前的信息将无法恢复。";
+"Save" = "保存";
+"Cancel" = "取消";
+

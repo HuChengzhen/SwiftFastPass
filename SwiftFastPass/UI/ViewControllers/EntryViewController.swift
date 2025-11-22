@@ -17,6 +17,9 @@ protocol EntryViewControllerDelegate: AnyObject {
 }
 
 final class EntryViewController: FormViewController {
+
+    // MARK: Row Tag
+
     enum RowTag: String {
         case icon
         case title
@@ -27,19 +30,32 @@ final class EntryViewController: FormViewController {
         case notes
     }
 
+    // MARK: Properties
+    private let accentColor = UIColor(red: 0.25, green: 0.49, blue: 1.0, alpha: 1.0)
+    
+    
     private var entry: KPKEntry?
     private weak var delegate: EntryViewControllerDelegate?
+
+    /// 选中的图标 & 颜色
     private var iconId: Int?
     private var iconColorId: Int?
-    private var isPasswordVisible = false
 
+    private var isPasswordVisible = false
     private var sensitiveFieldMenuHandlers: [RowTag: SensitiveFieldMenuHandler] = [:]
+
+    init() {
+        super.init(style: .insetGrouped)
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
 
     // MARK: - Public API
 
     func configure(with entry: KPKEntry) {
         self.entry = entry
-        // 把已有图标信息同步到本地状态，方便初始化 UI
         self.iconId = entry.iconId
         self.iconColorId = entry.iconColorId
     }
@@ -52,11 +68,15 @@ final class EntryViewController: FormViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         view.backgroundColor = .systemGroupedBackground
         tableView.backgroundColor = .clear
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
 
         configureNavigationBar()
         configureForm()
+        setupHeaderBanner()
+
         if entry != nil {
             disableFormEditing()
         }
@@ -82,118 +102,364 @@ final class EntryViewController: FormViewController {
         }
     }
 
-    // MARK: - Form
+    // MARK: - Form 构建
 
     private func configureForm() {
 
-        // MARK: Section 1: 图标 & 标题
+        // ========== Section 1: 基本信息（图标 + 标题） ==========
+        form +++ Section()
+        <<< IconRow(RowTag.icon.rawValue) { [weak self] row in
+            row.value = self?.currentIconPreviewImage()
+        }
+        .onCellSelection { [weak self] cell, row in
+            self?.iconRowTapped(row: row)
+        }
 
-        form
-            +++ Section()
-            <<< ImageRow(RowTag.icon.rawValue) { [weak self] row in
-                guard let self = self else { return }
-                row.title = NSLocalizedString("Icon", comment: "")
-                row.sourceTypes = []
 
-                // 有老数据但没有颜色时，继续用原来的 PNG 图标
-                if let entry = self.entry, entry.iconColorId == 0 {
-                    row.value = entry.image()
-                } else if self.entry == nil {
-                    // 新建条目默认图标
-                    row.value = UIImage(named: "00_PasswordTemplate")
-                } else {
-                    // 其余情况（有颜色的 SF 图标）只用 accessoryView 来显示
-                    row.value = nil
-                }
-            }
-            .cellSetup { [weak self] cell, _ in
-                guard let self = self else { return }
-                cell.height = { 56 }
 
-                // 使用统一风格的圆角彩色图标
-                if #available(iOS 13.0, *) {
-                    if let iconId = self.iconId,
-                       let colorId = self.iconColorId,
-                       colorId != 0,
-                       Icons.sfSymbolNames.indices.contains(iconId),
-                       IconColors.palette.indices.contains(colorId) {
 
-                        let symbolName = Icons.sfSymbolNames[iconId]
-                        let tint = IconColors.palette[colorId]
-                        cell.accessoryView = self.makeIconAccessoryView(
-                            symbolName: symbolName,
-                            color: tint
-                        )
-                    }
-                }
-            }
-            .onCellSelection { [weak self] cell, row in
-                self?.imageRowSelected(cell: cell, row: row)
-            }
-            <<< TextRow(RowTag.title.rawValue) { row in
-                row.title = NSLocalizedString("Title", comment: "")
-                row.value = entry?.title
-            }
 
-            // MARK: Section 2: 用户名、URL、密码
 
-            +++ Section()
-            <<< TextRow(RowTag.username.rawValue) { row in
-                row.title = NSLocalizedString("User Name", comment: "")
-                row.value = entry?.username
-            }
-            .cellSetup { [weak self] cell, _ in
-                self?.registerSensitiveFieldInteractions(for: cell, tag: .username)
-            }
 
-            <<< URLRow(RowTag.url.rawValue) { row in
-                row.title = NSLocalizedString("URL", comment: "")
-                if let urlString = entry?.url {
-                    row.value = URL(string: urlString)
-                }
-            }
-            .cellSetup { [weak self] cell, _ in
-                self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
-            }
+        <<< TextRow(RowTag.title.rawValue) { row in
+            row.title = NSLocalizedString("Title", comment: "")
+            row.value = entry?.title
+            row.placeholder = NSLocalizedString("Title", comment: "")
+        }
 
-            <<< TextRow(RowTag.password.rawValue) { row in
-                row.title = NSLocalizedString("Password", comment: "")
-                row.value = entry?.password
-            }
-            .cellSetup { [weak self] cell, _ in
-                self?.registerSensitiveFieldInteractions(for: cell, tag: .password)
-                if #available(iOS 12.0, *) {
-                    cell.textField.textContentType = .oneTimeCode
-                } else {
-                    cell.textField.textContentType = nil
-                }
-                self?.configurePasswordCell(cell)
-            }
-            .cellUpdate { [weak self] cell, _ in
-                self?.configurePasswordCell(cell)
-            }
+        // ========== Section 2: 账号 / URL / 密码 ==========
 
-            <<< ButtonRow(RowTag.generatePassword.rawValue) { row in
-                row.title = NSLocalizedString("Generate Password", comment: "")
-                row.hidden = Condition(booleanLiteral: entry != nil)
-            }
-            .onCellSelection { [weak self] _, _ in
-                self?.generatePasswordButtonTapped()
-            }
+        // 用户名
+        // 用户名
+        let primarySection = Section()
+        form +++ primarySection
+        <<< TextRow(RowTag.username.rawValue) { row in
+            row.title = NSLocalizedString("User Name", comment: "")
+            row.value = entry?.username
+            row.placeholder = NSLocalizedString("User Name", comment: "")
+        }
+        .cellSetup { [weak self] cell, _ in
+            self?.registerSensitiveFieldInteractions(for: cell, tag: .username)
+            self?.applyFieldVisualStyle(.username, to: cell)
+        }
+        .cellUpdate { [weak self] cell, _ in
+            self?.applyFieldVisualStyle(.username, to: cell)
+        }
 
-            // MARK: Section 3: 备注
-
-            +++ Section(NSLocalizedString("Notes", comment: ""))
-            <<< TextAreaRow(RowTag.notes.rawValue) { row in
-                row.placeholder = NSLocalizedString("Notes", comment: "")
-                row.value = entry?.notes
-                row.textAreaHeight = .dynamic(initialTextViewHeight: 80)
+        // URL
+        <<< URLRow(RowTag.url.rawValue) { row in
+            row.title = NSLocalizedString("URL", comment: "")
+            if let urlString = entry?.url {
+                row.value = URL(string: urlString)
             }
+            row.placeholder = "https://example.com"
+        }
+        .cellSetup { [weak self] cell, _ in
+            self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
+            if let textCell = cell as? TextCell {
+                self?.applyFieldVisualStyle(.url, to: textCell)
+            }
+        }
+        .cellUpdate { [weak self] cell, _ in
+            if let textCell = cell as? TextCell {
+                self?.applyFieldVisualStyle(.url, to: textCell)
+            }
+        }
+
+
+
+
+        <<< TextRow(RowTag.password.rawValue) { row in
+            row.title = NSLocalizedString("Password", comment: "")
+            row.value = entry?.password
+            row.placeholder = NSLocalizedString("Password", comment: "")
+        }
+        .cellSetup { [weak self] cell, _ in
+            self?.registerSensitiveFieldInteractions(for: cell, tag: .password)
+            if #available(iOS 12.0, *) {
+                cell.textField.textContentType = .oneTimeCode
+            } else {
+                cell.textField.textContentType = nil
+            }
+            self?.configurePasswordCell(cell)
+        }
+        .cellUpdate { [weak self] cell, _ in
+            self?.configurePasswordCell(cell)
+        }
+
+        <<< ButtonRow(RowTag.generatePassword.rawValue) { row in
+            row.title = NSLocalizedString("Generate Password", comment: "")
+            row.hidden = Condition(booleanLiteral: entry != nil)
+        }
+        .cellSetup { cell, _ in
+            cell.textLabel?.textAlignment = .center
+            cell.textLabel?.textColor = .systemBlue
+        }
+        .onCellSelection { [weak self] _, _ in
+            self?.generatePasswordButtonTapped()
+        }
+
+        // ========== Section 3: 备注 ==========
+
+        form +++ Section(NSLocalizedString("Notes", comment: ""))
+        <<< TextAreaRow(RowTag.notes.rawValue) { row in
+            row.placeholder = NSLocalizedString("Notes", comment: "")
+            row.value = entry?.notes
+            row.textAreaHeight = .dynamic(initialTextViewHeight: 80)
+        }
+    }
+    private func configureIconRow(row: LabelRow, cell: LabelCell) {
+        // 关键：把左边默认的 imageView 清掉
+        cell.imageView?.image = nil
+
+        cell.accessoryType = .none
+        cell.accessoryView = nil
+
+        // 当前要显示的 icon / color
+        let iconIndex = iconId ?? 0
+        let colorIndex = IconColors.normalizedIndex(iconColorId)
+
+        var image: UIImage?
+
+        if #available(iOS 13.0, *),
+           Icons.sfSymbolNames.indices.contains(iconIndex),
+           IconColors.palette.indices.contains(colorIndex) {
+
+            let symbolName = Icons.sfSymbolNames[iconIndex]
+            let tint = IconColors.resolvedColor(for: colorIndex)
+            let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+
+            image = UIImage(systemName: symbolName, withConfiguration: config)?
+                .withTintColor(tint, renderingMode: .alwaysOriginal)
+        } else if let entry = entry {
+            // 旧条目兼容：用原来的 image()
+            image = entry.image()
+        } else {
+            image = UIImage(named: "00_PasswordTemplate")
+        }
+
+        guard let iconImage = image else { return }
+
+        let iconView = UIImageView(image: iconImage)
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.contentMode = .scaleAspectFit
+
+        cell.accessoryView = iconView
+
+        NSLayoutConstraint.activate([
+            iconView.widthAnchor.constraint(equalToConstant: 24),
+            iconView.heightAnchor.constraint(equalToConstant: 24)
+        ])
     }
 
-    // MARK: - Icon Row Helpers
+    
+    // MARK: - 关键信息行统一样式
 
-    /// 统一的右侧圆角彩色图标视图
+    private enum FieldVisualStyle {
+        case username
+        case url
+        case password
+    }
+
+    private func applyFieldVisualStyle(_ style: FieldVisualStyle, to cell: TextCell) {
+        guard let row = cell.row as? TextRow else { return }
+
+        let hasValue = !(row.value?.isEmpty ?? true)
+        let isReadOnly = row.isDisabled
+
+        // 行本身背景：轻量的卡片感，比周围稍亮一点
+        cell.backgroundColor = .secondarySystemGroupedBackground
+        cell.contentView.backgroundColor = cell.backgroundColor
+        cell.selectionStyle = .none
+
+        // 所有字段统一：标题偏小、偏弱，内容更突出
+        cell.textLabel?.font = .systemFont(ofSize: 13, weight: .medium)
+        cell.textField.borderStyle = .none
+
+        // 根据不同字段，定义图标 / 颜色 / 字体
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 15, weight: .medium)
+
+            switch style {
+            case .username:
+                let color = accentColor
+                cell.imageView?.image = UIImage(systemName: "person.fill", withConfiguration: config)
+                cell.imageView?.tintColor = color
+
+                cell.textLabel?.textColor = color.withAlphaComponent(0.9)
+
+                cell.textField.font = .systemFont(ofSize: 17, weight: hasValue ? .semibold : .regular)
+                if isReadOnly && hasValue {
+                    cell.textField.textColor = color
+                } else {
+                    cell.textField.textColor = .label
+                }
+
+            case .url:
+                let color = UIColor.systemTeal
+                cell.imageView?.image = UIImage(systemName: "link", withConfiguration: config)
+                cell.imageView?.tintColor = color
+
+                cell.textLabel?.textColor = color.withAlphaComponent(0.9)
+
+                cell.textField.font = .systemFont(ofSize: 16, weight: .regular)
+                if isReadOnly && hasValue {
+                    cell.textField.textColor = color
+                } else {
+                    cell.textField.textColor = .label
+                }
+
+            case .password:
+                let color = UIColor.systemOrange
+                cell.imageView?.image = UIImage(systemName: "key.fill", withConfiguration: config)
+                cell.imageView?.tintColor = color
+
+                cell.textLabel?.textColor = color.withAlphaComponent(0.9)
+
+                // 密码用等宽字体，更有“密码感”
+                cell.textField.font = UIFont.monospacedSystemFont(ofSize: 18, weight: .medium)
+                if isReadOnly && hasValue {
+                    cell.textField.textColor = color
+                } else {
+                    cell.textField.textColor = .label
+                }
+            }
+        } else {
+            // iOS 13 以下没有 SF Symbols，就简单一点
+            cell.imageView?.image = nil
+            cell.textLabel?.textColor = .secondaryLabel
+            cell.textField.font = .systemFont(ofSize: 17)
+            cell.textField.textColor = .label
+        }
+    }
+
+
+    private func iconRowTapped(row: IconRow) {
+        guard !row.isDisabled else { return }
+
+        let vc = SelectIconViewController()
+        vc.initialIconIndex = iconId ?? 0
+        vc.initialColorIndex = iconColorId ?? 0
+
+        vc.didSelectAction = { [weak self] _, iconIndex, colorIndex in
+            guard let self = self else { return }
+
+            self.iconId = iconIndex
+            self.iconColorId = IconColors.normalizedIndex(colorIndex)
+
+            row.value = self.currentIconPreviewImage()
+            row.updateCell()
+        }
+
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    // MARK: - 图标预览
+
+    private func currentIconPreviewImage() -> UIImage? {
+        // 1. 优先用当前选择的 iconId + iconColorId（SF Symbols）
+        if #available(iOS 13.0, *),
+           let iconId = iconId,
+           Icons.sfSymbolNames.indices.contains(iconId) {
+
+            let symbolName = Icons.sfSymbolNames[iconId]
+            let tint = IconColors.resolvedColor(for: iconColorId)
+            let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+
+            if let base = UIImage(systemName: symbolName, withConfiguration: config) {
+                // 直接把颜色“烤”进图片，IconCell 里不用再设置 tintColor
+                return base.withTintColor(tint, renderingMode: .alwaysOriginal)
+            }
+        }
+
+        // 2. 如果是编辑已有条目，用 KeePass 原来的 image() 兜底
+        if let entry = entry {
+            return entry.image()
+        }
+
+        // 3. 新建条目，还没选过图标，用默认模板图
+        return UIImage(named: "00_PasswordTemplate")
+    }
+
+
+    
+    private func setupHeaderBanner() {
+        guard tableView.tableHeaderView == nil else { return }
+
+        let header = UIView()
+        header.backgroundColor = .clear
+
+        let card = UIView()
+        card.translatesAutoresizingMaskIntoConstraints = false
+        card.backgroundColor = accentColor.withAlphaComponent(0.10)
+        card.layer.cornerRadius = 20
+        card.layer.masksToBounds = true
+
+        let iconView = UIImageView()
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.contentMode = .scaleAspectFit        // ✅ 防止变形
+
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+            iconView.image = UIImage(systemName: "key.fill", withConfiguration: config)
+        }
+        iconView.tintColor = accentColor
+
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = .systemFont(ofSize: 15, weight: .semibold)
+        titleLabel.textColor = accentColor
+        titleLabel.text = NSLocalizedString("Create a secure item", comment: "")
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.font = .systemFont(ofSize: 13)
+        subtitleLabel.textColor = .secondaryLabel
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.text = NSLocalizedString("Save your username & password here, and FastPass can fill it for you next time.", comment: "")
+
+        header.addSubview(card)
+        card.addSubview(iconView)
+        card.addSubview(titleLabel)
+        card.addSubview(subtitleLabel)
+
+        let inset: CGFloat = 20
+
+        NSLayoutConstraint.activate([
+            card.topAnchor.constraint(equalTo: header.topAnchor, constant: 8),
+            card.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: inset),
+            card.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -inset),
+            card.bottomAnchor.constraint(equalTo: header.bottomAnchor, constant: -8),
+
+            iconView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            iconView.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
+            iconView.widthAnchor.constraint(equalToConstant: 24),   // ✅ 固定宽高
+            iconView.heightAnchor.constraint(equalToConstant: 24),
+
+            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            titleLabel.centerYAnchor.constraint(equalTo: iconView.centerYAnchor),
+
+            subtitleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            subtitleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            subtitleLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 8),
+            subtitleLabel.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14)
+        ])
+
+        let width = view.bounds.width
+        header.frame = CGRect(x: 0, y: 0, width: width, height: 1)
+        header.layoutIfNeeded()
+        let targetSize = header.systemLayoutSizeFitting(
+            CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+        )
+        header.frame.size.height = targetSize.height
+
+        tableView.tableHeaderView = header
+    }
+
+
+    // MARK: - 统一的图标视图（右侧圆角彩色）
+
     private func makeIconAccessoryView(symbolName: String, color: UIColor) -> UIView {
         let size: CGFloat = 32
         let container = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
@@ -234,6 +500,8 @@ final class EntryViewController: FormViewController {
         return container
     }
 
+    // MARK: - 密码 cell
+
     private func configurePasswordCell(_ cell: TextCell) {
         if #available(iOS 12.0, *) {
             cell.textField.textContentType = .oneTimeCode
@@ -241,11 +509,16 @@ final class EntryViewController: FormViewController {
             cell.textField.textContentType = nil
         }
         cell.textField.isSecureTextEntry = !isPasswordVisible
+
         guard let row = cell.row as? TextRow else {
             cell.textField.rightView = nil
             cell.textField.rightViewMode = .never
             return
         }
+
+        // ⭐️ 这里加高亮 & 等宽字体
+        // ⭐️ 统一用视觉样式
+applyFieldVisualStyle(.password, to: cell)
 
         if row.isDisabled {
             cell.textField.rightView = nil
@@ -266,6 +539,9 @@ final class EntryViewController: FormViewController {
         cell.textField.rightView = button
     }
 
+
+    
+    
     // MARK: - Actions
 
     @objc
@@ -275,15 +551,17 @@ final class EntryViewController: FormViewController {
 
     @objc
     private func doneButtonTapped() {
-        let title = NSLocalizedString("Are you sure you want to modify the database?", comment: "")
-        let message = NSLocalizedString("This modification cannot be restored", comment: "")
-        let confirmTitle = NSLocalizedString("Confirm", comment: "")
+        let title = NSLocalizedString("Save Changes?", comment: "")
+        let message = NSLocalizedString("update_item_warning_message", comment: "")
+        let confirmTitle = NSLocalizedString("Save", comment: "")
         let cancelTitle = NSLocalizedString("Cancel", comment: "")
 
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: confirmTitle, style: .destructive) { [weak self] _ in
-            self?.persistChanges()
-        })
+        alertController.addAction(
+            UIAlertAction(title: confirmTitle, style: .destructive) { [weak self] _ in
+                self?.persistChanges()
+            }
+        )
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: nil))
         present(alertController, animated: true)
     }
@@ -295,21 +573,16 @@ final class EntryViewController: FormViewController {
     }
 
     private func refreshPasswordVisibility() {
-        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else {
-            return
-        }
-        row.updateCell()
+        (form.rowBy(tag: RowTag.password.rawValue) as? TextRow)?.updateCell()
     }
 
     private func hidePasswordIfNeeded() {
-        guard isPasswordVisible else {
-            return
-        }
+        guard isPasswordVisible else { return }
         isPasswordVisible = false
         refreshPasswordVisibility()
     }
 
-    // MARK: - Save
+    // MARK: - 保存逻辑
 
     private func persistChanges() {
         let titleRow = form.rowBy(tag: RowTag.title.rawValue) as? TextRow
@@ -330,8 +603,10 @@ final class EntryViewController: FormViewController {
             entry.password = password
             entry.url = url?.absoluteString
             entry.notes = notes
-            if let iconId = iconId, let iconColorId = iconColorId {
+            if let iconId = iconId {
                 entry.iconId = iconId
+            }
+            if let iconColorId = iconColorId {
                 entry.iconColorId = iconColorId
             }
             delegate?.entryViewController(self, didEditEntry: entry)
@@ -382,44 +657,12 @@ final class EntryViewController: FormViewController {
     }
 
     private func updateGeneratePasswordVisibility(isHidden: Bool) {
-        guard let row = form.rowBy(tag: RowTag.generatePassword.rawValue) as? ButtonRow else {
-            return
-        }
+        guard let row = form.rowBy(tag: RowTag.generatePassword.rawValue) as? ButtonRow else { return }
         row.hidden = Condition(booleanLiteral: isHidden)
         row.evaluateHidden()
     }
 
-    // MARK: - Icon row tap
-
-    private func imageRowSelected(cell: ImageCell, row: ImageRow) {
-        guard !row.isDisabled else { return }
-
-        let selectIconViewController = SelectIconViewController()
-        selectIconViewController.initialIconIndex = iconId ?? 0
-        selectIconViewController.initialColorIndex = iconColorId ?? 0
-
-        selectIconViewController.didSelectAction = { [weak self, weak cell] _, iconIndex, colorIndex in
-            guard let self = self, let cell = cell else { return }
-
-            self.iconId = iconIndex
-            self.iconColorId = colorIndex
-
-            if #available(iOS 13.0, *) {
-                let symbolName = Icons.sfSymbolNames[iconIndex]
-                let tint = IconColors.palette[colorIndex]
-                cell.accessoryView = self.makeIconAccessoryView(
-                    symbolName: symbolName,
-                    color: tint
-                )
-            }
-
-            // 不再需要旧的 image 缩略图
-            row.value = nil
-            row.updateCell()
-        }
-
-        navigationController?.pushViewController(selectIconViewController, animated: true)
-    }
+    // MARK: - 图标行点击
 
     private func generatePasswordButtonTapped() {
         let viewController = PasswordGenerateViewController()
@@ -427,7 +670,7 @@ final class EntryViewController: FormViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
 
-    // MARK: - Sensitive fields (复制 / 展示菜单)
+    // MARK: - 敏感字段菜单（复制 / 显示）
 
     private func registerSensitiveFieldInteractions(for cell: UITableViewCell, tag: RowTag) {
         removeSensitiveInteractions(from: cell)
@@ -452,7 +695,7 @@ final class EntryViewController: FormViewController {
         }
     }
 
-    private func shouldAllowSensitiveMenu(for tag: RowTag) -> Bool {
+    fileprivate func shouldAllowSensitiveMenu(for tag: RowTag) -> Bool {
         switch tag {
         case .username:
             guard let row = form.rowBy(tag: RowTag.username.rawValue) as? TextRow else { return false }
@@ -468,7 +711,7 @@ final class EntryViewController: FormViewController {
         }
     }
 
-    private func sensitiveValue(for tag: RowTag) -> String? {
+    fileprivate func sensitiveValue(for tag: RowTag) -> String? {
         switch tag {
         case .username:
             return (form.rowBy(tag: RowTag.username.rawValue) as? TextRow)?.value
@@ -498,6 +741,7 @@ final class EntryViewController: FormViewController {
     fileprivate func menuElements(for tag: RowTag) -> [UIMenuElement]? {
         guard shouldAllowSensitiveMenu(for: tag),
               let value = sensitiveValue(for: tag) else { return nil }
+
         let copyTitle = NSLocalizedString("Copy", comment: "")
         let displayTitle = NSLocalizedString("Display", comment: "")
 
@@ -515,15 +759,13 @@ final class EntryViewController: FormViewController {
 
 extension EntryViewController: PasswordGenerateDelegat {
     func passwordGenerate(_: PasswordGenerateViewController, didGenerate password: String) {
-        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else {
-            return
-        }
+        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else { return }
         row.value = password
         row.updateCell()
     }
 }
 
-// MARK: - SensitiveFieldMenuHandler
+// MARK: - 敏感字段菜单 Handler
 
 extension EntryViewController {
     final class SensitiveFieldMenuHandler: NSObject {
@@ -576,13 +818,5 @@ extension EntryViewController.SensitiveFieldMenuHandler: UIEditMenuInteractionDe
         targetRectFor _: UIEditMenuConfiguration
     ) -> CGRect {
         interaction.view?.bounds ?? .zero
-    }
-}
-
-// MARK: - 小工具：安全下标
-
-private extension Array {
-    subscript(safe index: Int) -> Element? {
-        return indices.contains(index) ? self[index] : nil
     }
 }
