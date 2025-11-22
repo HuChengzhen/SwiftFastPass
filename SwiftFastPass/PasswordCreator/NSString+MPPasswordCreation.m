@@ -79,17 +79,23 @@ static NSString *mergeWithoutDuplicates(NSString* baseCharacters, NSString* cust
   return password;
 }
 
-+ (NSString *)passwordWithCharactersets:(MPPasswordCharacterFlags)allowedCharacters
++ (nullable NSString *)passwordWithCharactersets:(MPPasswordCharacterFlags)allowedCharacters
                    withCustomCharacters:(NSString *)customCharacters
                         ensureOccurence:(BOOL)ensureOccurence
                                  length:(NSUInteger)length {
-  if(ensureOccurence) {
-    length = MAX(length, [NSString minimumPasswordLengthWithCharacterSet:allowedCharacters customCharacters:customCharacters ensureOccurance:ensureOccurence]);
-  }
-  NSMutableString *password = [NSMutableString stringWithCapacity:length];
   NSString *characters = mergeWithoutDuplicates(
                                                 allowedCharactersString(allowedCharacters),
                                                 customCharacters);
+  if(characters.length == 0) {
+    return nil;
+  }
+  if(ensureOccurence) {
+    length = MAX(length, [NSString minimumPasswordLengthWithCharacterSet:allowedCharacters customCharacters:customCharacters ensureOccurance:ensureOccurence]);
+  }
+  else {
+    length = MAX(length, 1);
+  }
+  NSMutableString *password = [NSMutableString stringWithCapacity:length];
   if(ensureOccurence) {
     if(allowedCharacters & MPPasswordCharactersLowerCase) {
       [password appendString:characterClassMap()[@(MPPasswordCharactersLowerCase)].randomCharacter];
@@ -138,7 +144,7 @@ static NSString *mergeWithoutDuplicates(NSString* baseCharacters, NSString* cust
   return [NSString passwordFromString:self length:length];
 }
 
-- (NSString *)randomCharacter {
+- (nullable NSString *)randomCharacter {
   if(self.length == 0) {
     return nil;
   }

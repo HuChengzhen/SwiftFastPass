@@ -38,8 +38,8 @@ final class EntryViewController: FormViewController {
     private weak var delegate: EntryViewControllerDelegate?
 
     /// 选中的图标 & 颜色
-    private var iconId: Int?
-    private var iconColorId: Int?
+    private var iconId: Int? = DefaultIcon.id
+    private var iconColorId: Int? = DefaultIcon.colorId
 
     private var isPasswordVisible = false
     private var sensitiveFieldMenuHandlers: [RowTag: SensitiveFieldMenuHandler] = [:]
@@ -63,6 +63,19 @@ final class EntryViewController: FormViewController {
     func attach(delegate: EntryViewControllerDelegate) {
         self.delegate = delegate
     }
+
+    private enum DefaultIcon {
+        static let sfSymbolName = "key.fill"
+
+        /// 默认图标在 Icons.sfSymbolNames 里的下标
+        static let id: Int = {
+            Icons.sfSymbolNames.firstIndex(of: sfSymbolName) ?? 0
+        }()
+
+        /// 默认颜色，用你现在的调色板逻辑（一般就是蓝色）
+        static let colorId: Int = IconColors.normalizedIndex(nil)
+    }
+
 
     // MARK: - Lifecycle
 
@@ -357,28 +370,30 @@ final class EntryViewController: FormViewController {
     // MARK: - 图标预览
 
     private func currentIconPreviewImage() -> UIImage? {
-        // 1. 优先用当前选择的 iconId + iconColorId（SF Symbols）
-        if #available(iOS 13.0, *),
-           let iconId = iconId,
-           Icons.sfSymbolNames.indices.contains(iconId) {
-
-            let symbolName = Icons.sfSymbolNames[iconId]
-            let tint = IconColors.resolvedColor(for: iconColorId)
-            let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
-
-            if let base = UIImage(systemName: symbolName, withConfiguration: config) {
-                // 直接把颜色“烤”进图片，IconCell 里不用再设置 tintColor
-                return base.withTintColor(tint, renderingMode: .alwaysOriginal)
-            }
-        }
-
-        // 2. 如果是编辑已有条目，用 KeePass 原来的 image() 兜底
+        // 1️⃣ 已有条目：和 DatabaseViewController 保持一致
         if let entry = entry {
             return entry.image()
         }
 
-        // 3. 新建条目，还没选过图标，用默认模板图
-        return UIImage(named: "00_PasswordTemplate")
+        // 2️⃣ 新建条目：用当前选择的 SF Symbols 图标（默认就是蓝色 key.fill）
+        let resolvedIconId = iconId ?? DefaultIcon.id
+        let resolvedColorId = iconColorId ?? DefaultIcon.colorId
+
+        return makeSymbolImage(iconIndex: resolvedIconId, colorIndex: resolvedColorId)
+    }
+
+
+
+    private func makeSymbolImage(iconIndex: Int, colorIndex: Int?) -> UIImage? {
+        guard #available(iOS 13.0, *),
+              Icons.sfSymbolNames.indices.contains(iconIndex)
+        else { return UIImage(named: "00_PasswordTemplate") }
+
+        let symbolName = Icons.sfSymbolNames[iconIndex]
+        let tint = IconColors.resolvedColor(for: colorIndex)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        return UIImage(systemName: symbolName, withConfiguration: config)?
+            .withTintColor(tint, renderingMode: .alwaysOriginal)
     }
 
 
@@ -591,6 +606,9 @@ applyFieldVisualStyle(.password, to: cell)
         let urlRow = form.rowBy(tag: RowTag.url.rawValue) as? URLRow
         let notesRow = form.rowBy(tag: RowTag.notes.rawValue) as? TextAreaRow
 
+        let resolvedIconId = iconId ?? DefaultIcon.id
+        let resolvedIconColorId = IconColors.normalizedIndex(iconColorId)
+
         let title = titleRow?.value
         let username = usernameRow?.value
         let password = passwordRow?.value
@@ -603,12 +621,8 @@ applyFieldVisualStyle(.password, to: cell)
             entry.password = password
             entry.url = url?.absoluteString
             entry.notes = notes
-            if let iconId = iconId {
-                entry.iconId = iconId
-            }
-            if let iconColorId = iconColorId {
-                entry.iconColorId = iconColorId
-            }
+            entry.iconId = resolvedIconId
+            entry.iconColorId = resolvedIconColorId
             delegate?.entryViewController(self, didEditEntry: entry)
             disableFormEditing()
         } else {
@@ -618,12 +632,8 @@ applyFieldVisualStyle(.password, to: cell)
             newEntry.password = password
             newEntry.url = url?.absoluteString
             newEntry.notes = notes
-            if let iconId = iconId {
-                newEntry.iconId = iconId
-            }
-            if let iconColorId = iconColorId {
-                newEntry.iconColorId = iconColorId
-            }
+            newEntry.iconId = resolvedIconId
+            newEntry.iconColorId = resolvedIconColorId
             delegate?.entryViewController(self, didNewEntry: newEntry)
             navigationController?.popViewController(animated: true)
         }
@@ -733,9 +743,11 @@ applyFieldVisualStyle(.password, to: cell)
     }
 
     private func presentSensitiveDetail(with value: String) {
-        let viewController = ShowPasswordViewController()
-        viewController.password = value
-        present(viewController, animated: true)
+        let vc = ShowPasswordViewController()
+        vc.password = value
+        vc.modalPresentationStyle = .overFullScreen
+        vc.modalTransitionStyle = .crossDissolve
+        present(vc, animated: true)
     }
 
     fileprivate func menuElements(for tag: RowTag) -> [UIMenuElement]? {

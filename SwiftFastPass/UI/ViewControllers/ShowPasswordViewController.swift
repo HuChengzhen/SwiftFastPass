@@ -1,65 +1,124 @@
-//
-//  ShowPasswordViewController.swift
-//  SwiftFastPass
-//
-//  Created by 胡诚真 on 2019/6/10.
-//  Copyright © 2019 huchengzhen. All rights reserved.
-//
+final class ShowPasswordViewController: UIViewController {
 
-import SnapKit
-import UIKit
+    var password: String = ""
 
-class ShowPasswordViewController: UIViewController {
-    var password: String!
-    var outerView: UIView!
-    var passwordLabel: UILabel!
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.textColor = .label
+        label.text = NSLocalizedString("Password", comment: "")
+        return label
+    }()
 
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        modalTransitionStyle = .crossDissolve
-        modalPresentationStyle = .overCurrentContext
-    }
+    private let passwordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        // 等宽字体，便于辨认
+        label.font = UIFont.monospacedSystemFont(ofSize: 22, weight: .regular)
+        label.textColor = .label
+        label.numberOfLines = 0
+        label.textAlignment = .left                 // ✅ 左对齐
+        label.lineBreakMode = .byCharWrapping       // ✅ 按字符换行
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private let copyButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(NSLocalizedString("Copy", comment: ""), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+        button.backgroundColor = UIColor.systemBlue
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
+        return button
+    }()
+
+    private let closeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(NSLocalizedString("Close", comment: ""), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 17)
+        return button
+    }()
+
+    private let cardView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemBackground
+        view.layer.cornerRadius = 24
+        view.layer.masksToBounds = true
+        return view
+    }()
+
+    private let dimView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.40)
+        return view
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-    }
 
-    func setupUI() {
-        view.backgroundColor = UIColor.clear
-
-        outerView = UIView()
-        view.addSubview(outerView)
-        outerView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        if #available(iOS 13.0, *) {
-            outerView.backgroundColor = UIColor.label.withAlphaComponent(0.1)
-        } else {
-            outerView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
-        }
-        outerView.layer.cornerRadius = 10
-
-        passwordLabel = UILabel()
-        outerView.addSubview(passwordLabel)
-        passwordLabel.font = UIFont(name: "DejaVuSansMono-Bold", size: 40)
+        setupLayout()
         passwordLabel.text = password
-        passwordLabel.lineBreakMode = .byCharWrapping
-        passwordLabel.numberOfLines = 0
 
-        passwordLabel.snp.makeConstraints { make in
-            make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.80)
-            make.edges.equalToSuperview().inset(10)
-        }
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewDidTapped(sender:))))
+        copyButton.addTarget(self, action: #selector(copyTapped), for: .touchUpInside)
+        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
     }
 
-    @objc func viewDidTapped(sender _: UITapGestureRecognizer) {
-        dismiss(animated: true, completion: nil)
+    private func setupLayout() {
+        view.backgroundColor = .clear
+
+        view.addSubview(dimView)
+        view.addSubview(cardView)
+
+        NSLayoutConstraint.activate([
+            dimView.topAnchor.constraint(equalTo: view.topAnchor),
+            dimView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dimView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dimView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
+            // 卡片不要铺太宽，这样每行更短、更好读
+            cardView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cardView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            cardView.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 24),
+            cardView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -24),
+            cardView.widthAnchor.constraint(lessThanOrEqualToConstant: 360)
+        ])
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, passwordLabel, makeButtonRow()])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 16
+
+        cardView.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -20),
+            stack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20)
+        ])
+    }
+
+    private func makeButtonRow() -> UIStackView {
+        let row = UIStackView(arrangedSubviews: [copyButton, UIView(), closeButton])
+        row.axis = .horizontal
+        row.alignment = .center
+        row.spacing = 16
+        return row
+    }
+
+    @objc private func copyTapped() {
+        UIPasteboard.general.string = password
+        dismiss(animated: true)
+    }
+
+    @objc private func closeTapped() {
+        dismiss(animated: true)
     }
 }
