@@ -137,16 +137,22 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
             alertController.popoverPresentationController?.sourceRect = button.bounds
             alertController.popoverPresentationController?.sourceView = button
             let deleteAction = UIAlertAction(title: NSLocalizedString("Delete", comment: ""), style: .destructive) { _ in
+                var autoFillUUIDs: [String] = []
                 switch indexPath.section {
                 case 0:
-                    self.group.groups[indexPath.row].remove()
+                    let targetGroup = self.group.groups[indexPath.row]
+                    autoFillUUIDs = self.entryUUIDs(in: targetGroup)
+                    targetGroup.remove()
                 case 1:
-                    self.group.entries[indexPath.row].remove()
+                    let entry = self.group.entries[indexPath.row]
+                    autoFillUUIDs = [entry.uuid.uuidString]
+                    entry.remove()
                 default:
                     fatalError()
                 }
                 self.document.save(to: self.document.fileURL, for: .forOverwriting) { success in
                     if success {
+                        autoFillUUIDs.forEach { AutoFillCredentialStore.shared.removeCredential(withUUID: $0) }
                         tableView.deleteRows(at: [indexPath], with: .automatic)
                         successHandler(true)
                     }
@@ -168,33 +174,39 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
 extension DatabaseViewController: EntryViewControllerDelegate {
     func entryViewController(_: EntryViewController, didNewEntry entry: KPKEntry) {
         entry.add(to: group)
+        saveDocument {
+            AutoFillCredentialStore.shared.upsertEntryIfPossible(entry)
+        }
+    }
+
+    fileprivate func saveDocument(onSuccess: (() -> Void)? = nil) {
         document.save(to: document.fileURL, for: .forOverwriting) { success in
-            if success {
-                self.tableView.reloadData()
-            } else {
-                let alertController = UIAlertController(title: NSLocalizedString("Save Failed", comment: ""), message: nil, preferredStyle: .alert)
-                let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
-                alertController.addAction(cancel)
-                self.present(alertController, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                if success {
+                    self.tableView.reloadData()
+                    onSuccess?()
+                } else {
+                    let alertController = UIAlertController(title: NSLocalizedString("Save Failed", comment: ""), message: nil, preferredStyle: .alert)
+                    let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
+                    alertController.addAction(cancel)
+                    self.present(alertController, animated: true, completion: nil)
+                }
             }
         }
     }
 
-    fileprivate func saveDocument() {
-        document.save(to: document.fileURL, for: .forOverwriting) { success in
-            if success {
-                self.tableView.reloadData()
-            } else {
-                let alertController = UIAlertController(title: NSLocalizedString("Save Failed", comment: ""), message: nil, preferredStyle: .alert)
-                let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
-                alertController.addAction(cancel)
-                self.present(alertController, animated: true, completion: nil)
-            }
+    private func entryUUIDs(in group: KPKGroup) -> [String] {
+        var identifiers = group.entries.map { $0.uuid.uuidString }
+        for child in group.groups {
+            identifiers.append(contentsOf: entryUUIDs(in: child))
         }
+        return identifiers
     }
 
-    func entryViewController(_: EntryViewController, didEditEntry _: KPKEntry) {
-        saveDocument()
+    func entryViewController(_: EntryViewController, didEditEntry entry: KPKEntry) {
+        saveDocument {
+            AutoFillCredentialStore.shared.upsertEntryIfPossible(entry)
+        }
     }
 }
 

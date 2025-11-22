@@ -103,12 +103,20 @@ final class EntryViewController: FormViewController {
                     row.value = nil
                 }
             }
-            <<< PasswordRow(RowTag.password.rawValue) { row in
+            .cellSetup { [weak self] cell, _ in
+                self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
+            }
+            <<< TextRow(RowTag.password.rawValue) { row in
                 row.title = NSLocalizedString("Password", comment: "")
                 row.value = entry?.password
             }
             .cellSetup { [weak self] cell, _ in
                 self?.registerSensitiveFieldInteractions(for: cell, tag: .password)
+                if #available(iOS 12.0, *) {
+                    cell.textField.textContentType = .oneTimeCode
+                } else {
+                    cell.textField.textContentType = nil
+                }
                 self?.configurePasswordCell(cell)
             }
             .cellUpdate { [weak self] cell, _ in
@@ -137,9 +145,14 @@ final class EntryViewController: FormViewController {
         cell.accessoryView?.tintColor = UIColor.label
     }
 
-    private func configurePasswordCell(_ cell: PasswordCell) {
+    private func configurePasswordCell(_ cell: TextCell) {
+        if #available(iOS 12.0, *) {
+            cell.textField.textContentType = .oneTimeCode
+        } else {
+            cell.textField.textContentType = nil
+        }
         cell.textField.isSecureTextEntry = !isPasswordVisible
-        guard let row = cell.row as? PasswordRow else {
+        guard let row = cell.row as? TextRow else {
             cell.textField.rightView = nil
             cell.textField.rightViewMode = .never
             return
@@ -189,7 +202,7 @@ final class EntryViewController: FormViewController {
     }
 
     private func refreshPasswordVisibility() {
-        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? PasswordRow else {
+        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else {
             return
         }
         row.updateCell()
@@ -206,7 +219,7 @@ final class EntryViewController: FormViewController {
     private func persistChanges() {
         let titleRow = form.rowBy(tag: RowTag.title.rawValue) as? TextRow
         let usernameRow = form.rowBy(tag: RowTag.username.rawValue) as? TextRow
-        let passwordRow = form.rowBy(tag: RowTag.password.rawValue) as? PasswordRow
+        let passwordRow = form.rowBy(tag: RowTag.password.rawValue) as? TextRow
         let urlRow = form.rowBy(tag: RowTag.url.rawValue) as? URLRow
         let notesRow = form.rowBy(tag: RowTag.notes.rawValue) as? TextAreaRow
 
@@ -315,8 +328,11 @@ final class EntryViewController: FormViewController {
             guard let row = form.rowBy(tag: RowTag.username.rawValue) as? TextRow else { return false }
             return row.isDisabled && !(row.value?.isEmpty ?? true)
         case .password:
-            guard let row = form.rowBy(tag: RowTag.password.rawValue) as? PasswordRow else { return false }
+            guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else { return false }
             return row.isDisabled && !(row.value?.isEmpty ?? true)
+        case .url:
+            guard let row = form.rowBy(tag: RowTag.url.rawValue) as? URLRow else { return false }
+            return row.isDisabled && row.value != nil
         default:
             return false
         }
@@ -327,7 +343,9 @@ final class EntryViewController: FormViewController {
         case .username:
             return (form.rowBy(tag: RowTag.username.rawValue) as? TextRow)?.value
         case .password:
-            return (form.rowBy(tag: RowTag.password.rawValue) as? PasswordRow)?.value
+            return (form.rowBy(tag: RowTag.password.rawValue) as? TextRow)?.value
+        case .url:
+            return (form.rowBy(tag: RowTag.url.rawValue) as? URLRow)?.value?.absoluteString
         default:
             return nil
         }
@@ -338,7 +356,7 @@ final class EntryViewController: FormViewController {
         pasteboard.setItems([[UTType.plainText.identifier: text]], options: [.expirationDate: Date().addingTimeInterval(30)])
     }
 
-    private func presentPasswordDetail(with value: String) {
+    private func presentSensitiveDetail(with value: String) {
         let viewController = ShowPasswordViewController()
         viewController.password = value
         present(viewController, animated: true)
@@ -353,7 +371,7 @@ final class EntryViewController: FormViewController {
             self?.copyToPasteboard(value)
         }
         let displayAction = UIAction(title: displayTitle, image: UIImage(systemName: "eye")) { [weak self] _ in
-            self?.presentPasswordDetail(with: value)
+            self?.presentSensitiveDetail(with: value)
         }
         return [copyAction, displayAction]
     }
@@ -361,7 +379,7 @@ final class EntryViewController: FormViewController {
 
 extension EntryViewController: PasswordGenerateDelegat {
     func passwordGenerate(_: PasswordGenerateViewController, didGenerate password: String) {
-        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? PasswordRow else {
+        guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else {
             return
         }
         row.value = password

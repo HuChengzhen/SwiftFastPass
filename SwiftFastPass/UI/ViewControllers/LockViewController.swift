@@ -153,9 +153,16 @@ class LockViewController: FormViewController {
         navigationItem.title = file.name
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Open", comment: ""), style: .done, target: self, action: #selector(openButtonTapped(sender:)))
         form +++ Section()
-            <<< PasswordRow("password") { row in
+            <<< TextRow("password") { row in
                 row.title = NSLocalizedString("Password", comment: "")
                 row.placeholder = NSLocalizedString("Enter password here", comment: "")
+            }.cellSetup { cell, _ in
+                cell.textField.isSecureTextEntry = true
+                if #available(iOS 12.0, *) {
+                    cell.textField.textContentType = .oneTimeCode
+                } else {
+                    cell.textField.textContentType = nil
+                }
             }
             +++ Section()
             <<< ButtonRow("keyFile") { row in
@@ -164,7 +171,7 @@ class LockViewController: FormViewController {
     }
 
     @objc func openButtonTapped(sender _: Any) {
-        let password = (form.rowBy(tag: "password") as! PasswordRow).value
+        let password = (form.rowBy(tag: "password") as! TextRow).value
         openDatabase(password: password, keyFileContent: keyFileContent, updateFile: true)
     }
 

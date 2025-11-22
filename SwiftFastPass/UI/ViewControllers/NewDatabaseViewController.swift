@@ -40,12 +40,13 @@ class NewDatabaseViewController: FormViewController {
                 self.validateInputUpdateAddButtonState()
             }
             +++ Section()
-            <<< PasswordRow("password") { row in
+            <<< TextRow("password") { row in
                 row.title = NSLocalizedString("Password", comment: "")
                 row.placeholder = NSLocalizedString("Enter password here", comment: "")
                 row.add(rule: RuleRequired())
                 row.validationOptions = .validatesOnChange
             }.cellSetup { cell, _ in
+                cell.textField.isSecureTextEntry = true
                 if #available(iOS 12.0, *) {
                     cell.textField.textContentType = .oneTimeCode // prevent iOS from suggesting saving this password
                 } else {
@@ -54,12 +55,12 @@ class NewDatabaseViewController: FormViewController {
             }.onChange { _ in
                 self.validateInputUpdateAddButtonState()
             }
-            <<< PasswordRow("confirmPassword") { row in
+            <<< TextRow("confirmPassword") { row in
                 row.title = NSLocalizedString("Confirm password", comment: "")
                 row.placeholder = NSLocalizedString("Confirm password here", comment: "")
                 row.add(rule: RuleRequired())
                 row.add(rule: RuleClosure(closure: { value -> ValidationError? in
-                    let passwordRow: PasswordRow? = self.form.rowBy(tag: "password")
+                    let passwordRow: TextRow? = self.form.rowBy(tag: "password")
                     if passwordRow?.value != value {
                         return ValidationError(msg: NSLocalizedString("Passwords are different.", comment: ""))
                     }
@@ -67,6 +68,7 @@ class NewDatabaseViewController: FormViewController {
                 }))
                 row.validationOptions = .validatesOnChange
             }.cellSetup { cell, _ in
+                cell.textField.isSecureTextEntry = true
                 if #available(iOS 12.0, *) {
                     cell.textField.textContentType = .oneTimeCode
                 } else {
@@ -193,7 +195,7 @@ class NewDatabaseViewController: FormViewController {
         let name = (form.rowBy(tag: "name") as! TextRow).value!
         let fileName = name + ".kdbx"
         let fileURL = targetDirURL.appendingPathComponent(fileName)
-        let password = (form.rowBy(tag: "password") as! PasswordRow).value!
+        let password = (form.rowBy(tag: "password") as! TextRow).value!
 
         guard !FileManager.default.fileExists(atPath: fileURL.path) else {
             let alertController = UIAlertController(title: NSLocalizedString("The file with the same name already exists in the folder", comment: ""), message: NSLocalizedString("Please use a different file name", comment: ""), preferredStyle: .alert)

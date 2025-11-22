@@ -3,10 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5852CA4EB1CF4989BB19E2F2 /* SubscriptionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524D2A5DA1AE4FF08CABA650 /* SubscriptionModels.swift */; };
+		7A100487A7894A97AC8848F7 /* SubscriptionEntitlementStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CF0C77291041BFBE8D3026 /* SubscriptionEntitlementStore.swift */; };
+		9A4797A0AAD94915ADA5F22D /* SubscriptionPaywallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DB513DFF4A412C8DEE558E /* SubscriptionPaywallViewController.swift */; };
+		A9D733EE5E78443DA11C1DB6 /* SubscriptionEntitlementStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3CEFB88654733A9DE9C19 /* SubscriptionEntitlementStoreTests.swift */; };
+		CFE1B983032B4D838B20D7DF /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73AB54334940AF9BC8D38E /* SubscriptionManager.swift */; };
 		7F1940178F05D9F89AD443EF /* Pods_SwiftFastPass.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */; };
 		AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3522A8FC7B0045189E /* FilesViewController.swift */; };
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
@@ -26,6 +31,8 @@
 		AE519A1B22AD5656002F3BA9 /* NSString+MPPasswordCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519A1A22AD5656002F3BA9 /* NSString+MPPasswordCreation.m */; };
 		AE519A1E22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */; };
 		AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */; };
+		AE6C42242ED13D150082000D /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE6C42232ED13D150082000D /* AuthenticationServices.framework */; };
+		AE6C422F2ED13D150082000D /* SwiftFastPassAutoFillExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AE6C42222ED13D150082000D /* SwiftFastPassAutoFillExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */; };
 		AE99EF5022A95AA700C6E13A /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4F22A95AA700C6E13A /* Document.swift */; };
 		AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */; };
@@ -47,6 +54,9 @@
 		AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */; };
 		AEFD3E9A2ECD1AEF000E8FCD /* UTType+KeePass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */; };
 		AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */; };
+		AEF200112F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */; };
+		AEF200122F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */; };
+		AEF200132F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */; };
 		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
 		DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */; };
 /* End PBXBuildFile section */
@@ -101,6 +111,13 @@
 			remoteGlobalIDString = 979486118B3E90C08386079D57962701;
 			remoteInfo = SnapKit;
 		};
+		AE6C422D2ED13D150082000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AEC6F19722A8EE15007662AD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AE6C42212ED13D150082000D;
+			remoteInfo = SwiftFastPassAutoFillExtension;
+		};
 		AEC6F1B422A8EE17007662AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AEC6F19722A8EE15007662AD /* Project object */;
@@ -130,9 +147,25 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AE6C42302ED13D150082000D /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AE6C422F2ED13D150082000D /* SwiftFastPassAutoFillExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		524D2A5DA1AE4FF08CABA650 /* SubscriptionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionModels.swift; sourceTree = "<group>"; };
+		6FE3CEFB88654733A9DE9C19 /* SubscriptionEntitlementStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEntitlementStoreTests.swift; sourceTree = "<group>"; };
+		8A73AB54334940AF9BC8D38E /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		E5CF0C77291041BFBE8D3026 /* SubscriptionEntitlementStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEntitlementStore.swift; sourceTree = "<group>"; };
+		F8DB513DFF4A412C8DEE558E /* SubscriptionPaywallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPaywallViewController.swift; sourceTree = "<group>"; };
 		025FF0D6072556F81FB9C972 /* Pods-SwiftFastPass.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.release.xcconfig"; sourceTree = "<group>"; };
 		1BCEB04C4699562DED5A35C6 /* Pods-SwiftFastPass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.debug.xcconfig"; sourceTree = "<group>"; };
 		2BF8EE399BF755D1D3124937 /* Pods-SwiftFastPass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.debug.xcconfig"; sourceTree = "<group>"; };
@@ -168,6 +201,8 @@
 		AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MPComposedCharacterAdditions.m"; sourceTree = "<group>"; };
 		AE519A1D22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MPComposedCharacterAdditions.h"; sourceTree = "<group>"; };
 		AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPasswordViewController.swift; sourceTree = "<group>"; };
+		AE6C42222ED13D150082000D /* SwiftFastPassAutoFillExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SwiftFastPassAutoFillExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE6C42232ED13D150082000D /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		AE6E1DB122AE28A8001F99F9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		AE6E1DB522AE28B6001F99F9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendEventScrollView.swift; sourceTree = "<group>"; };
@@ -202,13 +237,37 @@
 		AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UTType+KeePass.swift"; sourceTree = "<group>"; };
 		AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSecretStore.swift; sourceTree = "<group>"; };
+		AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoFillCredentialStore.swift; sourceTree = "<group>"; };
+		AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AutoFillCredentialSnapshot+KeePass.swift"; sourceTree = "<group>"; };
 		C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFC10FB97654DD633DAF0723 /* Pods-SwiftFastPassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassUITests.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassUITests/Pods-SwiftFastPassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D643FE8B58BD6E9058D5B4E4 /* Pods-SwiftFastPassTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F7621FE858EC47F48B917420 /* Pods-SwiftFastPassTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.debug.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AE6C42332ED13D150082000D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AE6C42212ED13D150082000D /* SwiftFastPassAutoFillExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		AE6C42252ED13D150082000D /* SwiftFastPassAutoFillExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (AE6C42332ED13D150082000D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = SwiftFastPassAutoFillExtension; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		AE6C421F2ED13D150082000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE6C42242ED13D150082000D /* AuthenticationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AEC6F19C22A8EE15007662AD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -310,6 +369,7 @@
 				AE5199FD22AD49CD002F3BA9 /* SelectIconViewController.swift */,
 				AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */,
 				AE31229F22AD8FC000391D84 /* PasswordGenerateViewController.swift */,
+				F8DB513DFF4A412C8DEE558E /* SubscriptionPaywallViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -354,8 +414,17 @@
 				AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */,
 				AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */,
 				AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */,
+				AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		AEF200102F0D4D1A00E7B1A1 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		AEC6F19622A8EE15007662AD = {
@@ -364,6 +433,8 @@
 				AEC6F1A122A8EE15007662AD /* SwiftFastPass */,
 				AEC6F1B622A8EE17007662AD /* SwiftFastPassTests */,
 				AEC6F1C122A8EE17007662AD /* SwiftFastPassUITests */,
+				AE6C42252ED13D150082000D /* SwiftFastPassAutoFillExtension */,
+				AEF200102F0D4D1A00E7B1A1 /* Shared */,
 				AEC6F1A022A8EE15007662AD /* Products */,
 				38823227909DC13D3569EC75 /* Pods */,
 				C5B2E5E87A20C8D35870CBF2 /* Frameworks */,
@@ -376,6 +447,7 @@
 				AEC6F19F22A8EE15007662AD /* SwiftFastPass.app */,
 				AEC6F1B322A8EE17007662AD /* SwiftFastPassTests.xctest */,
 				AEC6F1BE22A8EE17007662AD /* SwiftFastPassUITests.xctest */,
+				AE6C42222ED13D150082000D /* SwiftFastPassAutoFillExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -390,6 +462,7 @@
 				AE519A0E22AD5486002F3BA9 /* SwiftFastPass-Bridging-Header.h */,
 				AE5199F322AD431E002F3BA9 /* ImageRow */,
 				AE9C91F522AD3B59008C1629 /* Utils */,
+				ED71022D64164808B9AB85D5 /* Subscriptions */,
 				AE02DE3722A8FF350045189E /* Models */,
 				AE3BC21D22A9079800C84275 /* UI */,
 				AE02DE3422A8F2820045189E /* SwiftFastPass.entitlements */,
@@ -407,9 +480,20 @@
 			isa = PBXGroup;
 			children = (
 				AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */,
+				6FE3CEFB88654733A9DE9C19 /* SubscriptionEntitlementStoreTests.swift */,
 				AEC6F1B922A8EE17007662AD /* Info.plist */,
 			);
 			path = SwiftFastPassTests;
+			sourceTree = "<group>";
+		};
+		ED71022D64164808B9AB85D5 /* Subscriptions */ = {
+			isa = PBXGroup;
+			children = (
+				524D2A5DA1AE4FF08CABA650 /* SubscriptionModels.swift */,
+				E5CF0C77291041BFBE8D3026 /* SubscriptionEntitlementStore.swift */,
+				8A73AB54334940AF9BC8D38E /* SubscriptionManager.swift */,
+			);
+			path = Subscriptions;
 			sourceTree = "<group>";
 		};
 		AEC6F1C122A8EE17007662AD /* SwiftFastPassUITests */ = {
@@ -435,6 +519,7 @@
 				4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */,
 				C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */,
 				6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */,
+				AE6C42232ED13D150082000D /* AuthenticationServices.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -442,6 +527,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		AE6C42212ED13D150082000D /* SwiftFastPassAutoFillExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AE6C42342ED13D150082000D /* Build configuration list for PBXNativeTarget "SwiftFastPassAutoFillExtension" */;
+			buildPhases = (
+				AE6C421E2ED13D150082000D /* Sources */,
+				AE6C421F2ED13D150082000D /* Frameworks */,
+				AE6C42202ED13D150082000D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AE6C42252ED13D150082000D /* SwiftFastPassAutoFillExtension */,
+			);
+			name = SwiftFastPassAutoFillExtension;
+			packageProductDependencies = (
+			);
+			productName = SwiftFastPassAutoFillExtension;
+			productReference = AE6C42222ED13D150082000D /* SwiftFastPassAutoFillExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		AEC6F19E22A8EE15007662AD /* SwiftFastPass */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AEC6F1C722A8EE17007662AD /* Build configuration list for PBXNativeTarget "SwiftFastPass" */;
@@ -452,10 +559,12 @@
 				AEC6F19D22A8EE15007662AD /* Resources */,
 				7838017AE3794CB1311DBAA1 /* [CP] Embed Pods Frameworks */,
 				AE1375BE2ECCCC53005AE0A9 /* Embed Frameworks */,
+				AE6C42302ED13D150082000D /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				AE6C422E2ED13D150082000D /* PBXTargetDependency */,
 			);
 			name = SwiftFastPass;
 			productName = SwiftFastPass;
@@ -506,10 +615,13 @@
 		AEC6F19722A8EE15007662AD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = huchengzhen;
 				TargetAttributes = {
+					AE6C42212ED13D150082000D = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
 					AEC6F19E22A8EE15007662AD = {
 						CreatedOnToolsVersion = 10.2.1;
 						LastSwiftMigration = 1100;
@@ -550,6 +662,7 @@
 				AEC6F19E22A8EE15007662AD /* SwiftFastPass */,
 				AEC6F1B222A8EE17007662AD /* SwiftFastPassTests */,
 				AEC6F1BD22A8EE17007662AD /* SwiftFastPassUITests */,
+				AE6C42212ED13D150082000D /* SwiftFastPassAutoFillExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -607,6 +720,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		AE6C42202ED13D150082000D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AEC6F19D22A8EE15007662AD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -726,15 +846,26 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		AE6C421E2ED13D150082000D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEF200122F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AEC6F19B22A8EE15007662AD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5852CA4EB1CF4989BB19E2F2 /* SubscriptionModels.swift in Sources */,
 				AEFD3E962ECD0D1B000E8FCD /* BiometricsUtil.swift in Sources */,
 				AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */,
 				AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */,
+				7A100487A7894A97AC8848F7 /* SubscriptionEntitlementStore.swift in Sources */,
 				AE519A1E22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.m in Sources */,
 				AE9C91EB22AD03FA008C1629 /* Icons.swift in Sources */,
+				CFE1B983032B4D838B20D7DF /* SubscriptionManager.swift in Sources */,
 				AE9C91EF22AD2224008C1629 /* EntryViewController.swift in Sources */,
 				AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */,
 				AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */,
@@ -751,6 +882,7 @@
 				AE519A1B22AD5656002F3BA9 /* NSString+MPPasswordCreation.m in Sources */,
 				AE5199FA22AD431E002F3BA9 /* ImageRow.swift in Sources */,
 				AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */,
+				9A4797A0AAD94915ADA5F22D /* SubscriptionPaywallViewController.swift in Sources */,
 				AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */,
 				AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */,
 				AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */,
@@ -758,6 +890,8 @@
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 				AE9C91E722AA8B5F008C1629 /* DatabaseViewController.swift in Sources */,
 				AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */,
+				AEF200132F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift in Sources */,
+				AEF200112F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -766,6 +900,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AEC6F1B822A8EE17007662AD /* SwiftFastPassTests.swift in Sources */,
+				A9D733EE5E78443DA11C1DB6 /* SubscriptionEntitlementStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -780,6 +915,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AE6C422E2ED13D150082000D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AE6C42212ED13D150082000D /* SwiftFastPassAutoFillExtension */;
+			targetProxy = AE6C422D2ED13D150082000D /* PBXContainerItemProxy */;
+		};
 		AEC6F1B522A8EE17007662AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AEC6F19E22A8EE15007662AD /* SwiftFastPass */;
@@ -824,6 +964,79 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		AE6C42312ED13D150082000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = SwiftFastPassAutoFillExtension/SwiftFastPassAutoFillExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P8GHCFM7HB;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftFastPassAutoFillExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SwiftFastPassAutoFillExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 huchengzhen. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass.SwiftFastPassAutoFillExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AE6C42322ED13D150082000D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = SwiftFastPassAutoFillExtension/SwiftFastPassAutoFillExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P8GHCFM7HB;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftFastPassAutoFillExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SwiftFastPassAutoFillExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 huchengzhen. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huchengzhen.SwiftFastPass.SwiftFastPassAutoFillExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		AEC6F1C522A8EE17007662AD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1098,6 +1311,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		AE6C42342ED13D150082000D /* Build configuration list for PBXNativeTarget "SwiftFastPassAutoFillExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AE6C42312ED13D150082000D /* Debug */,
+				AE6C42322ED13D150082000D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AEC6F19A22A8EE15007662AD /* Build configuration list for PBXProject "SwiftFastPass" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
