@@ -26,7 +26,6 @@
 		AE519A1B22AD5656002F3BA9 /* NSString+MPPasswordCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519A1A22AD5656002F3BA9 /* NSString+MPPasswordCreation.m */; };
 		AE519A1E22AD567E002F3BA9 /* NSString+MPComposedCharacterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519A1C22AD567D002F3BA9 /* NSString+MPComposedCharacterAdditions.m */; };
 		AE519A5D22AD69F8002F3BA9 /* ShowPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */; };
-		AE99222F2ECD54EC006546EE /* UITextField+PasswordAutofill.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99222E2ECD54EC006546EE /* UITextField+PasswordAutofill.swift */; };
 		AE99EF4E22A9301200C6E13A /* SendEventScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */; };
 		AE99EF5022A95AA700C6E13A /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF4F22A95AA700C6E13A /* Document.swift */; };
 		AE99EF5222A9635300C6E13A /* NewDatabaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */; };
@@ -171,7 +170,6 @@
 		AE519A5C22AD69F8002F3BA9 /* ShowPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPasswordViewController.swift; sourceTree = "<group>"; };
 		AE6E1DB122AE28A8001F99F9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		AE6E1DB522AE28B6001F99F9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		AE99222E2ECD54EC006546EE /* UITextField+PasswordAutofill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+PasswordAutofill.swift"; sourceTree = "<group>"; };
 		AE99EF4D22A9301200C6E13A /* SendEventScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendEventScrollView.swift; sourceTree = "<group>"; };
 		AE99EF4F22A95AA700C6E13A /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDatabaseViewController.swift; sourceTree = "<group>"; };
@@ -353,7 +351,6 @@
 		AE9C91F522AD3B59008C1629 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				AE99222E2ECD54EC006546EE /* UITextField+PasswordAutofill.swift */,
 				AE9C91F322AD3A26008C1629 /* KPKNode+Image.swift */,
 				AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */,
 				AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */,
@@ -760,7 +757,6 @@
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
 				AEC6F1A322A8EE15007662AD /* AppDelegate.swift in Sources */,
 				AE9C91E722AA8B5F008C1629 /* DatabaseViewController.swift in Sources */,
-				AE99222F2ECD54EC006546EE /* UITextField+PasswordAutofill.swift in Sources */,
 				AE9C91F422AD3A26008C1629 /* KPKNode+Image.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
