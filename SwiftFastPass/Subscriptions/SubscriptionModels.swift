@@ -3,14 +3,11 @@ import StoreKit
 
 enum SubscriptionTier: CaseIterable {
     case monthly
-    case annual
 
     var marketingName: String {
         switch self {
         case .monthly:
-            return NSLocalizedString("Monthly Plan", comment: "")
-        case .annual:
-            return NSLocalizedString("Annual Plan", comment: "")
+            return NSLocalizedString("FastPass Pro Monthly Plan", comment: "")
         }
     }
 
@@ -18,22 +15,17 @@ enum SubscriptionTier: CaseIterable {
         switch self {
         case .monthly:
             return 0
-        case .annual:
-            return 1
         }
     }
 }
 
 enum SubscriptionProductID: String, CaseIterable {
-    case premiumMonthly = "com.huchengzhen.swiftfastpass.plus.monthly"
-    case premiumAnnual = "com.huchengzhen.swiftfastpass.plus.annual"
+    case premiumMonthly = "com.huchengzhen.swiftfastpass.pro.monthly"
 
     var tier: SubscriptionTier {
         switch self {
         case .premiumMonthly:
             return .monthly
-        case .premiumAnnual:
-            return .annual
         }
     }
 }
@@ -64,9 +56,7 @@ struct SubscriptionProduct {
     var callToAction: String {
         switch identifier.tier {
         case .monthly:
-            return NSLocalizedString("Start Monthly", comment: "")
-        case .annual:
-            return NSLocalizedString("Start Annual", comment: "")
+            return NSLocalizedString("Unlock FastPass Pro", comment: "")
         }
     }
 }
@@ -76,43 +66,13 @@ struct SubscriptionFeature: Equatable {
     let detail: String
 
     static let `default`: [SubscriptionFeature] = [
-        SubscriptionFeature(title: NSLocalizedString("Unlimited AutoFill", comment: ""),
-                            detail: NSLocalizedString("Unlock the SwiftFastPass AutoFill extension on all of your devices.", comment: "")),
-        SubscriptionFeature(title: NSLocalizedString("Secure Sync", comment: ""),
-                            detail: NSLocalizedString("Keep entries in sync and backed up with your preferred storage provider.", comment: "")),
-        SubscriptionFeature(title: NSLocalizedString("Priority Support", comment: ""),
-                            detail: NSLocalizedString("Dedicated email support from the SwiftFastPass team.", comment: "")),
-        SubscriptionFeature(title: NSLocalizedString("Future Pro Features", comment: ""),
-                            detail: NSLocalizedString("New password insights, auditors, and automation as they ship.", comment: ""))
+        SubscriptionFeature(title: NSLocalizedString("AutoFill everywhere", comment: ""),
+                            detail: NSLocalizedString("One-tap fill-ins in Safari, apps, and the FastPass AutoFill extension.", comment: "")),
+        SubscriptionFeature(title: NSLocalizedString("Private cloud sync", comment: ""),
+                            detail: NSLocalizedString("Encrypted vaults stored in iCloud Drive so every change is backed up.", comment: "")),
+        SubscriptionFeature(title: NSLocalizedString("Unlimited vaults & devices", comment: ""),
+                            detail: NSLocalizedString("Create as many databases as you need across iPhone and iPad.", comment: "")),
+        SubscriptionFeature(title: NSLocalizedString("Priority support & roadmap", comment: ""),
+                            detail: NSLocalizedString("Get direct email help and early access to upcoming Pro tools.", comment: ""))
     ]
-}
-
-struct SubscriptionEntitlement: Codable, Equatable {
-    enum Status: String, Codable {
-        case unknown
-        case active
-        case gracePeriod
-        case expired
-    }
-
-    var status: Status
-    var expiresAt: Date?
-    var originalTransactionId: String?
-    var lastUpdated: Date
-
-    var isActive: Bool {
-        switch status {
-        case .active, .gracePeriod:
-            if let expiresAt = expiresAt {
-                return expiresAt > Date()
-            }
-            return true
-        case .unknown, .expired:
-            return false
-        }
-    }
-
-    static func empty() -> SubscriptionEntitlement {
-        SubscriptionEntitlement(status: .unknown, expiresAt: nil, originalTransactionId: nil, lastUpdated: Date.distantPast)
-    }
 }

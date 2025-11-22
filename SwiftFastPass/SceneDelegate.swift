@@ -37,33 +37,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
 
-        if setupICloudDocumentsDirectory() {
-            // iCloud 可用 → 正常显示 FilesViewController
-            let filesViewController = FilesViewController()
-            let navigationController = UINavigationController(rootViewController: filesViewController)
-            window.rootViewController = navigationController
-        } else {
-            // iCloud 不可用 → 显示提示界面
-            let viewController = UIViewController()
-            if #available(iOS 13.0, *) {
-                viewController.view.backgroundColor = UIColor.systemBackground
-            } else {
-                viewController.view.backgroundColor = UIColor.white
-            }
-            window.rootViewController = viewController
+        let filesViewController = FilesViewController()
+        let navigationController = UINavigationController(rootViewController: filesViewController)
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
 
-            // 用 alert 提示用户（确保在 root 设置好之后再 present）
+        if PremiumAccessController.shared.isPremiumUnlocked, !setupICloudDocumentsDirectory() {
             DispatchQueue.main.async {
                 let alertController = UIAlertController(
-                    title: NSLocalizedString("Please open iCloud in system settings", comment: ""),
-                    message: NSLocalizedString("This app does not work without iCloud", comment: ""),
+                    title: NSLocalizedString("Enable iCloud Drive", comment: ""),
+                    message: NSLocalizedString("FastPass Pro uses iCloud Drive for secure sync. Turn it on in Settings > Apple ID > iCloud to keep vaults backed up.", comment: ""),
                     preferredStyle: .alert
                 )
-                viewController.present(alertController, animated: true, completion: nil)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default))
+                navigationController.present(alertController, animated: true, completion: nil)
             }
         }
-
-        window.makeKeyAndVisible()
     }
 
     func sceneWillResignActive(_: UIScene) {

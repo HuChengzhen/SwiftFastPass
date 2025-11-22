@@ -17,11 +17,12 @@ protocol NewDatabaseDelegate: AnyObject {
 class NewDatabaseViewController: FormViewController {
     var keyFileContent: Data?
     weak var delegate: NewDatabaseDelegate?
+    private let premiumAccess = PremiumAccessController.shared
     private enum FormTag {
         static let securityLevel = "security_level_row"
         static let securityDescription = "security_level_detail_row"
     }
-    private var selectedSecurityLevel: File.SecurityLevel = .balanced
+    private var selectedSecurityLevel: File.SecurityLevel = PremiumAccessController.shared.isPremiumUnlocked ? .balanced : .paranoid
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,6 +112,12 @@ class NewDatabaseViewController: FormViewController {
         guard level != selectedSecurityLevel else {
             return
         }
+        if level != .paranoid,
+           !premiumAccess.enforce(feature: .advancedSecurity, presenter: self)
+        {
+            revertSecurityLevelSelection()
+            return
+        }
         if level.usesBiometrics {
             requestBiometricAuthorization(for: level)
         } else {
@@ -165,6 +172,7 @@ class NewDatabaseViewController: FormViewController {
     }
 
     func keyFileButtonTapped(cell: ButtonCellOf<String>, row: ButtonRow) {
+        guard premiumAccess.enforce(feature: .keyFile, presenter: self) else { return }
         if keyFileContent != nil {
             keyFileContent = nil
             row.title = NSLocalizedString("New Key File", comment: "")
@@ -191,11 +199,12 @@ class NewDatabaseViewController: FormViewController {
         view.endEditing(true)
 
         let tree = KPKTree(templateContents: ())
-        let targetDirURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents")
+        let targetDirURL = premiumAccess.documentsDirectoryURL()
         let name = (form.rowBy(tag: "name") as! TextRow).value!
         let fileName = name + ".kdbx"
         let fileURL = targetDirURL.appendingPathComponent(fileName)
         let password = (form.rowBy(tag: "password") as! TextRow).value!
+        let effectiveKeyFileContent = premiumAccess.isPremiumUnlocked ? keyFileContent : nil
 
         guard !FileManager.default.fileExists(atPath: fileURL.path) else {
             let alertController = UIAlertController(title: NSLocalizedString("The file with the same name already exists in the folder", comment: ""), message: NSLocalizedString("Please use a different file name", comment: ""), preferredStyle: .alert)
@@ -206,11 +215,11 @@ class NewDatabaseViewController: FormViewController {
             return
         }
 
-        if keyFileContent != nil {
+        if let keyData = effectiveKeyFileContent {
             let keyFileName = name + ".key"
             let keyFileURL = targetDirURL.appendingPathComponent(keyFileName)
             do {
-                try keyFileContent!.write(to: keyFileURL, options: .atomic)
+                try keyData.write(to: keyFileURL, options: .atomic)
             } catch {
                 print("NewDatabaseViewController.addButtonTapped error: \(error)")
                 sender.isEnabled = true
@@ -240,14 +249,14 @@ class NewDatabaseViewController: FormViewController {
                     let securityLevel = securityRow?.value ?? self.selectedSecurityLevel
                     let file = File(name: fileName,
                                     bookmark: bookmark,
-                                    requiresKeyFileContent: self.keyFileContent != nil,
+                                    requiresKeyFileContent: effectiveKeyFileContent != nil,
                                     securityLevel: securityLevel)
                     let shouldCacheCredentials = securityLevel.cachesCredentials
                     let storedPassword = shouldCacheCredentials ? password : nil
-                    let storedKeyFileContent = shouldCacheCredentials ? self.keyFileContent : nil
+                    let storedKeyFileContent = shouldCacheCredentials ? effectiveKeyFileContent : nil
                     file.attach(password: storedPassword,
                                 keyFileContent: storedKeyFileContent,
-                                requiresKeyFileContent: self.keyFileContent != nil,
+                                requiresKeyFileContent: effectiveKeyFileContent != nil,
                                 securityLevel: securityLevel)
                     file.image = document.tree?.root?.image()
 
@@ -258,30 +267,6 @@ class NewDatabaseViewController: FormViewController {
                 }
             }
             sender.isEnabled = true
-        }
-    }
-}
-
-private extension File.SecurityLevel {
-    var localizedTitle: String {
-        switch self {
-        case .paranoid:
-            return NSLocalizedString("Lockdown", comment: "Security level option")
-        case .balanced:
-            return NSLocalizedString("Balanced", comment: "Security level option")
-        case .convenience:
-            return NSLocalizedString("Quick Unlock", comment: "Security level option")
-        }
-    }
-
-    var localizedDescription: String {
-        switch self {
-        case .paranoid:
-            return NSLocalizedString("Every unlock requires the master password plus the key file. Nothing is cached and biometrics stay off.", comment: "Security level description")
-        case .balanced:
-            return NSLocalizedString("Enter the master password after a reboot or long break, but Face ID / Touch ID can reopen the vault for a short period. The key file selection is stored only on this device and is not uploaded or synced.", comment: "Security level description")
-        case .convenience:
-            return NSLocalizedString("Store a derived master key inside iOS Keychain so biometrics always unlock this database. If someone can unlock your device, they can open the vault too.", comment: "Security level description")
         }
     }
 }

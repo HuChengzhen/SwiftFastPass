@@ -93,7 +93,10 @@ final class AutoFillCredentialStore {
     }
 
     func credentials() -> [AutoFillCredentialSnapshot] {
-        queue.sync {
+        guard SubscriptionStatus.isPremiumUnlocked else {
+            return []
+        }
+        return queue.sync {
             loadSnapshots().sorted { sortPredicate(lhs: $0, rhs: $1) }
         }
     }
@@ -170,6 +173,17 @@ final class AutoFillCredentialStore {
     private func synchronizeCredentialIdentitiesIfPossible() {
         guard !isRunningInExtension else { return }
         guard #available(iOS 12.0, *) else { return }
+        guard SubscriptionStatus.isPremiumUnlocked else {
+            ASCredentialIdentityStore.shared.getState { state in
+                guard state.isEnabled else { return }
+                ASCredentialIdentityStore.shared.replaceCredentialIdentities(with: []) { _, error in
+                    if let error = error {
+                        NSLog("AutoFill identity sync error: \(error)")
+                    }
+                }
+            }
+            return
+        }
         let identities = credentials().compactMap(\.credentialIdentity)
         ASCredentialIdentityStore.shared.getState { state in
             guard state.isEnabled else { return }

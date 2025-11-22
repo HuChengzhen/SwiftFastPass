@@ -13,6 +13,9 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     private var allCredentials: [AutoFillCredentialSnapshot] = []
     private var filteredCredentials: [AutoFillCredentialSnapshot] = []
     private var currentServiceIdentifiers: [ASCredentialServiceIdentifier] = []
+    private var isPremiumUnlocked: Bool {
+        SubscriptionStatus.isPremiumUnlocked
+    }
 
     private let cellIdentifier = "CredentialCell"
 
@@ -64,6 +67,11 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     }
 
     override func provideCredentialWithoutUserInteraction(for credentialIdentity: ASPasswordCredentialIdentity) {
+        guard isPremiumUnlocked else {
+            let error = NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue)
+            extensionContext.cancelRequest(withError: error)
+            return
+        }
         guard let snapshot = snapshot(for: credentialIdentity.recordIdentifier) else {
             let error = NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.credentialIdentityNotFound.rawValue)
             extensionContext.cancelRequest(withError: error)
@@ -73,6 +81,10 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     }
 
     override func prepareInterfaceToProvideCredential(for credentialIdentity: ASPasswordCredentialIdentity) {
+        guard isPremiumUnlocked else {
+            updateEmptyState()
+            return
+        }
         if let snapshot = snapshot(for: credentialIdentity.recordIdentifier) {
             complete(with: snapshot)
         } else {
@@ -105,6 +117,15 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     }
 
     private func reloadCredentials(filtering serviceIdentifiers: [ASCredentialServiceIdentifier]? = nil) {
+        guard isPremiumUnlocked else {
+            allCredentials = []
+            filteredCredentials = []
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.updateEmptyState()
+            }
+            return
+        }
         allCredentials = AutoFillCredentialStore.shared.credentials()
         filteredCredentials = filter(credentials: allCredentials,
                                      serviceIdentifiers: serviceIdentifiers ?? currentServiceIdentifiers)
@@ -154,6 +175,12 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     }
 
     private func updateEmptyState() {
+        guard isPremiumUnlocked else {
+            tableView.isHidden = true
+            emptyStateLabel.isHidden = false
+            emptyStateLabel.text = NSLocalizedString("FastPass Pro subscription required to use AutoFill. Open the main app to upgrade.", comment: "")
+            return
+        }
         let hasContent = !filteredCredentials.isEmpty
         tableView.isHidden = !hasContent
         emptyStateLabel.isHidden = hasContent

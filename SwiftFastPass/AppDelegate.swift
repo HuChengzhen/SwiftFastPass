@@ -24,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         // 全局初始化写这里（日志、统计、KeePass 初始化之类的）
+        SubscriptionManager.shared.start()
         return true
     }
 

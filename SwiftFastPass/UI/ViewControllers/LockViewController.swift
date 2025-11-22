@@ -15,6 +15,7 @@ class LockViewController: FormViewController {
     var file: File!
 
     var keyFileContent: Data?
+    private let premiumAccess = PremiumAccessController.shared
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +24,7 @@ class LockViewController: FormViewController {
     }
 
     private func openDatabaseIfHasPassword() {
-        guard file.securityLevel.usesBiometrics else {
+        guard premiumAccess.isPremiumUnlocked, file.securityLevel.usesBiometrics else {
             return
         }
 
@@ -151,7 +152,9 @@ class LockViewController: FormViewController {
 
     private func setupUI() {
         navigationItem.title = file.name
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Open", comment: ""), style: .done, target: self, action: #selector(openButtonTapped(sender:)))
+        let editItem = UIBarButtonItem(title: NSLocalizedString("Edit", comment: ""), style: .plain, target: self, action: #selector(editButtonTapped))
+        let openItem = UIBarButtonItem(title: NSLocalizedString("Open", comment: ""), style: .done, target: self, action: #selector(openButtonTapped(sender:)))
+        navigationItem.rightBarButtonItems = [editItem, openItem]
         form +++ Section()
             <<< TextRow("password") { row in
                 row.title = NSLocalizedString("Password", comment: "")
@@ -175,7 +178,13 @@ class LockViewController: FormViewController {
         openDatabase(password: password, keyFileContent: keyFileContent, updateFile: true)
     }
 
+    @objc private func editButtonTapped() {
+        let settings = DatabaseSettingsViewController(file: file)
+        navigationController?.pushViewController(settings, animated: true)
+    }
+
     func keyFileButtonTapped(cell: ButtonCellOf<String>, row _: ButtonRow) {
+        guard premiumAccess.enforce(feature: .keyFile, presenter: self) else { return }
         if keyFileContent == nil {
             let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .import)
             documentPicker.delegate = self

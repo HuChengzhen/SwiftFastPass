@@ -140,6 +140,31 @@ final class File: NSObject, NSSecureCoding {
         }
     }
 
+    func updateSecurityLevel(_ level: SecurityLevel) {
+        guard securityLevel != level else {
+            return
+        }
+        let shouldCacheSecrets = level.cachesCredentials
+        var existingPassword = password
+        var existingKeyFile = keyFileContent
+
+        if shouldCacheSecrets,
+           (existingPassword == nil && existingKeyFile == nil),
+           securityLevel.cachesCredentials,
+           let secrets = FileSecretStore.credentials(for: self)
+        {
+            existingPassword = secrets.password
+            existingKeyFile = secrets.keyFileContent
+        }
+
+        let passwordToStore = shouldCacheSecrets ? existingPassword : nil
+        let keyFileToStore = shouldCacheSecrets ? existingKeyFile : nil
+        attach(password: passwordToStore,
+               keyFileContent: keyFileToStore,
+               requiresKeyFileContent: requiresKeyFileContent,
+               securityLevel: level)
+    }
+
     var hasCachedCredentials: Bool {
         if password != nil || keyFileContent != nil {
             return true
@@ -249,5 +274,29 @@ final class File: NSObject, NSSecureCoding {
             return decodedFiles
         }
         return (NSKeyedUnarchiver.unarchiveObject(withFile: archiveURL.path) as? [File]) ?? []
+    }
+}
+
+extension File.SecurityLevel {
+    var localizedTitle: String {
+        switch self {
+        case .paranoid:
+            return NSLocalizedString("Lockdown", comment: "Security level option")
+        case .balanced:
+            return NSLocalizedString("Balanced", comment: "Security level option")
+        case .convenience:
+            return NSLocalizedString("Quick Unlock", comment: "Security level option")
+        }
+    }
+
+    var localizedDescription: String {
+        switch self {
+        case .paranoid:
+            return NSLocalizedString("Every unlock requires the master password plus the key file. Nothing is cached and biometrics stay off.", comment: "Security level description")
+        case .balanced:
+            return NSLocalizedString("Enter the master password after a reboot or long break, but Face ID / Touch ID can reopen the vault for a short period. The key file selection is stored only on this device and is not uploaded or synced.", comment: "Security level description")
+        case .convenience:
+            return NSLocalizedString("Store a derived master key inside iOS Keychain so biometrics always unlock this database. If someone can unlock your device, they can open the vault too.", comment: "Security level description")
+        }
     }
 }

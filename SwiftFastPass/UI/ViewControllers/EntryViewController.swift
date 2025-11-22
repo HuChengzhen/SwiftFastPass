@@ -30,20 +30,31 @@ final class EntryViewController: FormViewController {
     private var entry: KPKEntry?
     private weak var delegate: EntryViewControllerDelegate?
     private var iconId: Int?
+    private var iconColorId: Int?
     private var isPasswordVisible = false
 
     private var sensitiveFieldMenuHandlers: [RowTag: SensitiveFieldMenuHandler] = [:]
 
+    // MARK: - Public API
+
     func configure(with entry: KPKEntry) {
         self.entry = entry
+        // 把已有图标信息同步到本地状态，方便初始化 UI
+        self.iconId = entry.iconId
+        self.iconColorId = entry.iconColorId
     }
 
     func attach(delegate: EntryViewControllerDelegate) {
         self.delegate = delegate
     }
 
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .clear
+
         configureNavigationBar()
         configureForm()
         if entry != nil {
@@ -51,40 +62,81 @@ final class EntryViewController: FormViewController {
         }
     }
 
+    // MARK: - Navigation Bar
+
     private func configureNavigationBar() {
         if let entry = entry {
             navigationItem.title = entry.title
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .edit,
+                target: self,
+                action: #selector(editButtonTapped)
+            )
         } else {
             navigationItem.title = NSLocalizedString("New Item", comment: "")
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .done,
+                target: self,
+                action: #selector(doneButtonTapped)
+            )
         }
     }
 
-    private func configureForm() {
-        // 通常习惯先重置一下 form（可选）
-//        form = Form()
+    // MARK: - Form
 
-        // MARK: - Section 1: 图标 & 标题
+    private func configureForm() {
+
+        // MARK: Section 1: 图标 & 标题
+
         form
             +++ Section()
-            <<< ImageRow(RowTag.icon.rawValue) { row in
+            <<< ImageRow(RowTag.icon.rawValue) { [weak self] row in
+                guard let self = self else { return }
                 row.title = NSLocalizedString("Icon", comment: "")
                 row.sourceTypes = []
-                row.value = entry?.image() ?? UIImage(named: "00_PasswordTemplate")
+
+                // 有老数据但没有颜色时，继续用原来的 PNG 图标
+                if let entry = self.entry, entry.iconColorId == 0 {
+                    row.value = entry.image()
+                } else if self.entry == nil {
+                    // 新建条目默认图标
+                    row.value = UIImage(named: "00_PasswordTemplate")
+                } else {
+                    // 其余情况（有颜色的 SF 图标）只用 accessoryView 来显示
+                    row.value = nil
+                }
             }
             .cellSetup { [weak self] cell, _ in
-                self?.configureIconCell(cell)
+                guard let self = self else { return }
+                cell.height = { 56 }
+
+                // 使用统一风格的圆角彩色图标
+                if #available(iOS 13.0, *) {
+                    if let iconId = self.iconId,
+                       let colorId = self.iconColorId,
+                       colorId != 0,
+                       Icons.sfSymbolNames.indices.contains(iconId),
+                       IconColors.palette.indices.contains(colorId) {
+
+                        let symbolName = Icons.sfSymbolNames[iconId]
+                        let tint = IconColors.palette[colorId]
+                        cell.accessoryView = self.makeIconAccessoryView(
+                            symbolName: symbolName,
+                            color: tint
+                        )
+                    }
+                }
             }
-            .onCellSelection { [weak self] _, row in
-                self?.imageRowSelected(row: row)
+            .onCellSelection { [weak self] cell, row in
+                self?.imageRowSelected(cell: cell, row: row)
             }
             <<< TextRow(RowTag.title.rawValue) { row in
                 row.title = NSLocalizedString("Title", comment: "")
                 row.value = entry?.title
             }
 
-            // MARK: - Section 2: 账号、URL、密码相关
+            // MARK: Section 2: 用户名、URL、密码
+
             +++ Section()
             <<< TextRow(RowTag.username.rawValue) { row in
                 row.title = NSLocalizedString("User Name", comment: "")
@@ -93,19 +145,17 @@ final class EntryViewController: FormViewController {
             .cellSetup { [weak self] cell, _ in
                 self?.registerSensitiveFieldInteractions(for: cell, tag: .username)
             }
+
             <<< URLRow(RowTag.url.rawValue) { row in
                 row.title = NSLocalizedString("URL", comment: "")
-
-                // ⚠ 如果 entry?.url 是 String，这里要转成 URL
                 if let urlString = entry?.url {
                     row.value = URL(string: urlString)
-                } else {
-                    row.value = nil
                 }
             }
             .cellSetup { [weak self] cell, _ in
                 self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
             }
+
             <<< TextRow(RowTag.password.rawValue) { row in
                 row.title = NSLocalizedString("Password", comment: "")
                 row.value = entry?.password
@@ -122,6 +172,7 @@ final class EntryViewController: FormViewController {
             .cellUpdate { [weak self] cell, _ in
                 self?.configurePasswordCell(cell)
             }
+
             <<< ButtonRow(RowTag.generatePassword.rawValue) { row in
                 row.title = NSLocalizedString("Generate Password", comment: "")
                 row.hidden = Condition(booleanLiteral: entry != nil)
@@ -130,7 +181,8 @@ final class EntryViewController: FormViewController {
                 self?.generatePasswordButtonTapped()
             }
 
-            // MARK: - Section 3: 备注
+            // MARK: Section 3: 备注
+
             +++ Section(NSLocalizedString("Notes", comment: ""))
             <<< TextAreaRow(RowTag.notes.rawValue) { row in
                 row.placeholder = NSLocalizedString("Notes", comment: "")
@@ -139,10 +191,47 @@ final class EntryViewController: FormViewController {
             }
     }
 
+    // MARK: - Icon Row Helpers
 
+    /// 统一的右侧圆角彩色图标视图
+    private func makeIconAccessoryView(symbolName: String, color: UIColor) -> UIView {
+        let size: CGFloat = 32
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
 
-    private func configureIconCell(_ cell: ImageCell) {
-        cell.accessoryView?.tintColor = UIColor.label
+        let bgView = UIView()
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        bgView.backgroundColor = color.withAlphaComponent(0.12)
+        bgView.layer.cornerRadius = size / 2
+        bgView.layer.masksToBounds = true
+
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = color
+
+        if #available(iOS 13.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+            imageView.image = UIImage(systemName: symbolName, withConfiguration: config)
+        } else {
+            imageView.image = UIImage(named: "00_PasswordTemplate")
+        }
+
+        container.addSubview(bgView)
+        bgView.addSubview(imageView)
+
+        NSLayoutConstraint.activate([
+            bgView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            bgView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            bgView.widthAnchor.constraint(equalToConstant: size),
+            bgView.heightAnchor.constraint(equalToConstant: size),
+
+            imageView.centerXAnchor.constraint(equalTo: bgView.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: 20),
+            imageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+
+        return container
     }
 
     private func configurePasswordCell(_ cell: TextCell) {
@@ -171,9 +260,13 @@ final class EntryViewController: FormViewController {
         button.tintColor = .secondaryLabel
         button.frame = CGRect(x: 0, y: 0, width: 36, height: 36)
         button.addTarget(self, action: #selector(passwordVisibilityButtonTapped), for: .touchUpInside)
-        button.accessibilityLabel = isPasswordVisible ? NSLocalizedString("Hide Password", comment: "") : NSLocalizedString("Show Password", comment: "")
+        button.accessibilityLabel = isPasswordVisible
+            ? NSLocalizedString("Hide Password", comment: "")
+            : NSLocalizedString("Show Password", comment: "")
         cell.textField.rightView = button
     }
+
+    // MARK: - Actions
 
     @objc
     private func editButtonTapped() {
@@ -216,6 +309,8 @@ final class EntryViewController: FormViewController {
         refreshPasswordVisibility()
     }
 
+    // MARK: - Save
+
     private func persistChanges() {
         let titleRow = form.rowBy(tag: RowTag.title.rawValue) as? TextRow
         let usernameRow = form.rowBy(tag: RowTag.username.rawValue) as? TextRow
@@ -235,8 +330,9 @@ final class EntryViewController: FormViewController {
             entry.password = password
             entry.url = url?.absoluteString
             entry.notes = notes
-            if let iconId = iconId {
+            if let iconId = iconId, let iconColorId = iconColorId {
                 entry.iconId = iconId
+                entry.iconColorId = iconColorId
             }
             delegate?.entryViewController(self, didEditEntry: entry)
             disableFormEditing()
@@ -250,13 +346,20 @@ final class EntryViewController: FormViewController {
             if let iconId = iconId {
                 newEntry.iconId = iconId
             }
+            if let iconColorId = iconColorId {
+                newEntry.iconColorId = iconColorId
+            }
             delegate?.entryViewController(self, didNewEntry: newEntry)
             navigationController?.popViewController(animated: true)
         }
     }
 
     private func enableFormEditing() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(doneButtonTapped)
+        )
         for row in form.allRows {
             row.disabled = Condition(booleanLiteral: false)
             row.evaluateDisabled()
@@ -265,7 +368,11 @@ final class EntryViewController: FormViewController {
     }
 
     private func disableFormEditing() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .edit,
+            target: self,
+            action: #selector(editButtonTapped)
+        )
         for row in form.allRows {
             row.disabled = Condition(booleanLiteral: true)
             row.evaluateDisabled()
@@ -282,14 +389,35 @@ final class EntryViewController: FormViewController {
         row.evaluateHidden()
     }
 
-    private func imageRowSelected(row: ImageRow) {
+    // MARK: - Icon row tap
+
+    private func imageRowSelected(cell: ImageCell, row: ImageRow) {
         guard !row.isDisabled else { return }
+
         let selectIconViewController = SelectIconViewController()
-        selectIconViewController.didSelectAction = { [weak self, weak row] _, iconId in
-            self?.iconId = iconId
-            row?.value = UIImage(named: Icons.iconNames[iconId])
-            row?.updateCell()
+        selectIconViewController.initialIconIndex = iconId ?? 0
+        selectIconViewController.initialColorIndex = iconColorId ?? 0
+
+        selectIconViewController.didSelectAction = { [weak self, weak cell] _, iconIndex, colorIndex in
+            guard let self = self, let cell = cell else { return }
+
+            self.iconId = iconIndex
+            self.iconColorId = colorIndex
+
+            if #available(iOS 13.0, *) {
+                let symbolName = Icons.sfSymbolNames[iconIndex]
+                let tint = IconColors.palette[colorIndex]
+                cell.accessoryView = self.makeIconAccessoryView(
+                    symbolName: symbolName,
+                    color: tint
+                )
+            }
+
+            // 不再需要旧的 image 缩略图
+            row.value = nil
+            row.updateCell()
         }
+
         navigationController?.pushViewController(selectIconViewController, animated: true)
     }
 
@@ -298,6 +426,8 @@ final class EntryViewController: FormViewController {
         viewController.delegate = self
         navigationController?.pushViewController(viewController, animated: true)
     }
+
+    // MARK: - Sensitive fields (复制 / 展示菜单)
 
     private func registerSensitiveFieldInteractions(for cell: UITableViewCell, tag: RowTag) {
         removeSensitiveInteractions(from: cell)
@@ -353,7 +483,10 @@ final class EntryViewController: FormViewController {
 
     private func copyToPasteboard(_ text: String) {
         let pasteboard = UIPasteboard.general
-        pasteboard.setItems([[UTType.plainText.identifier: text]], options: [.expirationDate: Date().addingTimeInterval(30)])
+        pasteboard.setItems(
+            [[UTType.plainText.identifier: text]],
+            options: [.expirationDate: Date().addingTimeInterval(30)]
+        )
     }
 
     private func presentSensitiveDetail(with value: String) {
@@ -362,8 +495,9 @@ final class EntryViewController: FormViewController {
         present(viewController, animated: true)
     }
 
-    private func menuElements(for tag: RowTag) -> [UIMenuElement]? {
-        guard shouldAllowSensitiveMenu(for: tag), let value = sensitiveValue(for: tag) else { return nil }
+    fileprivate func menuElements(for tag: RowTag) -> [UIMenuElement]? {
+        guard shouldAllowSensitiveMenu(for: tag),
+              let value = sensitiveValue(for: tag) else { return nil }
         let copyTitle = NSLocalizedString("Copy", comment: "")
         let displayTitle = NSLocalizedString("Display", comment: "")
 
@@ -377,6 +511,8 @@ final class EntryViewController: FormViewController {
     }
 }
 
+// MARK: - Password Generator
+
 extension EntryViewController: PasswordGenerateDelegat {
     func passwordGenerate(_: PasswordGenerateViewController, didGenerate password: String) {
         guard let row = form.rowBy(tag: RowTag.password.rawValue) as? TextRow else {
@@ -387,18 +523,22 @@ extension EntryViewController: PasswordGenerateDelegat {
     }
 }
 
-extension EntryViewController {
-     final class SensitiveFieldMenuHandler: NSObject {
-        weak var controller: EntryViewController?
-         let rowTag: RowTag
+// MARK: - SensitiveFieldMenuHandler
 
-         init(controller: EntryViewController, rowTag: RowTag) {
+extension EntryViewController {
+    final class SensitiveFieldMenuHandler: NSObject {
+        weak var controller: EntryViewController?
+        let rowTag: RowTag
+
+        init(controller: EntryViewController, rowTag: RowTag) {
             self.controller = controller
             self.rowTag = rowTag
         }
 
         private func makeMenu() -> UIMenu? {
-            guard let elements = controller?.menuElements(for: rowTag), !elements.isEmpty else {
+            guard let controller = controller,
+                  let elements = controller.menuElements(for: rowTag),
+                  !elements.isEmpty else {
                 return nil
             }
             return UIMenu(title: "", children: elements)
@@ -407,7 +547,10 @@ extension EntryViewController {
 }
 
 extension EntryViewController.SensitiveFieldMenuHandler: UIContextMenuInteractionDelegate {
-    func contextMenuInteraction(_: UIContextMenuInteraction, configurationForMenuAtLocation _: CGPoint) -> UIContextMenuConfiguration? {
+    func contextMenuInteraction(
+        _: UIContextMenuInteraction,
+        configurationForMenuAtLocation _: CGPoint
+    ) -> UIContextMenuConfiguration? {
         guard controller?.menuElements(for: rowTag) != nil else {
             return nil
         }
@@ -420,11 +563,26 @@ extension EntryViewController.SensitiveFieldMenuHandler: UIContextMenuInteractio
 
 @available(iOS 16.0, *)
 extension EntryViewController.SensitiveFieldMenuHandler: UIEditMenuInteractionDelegate {
-    func editMenuInteraction(_: UIEditMenuInteraction, menuFor _: UIEditMenuConfiguration, suggestedActions _: [UIMenuElement]) -> UIMenu? {
+    func editMenuInteraction(
+        _: UIEditMenuInteraction,
+        menuFor _: UIEditMenuConfiguration,
+        suggestedActions _: [UIMenuElement]
+    ) -> UIMenu? {
         makeMenu()
     }
 
-    func editMenuInteraction(_ interaction: UIEditMenuInteraction, targetRectFor _: UIEditMenuConfiguration) -> CGRect {
+    func editMenuInteraction(
+        _ interaction: UIEditMenuInteraction,
+        targetRectFor _: UIEditMenuConfiguration
+    ) -> CGRect {
         interaction.view?.bounds ?? .zero
+    }
+}
+
+// MARK: - 小工具：安全下标
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }
