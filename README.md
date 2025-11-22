@@ -67,3 +67,8 @@ xcodebuild test -workspace SwiftFastPass.xcworkspace \
 1. 简短说明与关联 issue。
 2. UI 改动时的模拟器截图。
 3. `xcodebuild test` 通过说明。
+
+## 许可证 License
+SwiftFastPass 采用 [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) 授权分发，与其依赖的 KeePassKit 保持一致。使用或分发本项目（包括二进制）即表示接受 GPLv3 的条款，任何衍生作品也必须使用相同许可证，并保留完整的版权与许可证声明。
+
+SwiftFastPass is distributed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) to remain compatible with its KeePassKit dependency. Using or redistributing the project (source or binary) implies acceptance of GPLv3, and derivative works must retain the full copyright and license notices under the same terms.
