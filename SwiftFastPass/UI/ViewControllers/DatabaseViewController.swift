@@ -20,6 +20,52 @@ class DatabaseViewController: UIViewController {
 
     /// 和其它页面统一的主色
     private let accentColor = UIColor(red: 0.25, green: 0.49, blue: 1.0, alpha: 1.0)
+    private let importLoadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.hidesWhenStopped = false
+        return indicator
+    }()
+    private lazy var importLoadingView: UIView = {
+        let overlay = UIView()
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        overlay.alpha = 0
+
+        let blurContainer = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
+        blurContainer.layer.cornerRadius = 16
+        blurContainer.clipsToBounds = true
+
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 12
+
+        importLoadingIndicator.color = accentColor
+
+        let label = UILabel()
+        label.text = NSLocalizedString("Importing Chrome passwords...", comment: "")
+        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.textColor = .label
+
+        stack.addArrangedSubview(importLoadingIndicator)
+        stack.addArrangedSubview(label)
+
+        blurContainer.contentView.addSubview(stack)
+        overlay.addSubview(blurContainer)
+
+        blurContainer.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.lessThanOrEqualToSuperview().multipliedBy(0.8)
+        }
+
+        stack.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(20)
+            make.bottom.equalToSuperview().offset(-20)
+            make.left.equalToSuperview().offset(24)
+            make.right.equalToSuperview().offset(-24)
+        }
+
+        return overlay
+    }()
 
     /// 空状态视图（卡片风格）
     private lazy var emptyStateView: UIView = {
@@ -142,6 +188,30 @@ class DatabaseViewController: UIViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
+    }
+
+    private func showImportLoading() {
+        if importLoadingView.superview == nil {
+            view.addSubview(importLoadingView)
+            importLoadingView.snp.makeConstraints { make in
+                make.edges.equalTo(view)
+            }
+        }
+        view.bringSubviewToFront(importLoadingView)
+        importLoadingIndicator.startAnimating()
+        UIView.animate(withDuration: 0.2) {
+            self.importLoadingView.alpha = 1
+        }
+    }
+
+    private func hideImportLoading() {
+        guard importLoadingView.superview != nil else { return }
+        UIView.animate(withDuration: 0.2, animations: {
+            self.importLoadingView.alpha = 0
+        }, completion: { _ in
+            self.importLoadingIndicator.stopAnimating()
+            self.importLoadingView.removeFromSuperview()
+        })
     }
 
     /// 根据当前数据是否为空，决定是否显示空状态
@@ -470,7 +540,7 @@ extension DatabaseViewController: EntryViewControllerDelegate {
         }
     }
 
-    fileprivate func saveDocument(onSuccess: (() -> Void)? = nil) {
+    fileprivate func saveDocument(onSuccess: (() -> Void)? = nil, onFailure: (() -> Void)? = nil) {
         document.save(to: document.fileURL, for: .forOverwriting) { success in
             DispatchQueue.main.async {
                 if success {
@@ -478,6 +548,7 @@ extension DatabaseViewController: EntryViewControllerDelegate {
                     self.updateEmptyStateIfNeeded()
                     onSuccess?()
                 } else {
+                    onFailure?()
                     let alertController = UIAlertController(
                         title: NSLocalizedString("Save Failed", comment: ""),
                         message: nil,
@@ -550,6 +621,7 @@ extension DatabaseViewController: UIDocumentPickerDelegate {
         }
 
         let fileName = url.deletingPathExtension().lastPathComponent
+        showImportLoading()
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             defer { url.stopAccessingSecurityScopedResource() }
             do {
@@ -561,6 +633,7 @@ extension DatabaseViewController: UIDocumentPickerDelegate {
                 }
             } catch {
                 DispatchQueue.main.async {
+                    self?.hideImportLoading()
                     self?.presentImportError(message: (error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
                 }
             }
@@ -588,10 +661,14 @@ extension DatabaseViewController: UIDocumentPickerDelegate {
         }
 
         containerGroup.add(to: group)
-        saveDocument { [weak self] in
+        saveDocument(onSuccess: { [weak self] in
+            guard let self else { return }
+            self.hideImportLoading()
             createdEntries.forEach { AutoFillCredentialStore.shared.upsertEntryIfPossible($0) }
-            self?.presentImportSuccess(imported: createdEntries.count, skipped: result.failedRowCount)
-        }
+            self.presentImportSuccess(imported: createdEntries.count, skipped: result.failedRowCount)
+        }, onFailure: { [weak self] in
+            self?.hideImportLoading()
+        })
     }
 
     private func presentImportError(message: String) {

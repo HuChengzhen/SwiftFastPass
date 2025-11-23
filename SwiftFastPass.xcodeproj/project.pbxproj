@@ -73,6 +73,7 @@
 		AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */; };
 		B3395316090F4337AF3FFDE5 /* SubscriptionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92BD791CB4745C68F8A843A /* SubscriptionStatus.swift */; };
 		CFE1B983032B4D838B20D7DF /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A73AB54334940AF9BC8D38E /* SubscriptionManager.swift */; };
+		AEF2AAA02F0D600100E7B1A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AEA1259022AE2C72003AD579 /* Localizable.strings */; };
 		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
 		DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */; };
 		E3506E41E3B74D8E93370BE7F5A78081 /* UpgradePromoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F309110A3841EC9911B52F57C274D0 /* UpgradePromoViewController.swift */; };
@@ -773,6 +774,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEF2AAA02F0D600100E7B1A2 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

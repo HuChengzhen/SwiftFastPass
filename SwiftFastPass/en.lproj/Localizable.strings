@@ -179,6 +179,7 @@
 "%@ per month • 1-month free trial • %@" = "%@ per month • 1-month free trial • %@";
 "A more secure experience" = "A more secure experience";
 "Import from Chrome (CSV)" = "Import from Chrome (CSV)";
+"Importing Chrome passwords..." = "Importing Chrome passwords...";
 "Unable to read the selected file." = "Unable to read the selected file.";
 "Imported from Chrome" = "Imported from Chrome";
 "Chrome import failed" = "Chrome import failed";
@@ -194,3 +195,8 @@
 "Bring your existing passwords by importing Chrome’s CSV export directly into a vault." = "Bring your existing passwords by importing Chrome’s CSV export directly into a vault.";
 "Export from Chrome and drop the CSV into any vault for a quick migration." = "Export from Chrome and drop the CSV into any vault for a quick migration.";
 "Importing passwords from CSV is a FastPass Pro feature." = "Importing passwords from CSV is a FastPass Pro feature.";
+"FastPass Pro subscription required to use AutoFill. Open the main app to upgrade." = "FastPass Pro subscription required to use AutoFill. Open the main app to upgrade.";
+"No passwords available.\nAdd entries in SwiftFastPass to use AutoFill." = "No passwords available.\nAdd entries in SwiftFastPass to use AutoFill.";
+"No saved passwords match this app or website." = "No saved passwords match this app or website.";
+"Passwords" = "Passwords";
+"Untitled Entry" = "Untitled Entry";
