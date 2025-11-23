@@ -89,7 +89,7 @@ final class UpgradePromoViewController: UIViewController {
         stackView.addArrangedSubview(label)
         
         // 关键：让顶部文字和 hero 拉开一点距离
-           stackView.setCustomSpacing(18, after: label)
+        stackView.setCustomSpacing(18, after: label)
     }
 
     // MARK: - Hero 区

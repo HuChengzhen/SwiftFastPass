@@ -419,8 +419,8 @@ extension FilesViewController: CardCollectionViewCellDelegate {
             if let indexPath = self.collectionView.indexPath(for: cell) {
                 let file = File.files[indexPath.row]
 
-                        // ⬇️ 先清掉这个数据库对应的 AutoFill 快照
-                        AutoFillCredentialStore.shared.removeCredentials(for: file)
+                // ⬇️ 先清掉这个数据库对应的 AutoFill 快照
+                AutoFillCredentialStore.shared.removeCredentials(for: file)
                 
                 File.files.remove(at: indexPath.row)
                 File.save()
