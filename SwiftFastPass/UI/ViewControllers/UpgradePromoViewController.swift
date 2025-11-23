@@ -199,6 +199,12 @@ final class UpgradePromoViewController: UIViewController {
         ))
 
         stack.addArrangedSubview(makeFeature(
+            icon: "square.and.arrow.down.on.square",
+            title: NSLocalizedString("Import passwords from Chrome CSV", comment: ""),
+            desc: NSLocalizedString("Export from Chrome and drop the CSV into any vault for a quick migration.", comment: "")
+        ))
+
+        stack.addArrangedSubview(makeFeature(
             icon: "sparkles.rectangle.stack",
             title: NSLocalizedString("Unlimited vaults", comment: ""),
             desc: NSLocalizedString("Create as many databases as you need with Pro unlocked.", comment: "")

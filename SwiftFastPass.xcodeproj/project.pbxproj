@@ -66,6 +66,7 @@
 		AEF200112F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */; };
 		AEF200122F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */; };
 		AEF200132F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */; };
+		AEF201C22F0D4D1A00E7B1B3 /* ChromeCSVImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF201C12F0D4D1A00E7B1B3 /* ChromeCSVImporter.swift */; };
 		AEFD3E962ECD0D1B000E8FCD /* BiometricsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */; };
 		AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */; };
 		AEFD3E9A2ECD1AEF000E8FCD /* UTType+KeePass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */; };
@@ -262,6 +263,7 @@
 		AEC6F1C422A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEF2000A2F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoFillCredentialStore.swift; sourceTree = "<group>"; };
 		AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AutoFillCredentialSnapshot+KeePass.swift"; sourceTree = "<group>"; };
+		AEF201C12F0D4D1A00E7B1B3 /* ChromeCSVImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromeCSVImporter.swift; sourceTree = "<group>"; };
 		AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsUtil.swift; sourceTree = "<group>"; };
 		AEFD3E972ECD1911000E8FCD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AEFD3E992ECD1AED000E8FCD /* UTType+KeePass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UTType+KeePass.swift"; sourceTree = "<group>"; };
@@ -453,6 +455,7 @@
 				AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */,
 				AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */,
 				AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */,
+				AEF201C12F0D4D1A00E7B1B3 /* ChromeCSVImporter.swift */,
 				2003C588F99042569BEE5E37E4DFE7BC /* OnboardingExperience.swift */,
 				1A70AB0050B846D3A61AA001778D6716 /* UpgradeExperience.swift */,
 			);
@@ -952,6 +955,7 @@
 				AE6C43EF2ED2C2E60082000D /* File+ResolvedURL.swift in Sources */,
 				AEF200132F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift in Sources */,
 				AEF200112F0D4D1A00E7B1A1 /* AutoFillCredentialStore.swift in Sources */,
+				AEF201C22F0D4D1A00E7B1B3 /* ChromeCSVImporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1225,14 +1229,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = SwiftFastPass/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Fast Pass";
+				INFOPLIST_KEY_CFBundleDisplayName = FastPass;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1257,14 +1261,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SwiftFastPass/SwiftFastPass.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = P8GHCFM7HB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = SwiftFastPass/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Fast Pass";
+				INFOPLIST_KEY_CFBundleDisplayName = FastPass;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -6,12 +6,16 @@
 import KeePassKit
 import SnapKit
 import UIKit
+import UniformTypeIdentifiers
 
 class DatabaseViewController: UIViewController {
     var document: Document!
     var group: KPKGroup!
 
     private var tableView: UITableView!
+    private let searchController = UISearchController(searchResultsController: nil)
+    private var filteredGroups: [KPKGroup] = []
+    private var filteredEntries: [KPKEntry] = []
 
     /// 和其它页面统一的主色
     private let accentColor = UIColor(red: 0.25, green: 0.49, blue: 1.0, alpha: 1.0)
@@ -80,6 +84,7 @@ class DatabaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupSearch()
         updateEmptyStateIfNeeded()
     }
 
@@ -128,15 +133,97 @@ class DatabaseViewController: UIViewController {
         tableView.addGestureRecognizer(longPressGesture)
     }
 
+    private func setupSearch() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = NSLocalizedString("Search groups and items", comment: "")
+        searchController.searchBar.autocapitalizationType = .none
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
+    }
 
     /// 根据当前数据是否为空，决定是否显示空状态
     private func updateEmptyStateIfNeeded() {
-        let isEmpty = group.groups.isEmpty && group.entries.isEmpty
-        if isEmpty {
-            tableView.backgroundView = emptyStateView
+        if isFiltering {
+            let isEmpty = filteredGroups.isEmpty && filteredEntries.isEmpty
+            if isEmpty {
+                let label = UILabel()
+                label.text = NSLocalizedString("No results", comment: "")
+                label.textAlignment = .center
+                label.textColor = .secondaryLabel
+                tableView.backgroundView = label
+            } else {
+                tableView.backgroundView = nil
+            }
         } else {
-            tableView.backgroundView = nil
+            let isEmpty = group.groups.isEmpty && group.entries.isEmpty
+            if isEmpty {
+                tableView.backgroundView = emptyStateView
+            } else {
+                tableView.backgroundView = nil
+            }
         }
+    }
+
+    private var isFiltering: Bool {
+        let text = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return searchController.isActive && !text.isEmpty
+    }
+
+    private func currentGroups() -> [KPKGroup] {
+        isFiltering ? filteredGroups : group.groups
+    }
+
+    private func currentEntries() -> [KPKEntry] {
+        isFiltering ? filteredEntries : group.entries
+    }
+
+    private func allGroups(in group: KPKGroup) -> [KPKGroup] {
+        let children = group.groups ?? []
+        var groups: [KPKGroup] = []
+        for child in children {
+            groups.append(child)
+            groups.append(contentsOf: allGroups(in: child))
+        }
+        return groups
+    }
+
+    private func allEntries(in group: KPKGroup) -> [KPKEntry] {
+        var entries: [KPKEntry] = group.entries ?? []
+        for child in group.groups ?? [] {
+            entries.append(contentsOf: allEntries(in: child))
+        }
+        return entries
+    }
+
+    private func matches(_ entry: KPKEntry, query: String) -> Bool {
+        let lower = query.lowercased()
+        func contains(_ value: String?) -> Bool {
+            guard let value else { return false }
+            return value.lowercased().contains(lower)
+        }
+        return contains(entry.title) ||
+            contains(entry.username) ||
+            contains(entry.url) ||
+            contains(entry.notes)
+    }
+
+    private func filterContent(for query: String) {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            filteredGroups = []
+            filteredEntries = []
+            tableView.reloadData()
+            updateEmptyStateIfNeeded()
+            return
+        }
+        let searchableGroups = allGroups(in: group)
+        filteredGroups = searchableGroups.filter { ($0.title ?? "").localizedCaseInsensitiveContains(trimmed) }
+        let searchableEntries = allEntries(in: group)
+        filteredEntries = searchableEntries.filter { matches($0, query: trimmed) }
+        tableView.reloadData()
+        updateEmptyStateIfNeeded()
     }
 
     // MARK: - Actions
@@ -212,6 +299,14 @@ class DatabaseViewController: UIViewController {
         }
         alertController.addAction(itemAction)
 
+        let importChromeAction = UIAlertAction(
+            title: NSLocalizedString("Import from Chrome (CSV)", comment: ""),
+            style: .default
+        ) { [weak self] _ in
+            self?.presentChromeCSVPicker()
+        }
+        alertController.addAction(importChromeAction)
+
         let cancelAction = UIAlertAction(
             title: NSLocalizedString("Cancel", comment: ""),
             style: .cancel,
@@ -242,8 +337,8 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         let rows: Int
         switch section {
-        case 0: rows = group.groups.count
-        case 1: rows = group.entries.count
+        case 0: rows = currentGroups().count
+        case 1: rows = currentEntries().count
         default: fatalError()
         }
 
@@ -265,9 +360,9 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
         let node: KPKNode
         switch indexPath.section {
         case 0:
-            node = group.groups[indexPath.row]
+            node = currentGroups()[indexPath.row]
         case 1:
-            node = group.entries[indexPath.row]
+            node = currentEntries()[indexPath.row]
         default:
             fatalError()
         }
@@ -281,11 +376,11 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
         case 0:
             let databaseViewController = DatabaseViewController()
             databaseViewController.document = document
-            databaseViewController.group = group.groups[indexPath.row]
+            databaseViewController.group = currentGroups()[indexPath.row]
             navigationController?.pushViewController(databaseViewController, animated: true)
         case 1:
             let entryViewController = EntryViewController()
-            entryViewController.configure(with: group.entries[indexPath.row])
+            entryViewController.configure(with: currentEntries()[indexPath.row])
             entryViewController.attach(delegate: self)
             navigationController?.pushViewController(entryViewController, animated: true)
         default:
@@ -316,11 +411,11 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
                 var autoFillUUIDs: [String] = []
                 switch indexPath.section {
                 case 0:
-                    let targetGroup = self.group.groups[indexPath.row]
+                    let targetGroup = self.currentGroups()[indexPath.row]
                     autoFillUUIDs = self.entryUUIDs(in: targetGroup)
                     targetGroup.remove()
                 case 1:
-                    let entry = self.group.entries[indexPath.row]
+                    let entry = self.currentEntries()[indexPath.row]
                     autoFillUUIDs = [entry.uuid.uuidString]
                     entry.remove()
                 default:
@@ -332,7 +427,7 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
                             AutoFillCredentialStore.shared.removeCredential(withUUID: $0)
                         }
                         DispatchQueue.main.async {
-                            tableView.deleteRows(at: [indexPath], with: .automatic)
+                            tableView.reloadData()
                             self.updateEmptyStateIfNeeded()
                             successHandler(true)
                         }
@@ -414,5 +509,114 @@ extension DatabaseViewController: AddGroupDelegate {
 
     func addGroup(_: AddGroupViewController, didEditGroup _: KPKGroup) {
         saveDocument()
+    }
+}
+
+// MARK: - Search
+
+extension DatabaseViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let text = searchController.searchBar.text ?? ""
+        filterContent(for: text)
+    }
+}
+
+// MARK: - Chrome CSV Import
+
+extension DatabaseViewController: UIDocumentPickerDelegate {
+    private func presentChromeCSVPicker() {
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [
+            .commaSeparatedText,
+            .plainText
+        ])
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+        importChromeCSV(from: url)
+    }
+
+    private func importChromeCSV(from url: URL) {
+        guard url.startAccessingSecurityScopedResource() else {
+            presentImportError(message: NSLocalizedString("Unable to read the selected file.", comment: ""))
+            return
+        }
+
+        let fileName = url.deletingPathExtension().lastPathComponent
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            defer { url.stopAccessingSecurityScopedResource() }
+            do {
+                let data = try Data(contentsOf: url)
+                let importer = ChromeCSVImporter()
+                let result = try importer.parse(data: data)
+                DispatchQueue.main.async {
+                    self?.applyImportedEntries(result, sourceName: fileName)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self?.presentImportError(message: (error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func applyImportedEntries(_ result: ChromeCSVImportResult, sourceName: String) {
+        let containerGroup = KPKGroup()
+        containerGroup.title = NSLocalizedString("Imported from Chrome", comment: "")
+
+        var createdEntries: [KPKEntry] = []
+        for item in result.entries {
+            let entry = KPKEntry()
+            if !item.name.isEmpty {
+                entry.title = item.name
+            } else {
+                entry.title = sourceName
+            }
+            entry.username = item.username
+            entry.password = item.password
+            entry.url = item.url
+            entry.notes = item.note
+            entry.add(to: containerGroup)
+            createdEntries.append(entry)
+        }
+
+        containerGroup.add(to: group)
+        saveDocument { [weak self] in
+            createdEntries.forEach { AutoFillCredentialStore.shared.upsertEntryIfPossible($0) }
+            self?.presentImportSuccess(imported: createdEntries.count, skipped: result.failedRowCount)
+        }
+    }
+
+    private func presentImportError(message: String) {
+        let alert = UIAlertController(
+            title: NSLocalizedString("Chrome import failed", comment: ""),
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default))
+        present(alert, animated: true)
+    }
+
+    private func presentImportSuccess(imported: Int, skipped: Int) {
+        let message: String
+        if skipped > 0 {
+            message = String(
+                format: NSLocalizedString("Imported %d items. %d rows were skipped.", comment: ""),
+                imported,
+                skipped
+            )
+        } else {
+            message = String(format: NSLocalizedString("Imported %d items from Chrome.", comment: ""), imported)
+        }
+
+        let alert = UIAlertController(
+            title: NSLocalizedString("Import Complete", comment: ""),
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default))
+        present(alert, animated: true)
     }
 }

@@ -72,6 +72,8 @@ struct SubscriptionFeature: Equatable {
                             detail: NSLocalizedString("Encrypted vaults stored in iCloud Drive so every change is backed up.", comment: "")),
         SubscriptionFeature(title: NSLocalizedString("Unlimited vaults & devices", comment: ""),
                             detail: NSLocalizedString("Create as many databases as you need across iPhone and iPad.", comment: "")),
+        SubscriptionFeature(title: NSLocalizedString("Import passwords from Chrome CSV", comment: ""),
+                            detail: NSLocalizedString("Bring your existing passwords by importing Chrome’s CSV export directly into a vault.", comment: "")),
         SubscriptionFeature(title: NSLocalizedString("Priority support & roadmap", comment: ""),
                             detail: NSLocalizedString("Get direct email help and early access to upcoming Pro tools.", comment: ""))
     ]
