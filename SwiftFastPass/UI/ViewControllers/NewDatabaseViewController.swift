@@ -163,31 +163,31 @@ class NewDatabaseViewController: FormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // ❗️让 NavigationBar 透明（否则背景会挡住横杠）
-            navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            navigationController?.navigationBar.shadowImage = UIImage()
-            navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
 
-            // ❗️隐藏默认标题
-            navigationItem.title = ""
+        // ❗️隐藏默认标题
+        navigationItem.title = ""
 
-            // 添加 grabber 作为 titleView
-            let grabber = UIView()
-            grabber.translatesAutoresizingMaskIntoConstraints = false
-            grabber.backgroundColor = UIColor.label.withAlphaComponent(0.15)
-            grabber.layer.cornerRadius = 3
-            grabber.layer.cornerCurve = .continuous
+        // 添加 grabber 作为 titleView
+        let grabber = UIView()
+        grabber.translatesAutoresizingMaskIntoConstraints = false
+        grabber.backgroundColor = UIColor.label.withAlphaComponent(0.15)
+        grabber.layer.cornerRadius = 3
+        grabber.layer.cornerCurve = .continuous
 
-            let grabberContainer = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 24))
-            grabberContainer.addSubview(grabber)
+        let grabberContainer = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 24))
+        grabberContainer.addSubview(grabber)
 
-            NSLayoutConstraint.activate([
-                grabber.widthAnchor.constraint(equalToConstant: 36),
-                grabber.heightAnchor.constraint(equalToConstant: 6),
-                grabber.centerXAnchor.constraint(equalTo: grabberContainer.centerXAnchor),
-                grabber.centerYAnchor.constraint(equalTo: grabberContainer.centerYAnchor, constant: 4)
-            ])
+        NSLayoutConstraint.activate([
+            grabber.widthAnchor.constraint(equalToConstant: 36),
+            grabber.heightAnchor.constraint(equalToConstant: 6),
+            grabber.centerXAnchor.constraint(equalTo: grabberContainer.centerXAnchor),
+            grabber.centerYAnchor.constraint(equalTo: grabberContainer.centerYAnchor, constant: 4)
+        ])
 
-            navigationItem.titleView = grabberContainer
+        navigationItem.titleView = grabberContainer
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                            target: self,
@@ -221,103 +221,103 @@ class NewDatabaseViewController: FormViewController {
 
     private func buildForm() {
         form +++ Section()
-        <<< TextRow("name") { row in
-            row.title = NSLocalizedString("Name", comment: "")
-            row.placeholder = NSLocalizedString("Enter name here", comment: "")
-            row.add(rule: RuleRequired())
-            row.validationOptions = .validatesOnChange
-        }
-        .cellSetup { cell, _ in
-            self.styleTextRowCell(cell, position: .single)
-        }
-        .onChange { [weak self] _ in
-            self?.validateInputUpdateAddButtonState()
-        }
-        .cellUpdate { cell, row in
-            if !row.isValid {
-                cell.textLabel?.textColor = .systemRed
-                cell.textField.textColor = .systemRed
-            } else {
-                cell.textLabel?.textColor = .secondaryLabel
-                cell.textField.textColor = .label
+            <<< TextRow("name") { row in
+                row.title = NSLocalizedString("Name", comment: "")
+                row.placeholder = NSLocalizedString("Enter name here", comment: "")
+                row.add(rule: RuleRequired())
+                row.validationOptions = .validatesOnChange
             }
-        }
+            .cellSetup { cell, _ in
+                self.styleTextRowCell(cell, position: .single)
+            }
+            .onChange { [weak self] _ in
+                self?.validateInputUpdateAddButtonState()
+            }
+            .cellUpdate { cell, row in
+                if !row.isValid {
+                    cell.textLabel?.textColor = .systemRed
+                    cell.textField.textColor = .systemRed
+                } else {
+                    cell.textLabel?.textColor = .secondaryLabel
+                    cell.textField.textColor = .label
+                }
+            }
 
 
             +++ Section()
-        <<< TextRow("password") { row in
-            row.title = NSLocalizedString("Password", comment: "")
-            row.placeholder = NSLocalizedString("Enter password here", comment: "")
-            row.add(rule: RuleRequired())
-            row.validationOptions = .validatesOnChange
-        }
-        .cellSetup { cell, _ in
-            self.styleTextRowCell(cell, position: .top)
-            cell.textField.isSecureTextEntry = true
-            if #available(iOS 12.0, *) {
-                cell.textField.textContentType = .oneTimeCode // prevent iOS from suggesting saving this password
-            } else {
-                cell.textField.textContentType = nil
+            <<< TextRow("password") { row in
+                row.title = NSLocalizedString("Password", comment: "")
+                row.placeholder = NSLocalizedString("Enter password here", comment: "")
+                row.add(rule: RuleRequired())
+                row.validationOptions = .validatesOnChange
             }
-        }
-        .onChange { [weak self] _ in
-            self?.validateInputUpdateAddButtonState()
-        }
-        .cellUpdate { cell, row in
-            if !row.isValid {
-                cell.textLabel?.textColor = .systemRed
-                cell.textField.textColor = .systemRed
-            } else {
-                cell.textLabel?.textColor = .secondaryLabel
-                cell.textField.textColor = .label
-            }
-        }
-
-
-        <<< TextRow("confirmPassword") { [weak self] row in
-            row.title = NSLocalizedString("Confirm password", comment: "")
-            row.placeholder = NSLocalizedString("Confirm password here", comment: "")
-            // 1. 必填
-            row.add(rule: RuleRequired())
-            // 2. 和 password 一致校验
-            row.add(rule: RuleClosure { [weak self] value -> ValidationError? in
-                guard let self = self else { return nil }
-
-                let passwordRow: TextRow? = self.form.rowBy(tag: "password")
-                let password = passwordRow?.value ?? ""
-                let confirm = value ?? ""
-
-                // 只有在两个都不为空时才做比较，避免一开始就报错
-                if !password.isEmpty, !confirm.isEmpty, password != confirm {
-                    return ValidationError(msg: NSLocalizedString("Passwords are different.", comment: ""))
+            .cellSetup { cell, _ in
+                self.styleTextRowCell(cell, position: .top)
+                cell.textField.isSecureTextEntry = true
+                if #available(iOS 12.0, *) {
+                    cell.textField.textContentType = .oneTimeCode // prevent iOS from suggesting saving this password
+                } else {
+                    cell.textField.textContentType = nil
                 }
-                return nil
-            })
+            }
+            .onChange { [weak self] _ in
+                self?.validateInputUpdateAddButtonState()
+            }
+            .cellUpdate { cell, row in
+                if !row.isValid {
+                    cell.textLabel?.textColor = .systemRed
+                    cell.textField.textColor = .systemRed
+                } else {
+                    cell.textLabel?.textColor = .secondaryLabel
+                    cell.textField.textColor = .label
+                }
+            }
 
-            row.validationOptions = .validatesOnChange
-        }
-        .cellSetup { cell, _ in
-            self.styleTextRowCell(cell, position: .bottom)
-            cell.textField.isSecureTextEntry = true
-            if #available(iOS 12.0, *) {
-                cell.textField.textContentType = .oneTimeCode
-            } else {
-                cell.textField.textContentType = nil
+
+            <<< TextRow("confirmPassword") { [weak self] row in
+                row.title = NSLocalizedString("Confirm password", comment: "")
+                row.placeholder = NSLocalizedString("Confirm password here", comment: "")
+                // 1. 必填
+                row.add(rule: RuleRequired())
+                // 2. 和 password 一致校验
+                row.add(rule: RuleClosure { [weak self] value -> ValidationError? in
+                    guard let self = self else { return nil }
+
+                    let passwordRow: TextRow? = self.form.rowBy(tag: "password")
+                    let password = passwordRow?.value ?? ""
+                    let confirm = value ?? ""
+
+                    // 只有在两个都不为空时才做比较，避免一开始就报错
+                    if !password.isEmpty, !confirm.isEmpty, password != confirm {
+                        return ValidationError(msg: NSLocalizedString("Passwords are different.", comment: ""))
+                    }
+                    return nil
+                })
+
+                row.validationOptions = .validatesOnChange
             }
-        }
-        .onChange { [weak self] _ in
-            self?.validateInputUpdateAddButtonState()
-        }
-        .cellUpdate { cell, row in
-            // 根据校验结果切换文字颜色
-            if !row.isValid {
-                cell.textLabel?.textColor = .systemRed
-                cell.textField.textColor = .systemRed
-            } else {
-                cell.textLabel?.textColor = .secondaryLabel
-                cell.textField.textColor = .label
+            .cellSetup { cell, _ in
+                self.styleTextRowCell(cell, position: .bottom)
+                cell.textField.isSecureTextEntry = true
+                if #available(iOS 12.0, *) {
+                    cell.textField.textContentType = .oneTimeCode
+                } else {
+                    cell.textField.textContentType = nil
+                }
             }
-        }
+            .onChange { [weak self] _ in
+                self?.validateInputUpdateAddButtonState()
+            }
+            .cellUpdate { cell, row in
+                // 根据校验结果切换文字颜色
+                if !row.isValid {
+                    cell.textLabel?.textColor = .systemRed
+                    cell.textField.textColor = .systemRed
+                } else {
+                    cell.textLabel?.textColor = .secondaryLabel
+                    cell.textField.textColor = .label
+                }
+            }
 
 
 
@@ -375,13 +375,13 @@ class NewDatabaseViewController: FormViewController {
                 cell.clipsToBounds = true
                 
                 // ⬇️ 新增：左右内边距 + 让 segmented 贴着内边距
-                    cell.preservesSuperviewLayoutMargins = false
-                    cell.segmentedControl.translatesAutoresizingMaskIntoConstraints = false
-                    NSLayoutConstraint.activate([
-                        cell.segmentedControl.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 24),
-                        cell.segmentedControl.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -24),
-                        cell.segmentedControl.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
-                    ])
+                cell.preservesSuperviewLayoutMargins = false
+                cell.segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    cell.segmentedControl.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 24),
+                    cell.segmentedControl.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -24),
+                    cell.segmentedControl.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+                ])
             }
             .onChange { [weak self] row in
                 guard let level = row.value else { return }
@@ -560,25 +560,25 @@ class NewDatabaseViewController: FormViewController {
         cell.layer.addSublayer(borderLayer)
 
         // ⬇️⬇️ 在这里加入场动画（每个 indexPath 只执行一次）
-            if !animatedIndexPaths.contains(indexPath) {
-                animatedIndexPaths.insert(indexPath)
+        if !animatedIndexPaths.contains(indexPath) {
+            animatedIndexPaths.insert(indexPath)
 
-                cell.alpha = 0
-                cell.transform = CGAffineTransform(translationX: 0, y: 18)
+            cell.alpha = 0
+            cell.transform = CGAffineTransform(translationX: 0, y: 18)
 
-                UIView.animate(
-                    withDuration: 0.42,
-                    delay: 0.03 * Double(indexPath.row),   // 轻微错位，列表有“级联感”
-                    usingSpringWithDamping: 0.82,
-                    initialSpringVelocity: 0.6,
-                    options: [.curveEaseOut],
-                    animations: {
-                        cell.alpha = 1
-                        cell.transform = .identity
-                    },
-                    completion: nil
-                )
-            }
+            UIView.animate(
+                withDuration: 0.42,
+                delay: 0.03 * Double(indexPath.row),   // 轻微错位，列表有“级联感”
+                usingSpringWithDamping: 0.82,
+                initialSpringVelocity: 0.6,
+                options: [.curveEaseOut],
+                animations: {
+                    cell.alpha = 1
+                    cell.transform = .identity
+                },
+                completion: nil
+            )
+        }
     }
 
 
@@ -681,12 +681,12 @@ class NewDatabaseViewController: FormViewController {
 
         UIView.animate(withDuration: 0.12,
                        animations: {
-            cell.contentView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
-        }, completion: { _ in
-            UIView.animate(withDuration: 0.18) {
-                cell.contentView.transform = .identity
-            }
-        })
+                           cell.contentView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+                       }, completion: { _ in
+                           UIView.animate(withDuration: 0.18) {
+                               cell.contentView.transform = .identity
+                           }
+                       })
     }
 
     // MARK: - Validation & buttons
@@ -833,6 +833,7 @@ private enum DefaultGroupIconRewriter {
         if let symbolName = replacements[Int(group.iconId)],
            let index = Icons.sfSymbolNames.firstIndex(of: symbolName) {
             group.iconId = index
+            group.iconColorId = IconColors.normalizedIndex(1)
         }
 
         group.groups.forEach { update(group: $0) }

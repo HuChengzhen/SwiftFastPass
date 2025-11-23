@@ -256,31 +256,31 @@ final class PasswordGenerateViewController: FormViewController {
         // MARK: Section 2: Length Slider
 
         form +++ Section()
-        <<< SliderRow("length") { row in
-            row.title = NSLocalizedString("Length", comment: "")
-            row.value = 16
-            row.steps = 119
-            row.displayValueFor = { value in
-                String(Int(value ?? 0))
+            <<< SliderRow("length") { row in
+                row.title = NSLocalizedString("Length", comment: "")
+                row.value = 16
+                row.steps = 119
+                row.displayValueFor = { value in
+                    String(Int(value ?? 0))
+                }
             }
-        }
-        .cellSetup { [weak self] cell, _ in
-            cell.slider.minimumValue = Float(self!.minimumPasswordLength)
-            cell.slider.maximumValue = 120
-            cell.slider.tintColor = self?.accentColor
-            cell.textLabel?.font = .systemFont(ofSize: 14, weight: .medium)
-        }
-        .onChange { [weak self] row in
-            guard let self = self else { return }
-
-            // ---- 最小长度限制 ----
-            if let v = row.value, Int(v) < minimumPasswordLength {
-                row.value = Cell<Float>.Value(minimumPasswordLength)
-                row.updateCell()
+            .cellSetup { [weak self] cell, _ in
+                cell.slider.minimumValue = Float(self!.minimumPasswordLength)
+                cell.slider.maximumValue = 120
+                cell.slider.tintColor = self?.accentColor
+                cell.textLabel?.font = .systemFont(ofSize: 14, weight: .medium)
             }
+            .onChange { [weak self] row in
+                guard let self = self else { return }
 
-            self.updatePassword(animated: true)
-        }
+                // ---- 最小长度限制 ----
+                if let v = row.value, Int(v) < minimumPasswordLength {
+                    row.value = Cell<Float>.Value(minimumPasswordLength)
+                    row.updateCell()
+                }
+
+                self.updatePassword(animated: true)
+            }
 
     }
 

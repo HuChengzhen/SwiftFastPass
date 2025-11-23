@@ -121,12 +121,12 @@ final class EntryViewController: FormViewController {
 
         // ========== Section 1: 基本信息（图标 + 标题） ==========
         form +++ Section()
-        <<< IconRow(RowTag.icon.rawValue) { [weak self] row in
-            row.value = self?.currentIconPreviewImage()
-        }
-        .onCellSelection { [weak self] cell, row in
-            self?.iconRowTapped(row: row)
-        }
+            <<< IconRow(RowTag.icon.rawValue) { [weak self] row in
+                row.value = self?.currentIconPreviewImage()
+            }
+            .onCellSelection { [weak self] cell, row in
+                self?.iconRowTapped(row: row)
+            }
 
 
 
@@ -134,11 +134,11 @@ final class EntryViewController: FormViewController {
 
 
 
-        <<< TextRow(RowTag.title.rawValue) { row in
-            row.title = NSLocalizedString("Title", comment: "")
-            row.value = entry?.title
-            row.placeholder = NSLocalizedString("Title", comment: "")
-        }
+            <<< TextRow(RowTag.title.rawValue) { row in
+                row.title = NSLocalizedString("Title", comment: "")
+                row.value = entry?.title
+                row.placeholder = NSLocalizedString("Title", comment: "")
+            }
 
         // ========== Section 2: 账号 / URL / 密码 ==========
 
@@ -146,80 +146,80 @@ final class EntryViewController: FormViewController {
         // 用户名
         let primarySection = Section()
         form +++ primarySection
-        <<< TextRow(RowTag.username.rawValue) { row in
-            row.title = NSLocalizedString("User Name", comment: "")
-            row.value = entry?.username
-            row.placeholder = NSLocalizedString("User Name", comment: "")
-        }
-        .cellSetup { [weak self] cell, _ in
-            self?.registerSensitiveFieldInteractions(for: cell, tag: .username)
-            self?.applyFieldVisualStyle(.username, to: cell)
-        }
-        .cellUpdate { [weak self] cell, _ in
-            self?.applyFieldVisualStyle(.username, to: cell)
-        }
-
-        // URL
-        <<< URLRow(RowTag.url.rawValue) { row in
-            row.title = NSLocalizedString("URL", comment: "")
-            if let urlString = entry?.url {
-                row.value = URL(string: urlString)
+            <<< TextRow(RowTag.username.rawValue) { row in
+                row.title = NSLocalizedString("User Name", comment: "")
+                row.value = entry?.username
+                row.placeholder = NSLocalizedString("User Name", comment: "")
             }
-            row.placeholder = "https://example.com"
-        }
-        .cellSetup { [weak self] cell, _ in
-            self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
-            if let textCell = cell as? TextCell {
-                self?.applyFieldVisualStyle(.url, to: textCell)
+            .cellSetup { [weak self] cell, _ in
+                self?.registerSensitiveFieldInteractions(for: cell, tag: .username)
+                self?.applyFieldVisualStyle(.username, to: cell)
             }
-        }
-        .cellUpdate { [weak self] cell, _ in
-            if let textCell = cell as? TextCell {
-                self?.applyFieldVisualStyle(.url, to: textCell)
+            .cellUpdate { [weak self] cell, _ in
+                self?.applyFieldVisualStyle(.username, to: cell)
             }
-        }
 
-
-
-
-        <<< TextRow(RowTag.password.rawValue) { row in
-            row.title = NSLocalizedString("Password", comment: "")
-            row.value = entry?.password
-            row.placeholder = NSLocalizedString("Password", comment: "")
-        }
-        .cellSetup { [weak self] cell, _ in
-            self?.registerSensitiveFieldInteractions(for: cell, tag: .password)
-            if #available(iOS 12.0, *) {
-                cell.textField.textContentType = .oneTimeCode
-            } else {
-                cell.textField.textContentType = nil
+            // URL
+            <<< URLRow(RowTag.url.rawValue) { row in
+                row.title = NSLocalizedString("URL", comment: "")
+                if let urlString = entry?.url {
+                    row.value = URL(string: urlString)
+                }
+                row.placeholder = "https://example.com"
             }
-            self?.configurePasswordCell(cell)
-        }
-        .cellUpdate { [weak self] cell, _ in
-            self?.configurePasswordCell(cell)
-        }
+            .cellSetup { [weak self] cell, _ in
+                self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
+                if let textCell = cell as? TextCell {
+                    self?.applyFieldVisualStyle(.url, to: textCell)
+                }
+            }
+            .cellUpdate { [weak self] cell, _ in
+                if let textCell = cell as? TextCell {
+                    self?.applyFieldVisualStyle(.url, to: textCell)
+                }
+            }
 
-        <<< ButtonRow(RowTag.generatePassword.rawValue) { row in
-            row.title = NSLocalizedString("Generate Password", comment: "")
-            row.hidden = Condition(booleanLiteral: entry != nil)
-        }
-        .cellSetup { cell, _ in
-            cell.textLabel?.textAlignment = .center
-            cell.textLabel?.textColor = .systemBlue
-        }
-        .onCellSelection { [weak self] _, _ in
-            self?.generatePasswordButtonTapped()
-        }
+
+
+
+            <<< TextRow(RowTag.password.rawValue) { row in
+                row.title = NSLocalizedString("Password", comment: "")
+                row.value = entry?.password
+                row.placeholder = NSLocalizedString("Password", comment: "")
+            }
+            .cellSetup { [weak self] cell, _ in
+                self?.registerSensitiveFieldInteractions(for: cell, tag: .password)
+                if #available(iOS 12.0, *) {
+                    cell.textField.textContentType = .oneTimeCode
+                } else {
+                    cell.textField.textContentType = nil
+                }
+                self?.configurePasswordCell(cell)
+            }
+            .cellUpdate { [weak self] cell, _ in
+                self?.configurePasswordCell(cell)
+            }
+
+            <<< ButtonRow(RowTag.generatePassword.rawValue) { row in
+                row.title = NSLocalizedString("Generate Password", comment: "")
+                row.hidden = Condition(booleanLiteral: entry != nil)
+            }
+            .cellSetup { cell, _ in
+                cell.textLabel?.textAlignment = .center
+                cell.textLabel?.textColor = .systemBlue
+            }
+            .onCellSelection { [weak self] _, _ in
+                self?.generatePasswordButtonTapped()
+            }
 
         // ========== Section 3: 备注 ==========
 
         form +++ Section(NSLocalizedString("Notes", comment: ""))
-        <<< TextAreaRow(RowTag.notes.rawValue) { row in
-            row.placeholder = NSLocalizedString("Notes", comment: "")
-            row.value = entry?.notes
-            row.textAreaHeight = .dynamic(initialTextViewHeight: 80)
-        }
+            <<< TextAreaRow(RowTag.notes.rawValue) { row in
+                row.placeholder = NSLocalizedString("Notes", comment: "")
+                row.value = entry?.notes
+                row.textAreaHeight = .dynamic(initialTextViewHeight: 80)
+            }
     }
     private func configureIconRow(row: LabelRow, cell: LabelCell) {
         // 关键：把左边默认的 imageView 清掉
@@ -533,7 +533,7 @@ final class EntryViewController: FormViewController {
 
         // ⭐️ 这里加高亮 & 等宽字体
         // ⭐️ 统一用视觉样式
-applyFieldVisualStyle(.password, to: cell)
+        applyFieldVisualStyle(.password, to: cell)
 
         if row.isDisabled {
             cell.textField.rightView = nil
@@ -607,7 +607,13 @@ applyFieldVisualStyle(.password, to: cell)
         let notesRow = form.rowBy(tag: RowTag.notes.rawValue) as? TextAreaRow
 
         let resolvedIconId = iconId ?? DefaultIcon.id
-        let resolvedIconColorId = IconColors.normalizedIndex(iconColorId)
+        // 老条目保持 0 以继续使用 KeePass 图标；新条目默认配色
+        let resolvedIconColorId: Int
+        if entry != nil, (iconColorId == nil || iconColorId == 0) {
+            resolvedIconColorId = 0
+        } else {
+            resolvedIconColorId = IconColors.normalizedIndex(iconColorId)
+        }
 
         let title = titleRow?.value
         let username = usernameRow?.value

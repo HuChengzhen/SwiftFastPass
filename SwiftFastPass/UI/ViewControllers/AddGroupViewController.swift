@@ -114,6 +114,17 @@ class AddGroupViewController: FormViewController {
     // MARK: - 自定义右侧图标视图（完全居中）
 
     private func updateIconAccessoryView(for cell: ImageCell) {
+        // 兼容旧数据库：当 iconColorId 为 0（未启用 SF 配色）且正在编辑已有分组时，直接展示原有图标
+        if (iconColorId == nil || iconColorId == 0),
+           case let .edit(group) = mode {
+            let imageView = UIImageView(image: group.image())
+            imageView.contentMode = .scaleAspectFit
+            imageView.clipsToBounds = true
+            imageView.frame = CGRect(x: 0, y: 0, width: 28, height: 28)
+            cell.accessoryView = imageView
+            return
+        }
+
         if #available(iOS 13.0, *) {
             let iconIndex = iconId ?? 0
             let colorIndex = IconColors.normalizedIndex(iconColorId)
@@ -201,7 +212,17 @@ class AddGroupViewController: FormViewController {
     @objc func doneButtonTapped(sender _: Any) {
         let titleValue = (form.rowBy(tag: FormTag.title) as? TextRow)?.value
         let updatedIconId = iconId ?? 0
-        let updatedIconColorId = IconColors.normalizedIndex(iconColorId)
+
+        // 新建群组默认给一个颜色；老群组保持 0 以兼容旧 KeePass 图标
+        let updatedIconColorId: Int
+        switch mode {
+        case .create:
+            updatedIconColorId = IconColors.normalizedIndex(iconColorId)
+        case .edit:
+            updatedIconColorId = (iconColorId == nil || iconColorId == 0)
+                ? 0
+                : IconColors.normalizedIndex(iconColorId)
+        }
 
         switch mode {
         case .create:

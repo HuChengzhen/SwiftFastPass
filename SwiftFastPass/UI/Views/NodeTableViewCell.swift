@@ -66,9 +66,9 @@ final class NodeTableViewCell: UITableViewCell {
 
         let baseImage = node.image()
         let color = IconColors.resolvedColor(for: node.iconColorId)
+        let isSFSymbol = node.usesSFSymbolIcon()
 
-        if #available(iOS 13.0, *),
-           Icons.sfSymbolNames.indices.contains(node.iconId) {
+        if isSFSymbol {
             iconContainerView.backgroundColor = color.withAlphaComponent(0.12)
             iconImageView.image = baseImage.withRenderingMode(.alwaysTemplate)
             iconImageView.tintColor = color
