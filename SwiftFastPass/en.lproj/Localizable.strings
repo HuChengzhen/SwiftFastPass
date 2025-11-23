@@ -193,3 +193,4 @@
 "Import passwords from Chrome CSV" = "Import passwords from Chrome CSV";
 "Bring your existing passwords by importing Chrome’s CSV export directly into a vault." = "Bring your existing passwords by importing Chrome’s CSV export directly into a vault.";
 "Export from Chrome and drop the CSV into any vault for a quick migration." = "Export from Chrome and drop the CSV into any vault for a quick migration.";
+"Importing passwords from CSV is a FastPass Pro feature." = "Importing passwords from CSV is a FastPass Pro feature.";

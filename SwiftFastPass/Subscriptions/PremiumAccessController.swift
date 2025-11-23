@@ -6,6 +6,7 @@ enum PremiumFeature {
     case keyFile
     case iCloudSync
     case autoFill
+    case csvImport
 
     var message: String {
         switch self {
@@ -19,6 +20,8 @@ enum PremiumFeature {
             return NSLocalizedString("iCloud syncing is a FastPass Pro benefit.", comment: "")
         case .autoFill:
             return NSLocalizedString("AutoFill integration is only available to FastPass Pro subscribers.", comment: "")
+        case .csvImport:
+            return NSLocalizedString("Importing passwords from CSV is a FastPass Pro feature.", comment: "")
         }
     }
 }

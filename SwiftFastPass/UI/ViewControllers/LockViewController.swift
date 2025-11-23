@@ -6,12 +6,43 @@
 //  Copyright © 2019 huchengzhen. All rights reserved.
 //
 
-import Eureka          // 仍然继承 FormViewController 用 tableView
 import KeePassKit
 import LocalAuthentication
 import UIKit
 
-final class LockViewController: FormViewController {
+// MARK: - 通用卡片视图，带圆角和阴影（不会出现奇怪的 1px 线）
+
+final class CardView: UIView {
+    init(cornerRadius: CGFloat = 18) {
+        super.init(frame: .zero)
+        backgroundColor = .secondarySystemBackground
+        layer.cornerRadius = cornerRadius
+        layer.masksToBounds = false
+        layer.shadowColor = UIColor.black.withAlphaComponent(0.06).cgColor
+        layer.shadowRadius = 10
+        layer.shadowOpacity = 1
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        translatesAutoresizingMaskIntoConstraints = false
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // 明确 shadowPath，避免系统自动算出来在边缘留下细线
+        layer.shadowPath = UIBezierPath(
+            roundedRect: bounds,
+            cornerRadius: layer.cornerRadius
+        ).cgPath
+    }
+}
+
+// MARK: - LockViewController
+
+final class LockViewController: UIViewController {
 
     // MARK: - Public data
 
@@ -25,6 +56,10 @@ final class LockViewController: FormViewController {
 
     // MARK: - UI elements
 
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private let stackView = UIStackView()
+
     private let passwordTextField = UITextField()
     private let keyFileButton = UIButton(type: .system)
 
@@ -36,28 +71,12 @@ final class LockViewController: FormViewController {
         openDatabaseIfHasPassword()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        // 让 tableHeaderView 自适应高度
-        if let header = tableView.tableHeaderView {
-            let size = header.systemLayoutSizeFitting(
-                CGSize(width: tableView.bounds.width,
-                       height: UIView.layoutFittingCompressedSize.height)
-            )
-            if header.frame.height != size.height {
-                header.frame.size.height = size.height
-                tableView.tableHeaderView = header
-            }
-        }
-    }
-
     // MARK: - 自动解锁
 
     private func openDatabaseIfHasPassword() {
-        guard premiumAccess.isPremiumUnlocked, file.securityLevel.usesBiometrics else {
-            return
-        }
+        guard premiumAccess.isPremiumUnlocked,
+              file.securityLevel.usesBiometrics
+        else { return }
 
         var hasCredentials = file.password != nil || file.keyFileContent != nil
         var loadedFromKeychain = false
@@ -66,9 +85,7 @@ final class LockViewController: FormViewController {
             hasCredentials = loadedFromKeychain
         }
 
-        guard hasCredentials else {
-            return
-        }
+        guard hasCredentials else { return }
 
         let openBlock = {
             self.openDatabase(password: self.file.password,
@@ -93,9 +110,7 @@ final class LockViewController: FormViewController {
     // MARK: - Public
 
     func openDatabase(password: String?, keyFileContent: Data?, updateFile: Bool) {
-        guard let url = resolveBookmarkURL() else {
-            return
-        }
+        guard let url = resolveBookmarkURL() else { return }
 
         let document = Document(fileURL: url)
         document.key = buildCompositeKey(password: password, keyFileContent: keyFileContent)
@@ -206,82 +221,79 @@ final class LockViewController: FormViewController {
             action: #selector(openButtonTapped(sender:))
         )
         navigationItem.rightBarButtonItems = [editItem, openItem]
-
-        // 整体背景和列表样式
-        view.backgroundColor = .systemGroupedBackground
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
-        tableView.keyboardDismissMode = .onDrag
-        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)
         navigationController?.navigationBar.tintColor = accentColor
 
-        // Eureka 的 form 不再使用，仅保持空
-        form.removeAll()
+        view.backgroundColor = .systemGroupedBackground
 
-        setupHeader()
-    }
+        // ScrollView 基础结构
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.alwaysBounceVertical = true
+        scrollView.keyboardDismissMode = .onDrag
 
-    /// 整个 header：Hero 卡片 + 密码卡片 + 密钥文件按钮（全部是卡片风格）
-    private func setupHeader() {
-        let container = UIView()
-        container.backgroundColor = .clear
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.backgroundColor = .clear
 
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 16
-        stack.alignment = .fill
-        stack.distribution = .fill
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.spacing = 20
+        stackView.translatesAutoresizingMaskIntoConstraints = false
 
-        container.addSubview(stack)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(stackView)
 
+        let guide = view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 16),
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
-            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -16)
+            // scrollView 填满
+            scrollView.topAnchor.constraint(equalTo: guide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            // contentView 约束到 scrollView
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+            // stackView 内边距
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
 
-        // 1. Hero 卡片
-        stack.addArrangedSubview(makeHeroCard())
+        // 1. Hero 区（小圆点 + 文本，不再是卡片背景）
+        stackView.addArrangedSubview(makeHeroHeader())
 
-        // 2. 密码输入卡片
-        stack.addArrangedSubview(makePasswordCard())
+        // 2. 密码卡片
+        stackView.addArrangedSubview(makePasswordCard())
 
-        // 3. 密钥文件按钮（卡片式主按钮）
-        stack.addArrangedSubview(makeKeyFileButton())
-
-        // 先给一个大致高度，后面在 viewDidLayoutSubviews 里会自动调整
-        container.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 260)
-        tableView.tableHeaderView = container
+        // 3. 密钥文件按钮卡片
+        stackView.addArrangedSubview(makeKeyFileButton())
     }
 
-    /// 顶部文件信息卡片（hero）
-    private func makeHeroCard() -> UIView {
-        let card = UIView()
-        card.backgroundColor = .secondarySystemBackground
-        card.layer.cornerRadius = 18
-        card.layer.masksToBounds = false
-        card.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
-        card.layer.shadowRadius = 10
-        card.layer.shadowOpacity = 1
-        card.layer.shadowOffset = CGSize(width: 0, height: 4)
-        card.translatesAutoresizingMaskIntoConstraints = false
+    /// 顶部文件信息（不再单独卡片背景，避免多余的交界线）
+    private func makeHeroHeader() -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
 
-        let iconView = UIView()
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.backgroundColor = accentColor.withAlphaComponent(0.15)
-        iconView.layer.cornerRadius = 16
+        let iconContainer = UIView()
+        iconContainer.translatesAutoresizingMaskIntoConstraints = false
+        iconContainer.backgroundColor = accentColor.withAlphaComponent(0.15)
+        iconContainer.layer.cornerRadius = 16
 
         let innerDot = UIView()
         innerDot.translatesAutoresizingMaskIntoConstraints = false
         innerDot.backgroundColor = accentColor
         innerDot.layer.cornerRadius = 8
-        iconView.addSubview(innerDot)
+        iconContainer.addSubview(innerDot)
 
         NSLayoutConstraint.activate([
-            innerDot.centerXAnchor.constraint(equalTo: iconView.centerXAnchor),
-            innerDot.centerYAnchor.constraint(equalTo: iconView.centerYAnchor),
+            innerDot.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            innerDot.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
             innerDot.widthAnchor.constraint(equalToConstant: 16),
             innerDot.heightAnchor.constraint(equalToConstant: 16)
         ])
@@ -299,40 +311,32 @@ final class LockViewController: FormViewController {
         subtitleLabel.textColor = .secondaryLabel
         subtitleLabel.numberOfLines = 0
 
-        card.addSubview(iconView)
-        card.addSubview(titleLabel)
-        card.addSubview(subtitleLabel)
+        container.addSubview(iconContainer)
+        container.addSubview(titleLabel)
+        container.addSubview(subtitleLabel)
 
         NSLayoutConstraint.activate([
-            iconView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            iconView.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
-            iconView.widthAnchor.constraint(equalToConstant: 32),
-            iconView.heightAnchor.constraint(equalToConstant: 32),
+            iconContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            iconContainer.topAnchor.constraint(equalTo: container.topAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 32),
+            iconContainer.heightAnchor.constraint(equalToConstant: 32),
 
-            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-            titleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            titleLabel.centerYAnchor.constraint(equalTo: iconView.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 12),
+            titleLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
 
-            subtitleLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 12),
-            subtitleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            subtitleLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            subtitleLabel.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -16)
+            subtitleLabel.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: 12),
+            subtitleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
 
-        return card
+        return container
     }
 
     /// 密码输入卡片
     private func makePasswordCard() -> UIView {
-        let card = UIView()
-        card.backgroundColor = .secondarySystemBackground
-        card.layer.cornerRadius = 18
-        card.layer.masksToBounds = false
-        card.layer.shadowColor = UIColor.black.withAlphaComponent(0.06).cgColor
-        card.layer.shadowRadius = 8
-        card.layer.shadowOpacity = 1
-        card.layer.shadowOffset = CGSize(width: 0, height: 3)
-        card.translatesAutoresizingMaskIntoConstraints = false
+        let card = CardView()
 
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -348,8 +352,11 @@ final class LockViewController: FormViewController {
         passwordTextField.font = UIFont.monospacedDigitSystemFont(ofSize: 18, weight: .medium)
         passwordTextField.textColor = .label
         passwordTextField.tintColor = accentColor
+        passwordTextField.borderStyle = .none
+        passwordTextField.backgroundColor = .clear
+        passwordTextField.layer.borderWidth = 0
+
         if #available(iOS 12.0, *) {
-            // 使用 oneTimeCode 避免系统自动保存密码弹窗
             passwordTextField.textContentType = .oneTimeCode
         } else {
             passwordTextField.textContentType = nil
@@ -381,11 +388,10 @@ final class LockViewController: FormViewController {
         keyFileButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         keyFileButton.backgroundColor = accentColor
         keyFileButton.layer.cornerRadius = 18
-        keyFileButton.layer.masksToBounds = false
+        keyFileButton.layer.masksToBounds = true
         keyFileButton.contentEdgeInsets = UIEdgeInsets(top: 14, left: 16, bottom: 14, right: 16)
         keyFileButton.addTarget(self, action: #selector(keyFileButtonTapped), for: .touchUpInside)
 
-        // 外面再包一层透明 view，和其它卡片对齐
         let wrapper = UIView()
         wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.addSubview(keyFileButton)
@@ -436,19 +442,19 @@ final class LockViewController: FormViewController {
 // MARK: - UIDocumentPickerDelegate
 
 extension LockViewController: UIDocumentPickerDelegate {
-    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        if let url = urls.first {
-            let data: Data
-            do {
-                data = try Data(contentsOf: url)
-            } catch {
-                print(error)
-                return
-            }
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        controller.dismiss(animated: true, completion: nil)
+
+        guard let url = urls.first else { return }
+
+        do {
+            let data = try Data(contentsOf: url)
             keyFileContent = data
             keyFileButton.setTitle(NSLocalizedString("File: ", comment: "") + url.lastPathComponent, for: .normal)
             keyFileButton.setTitleColor(.systemRed, for: .normal)
             keyFileButton.backgroundColor = UIColor.systemRed.withAlphaComponent(0.12)
+        } catch {
+            print("Load key file error: \(error)")
         }
     }
 }

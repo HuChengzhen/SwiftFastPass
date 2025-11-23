@@ -13,6 +13,7 @@ class DatabaseViewController: UIViewController {
     var group: KPKGroup!
 
     private var tableView: UITableView!
+    private let premiumAccess = PremiumAccessController.shared
     private let searchController = UISearchController(searchResultsController: nil)
     private var filteredGroups: [KPKGroup] = []
     private var filteredEntries: [KPKEntry] = []
@@ -303,7 +304,9 @@ class DatabaseViewController: UIViewController {
             title: NSLocalizedString("Import from Chrome (CSV)", comment: ""),
             style: .default
         ) { [weak self] _ in
-            self?.presentChromeCSVPicker()
+            guard let self else { return }
+            guard self.premiumAccess.enforce(feature: .csvImport, presenter: self) else { return }
+            self.presentChromeCSVPicker()
         }
         alertController.addAction(importChromeAction)
 
@@ -525,6 +528,7 @@ extension DatabaseViewController: UISearchResultsUpdating {
 
 extension DatabaseViewController: UIDocumentPickerDelegate {
     private func presentChromeCSVPicker() {
+        guard ensureCSVImportAccess() else { return }
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [
             .commaSeparatedText,
             .plainText
@@ -539,6 +543,7 @@ extension DatabaseViewController: UIDocumentPickerDelegate {
     }
 
     private func importChromeCSV(from url: URL) {
+        guard ensureCSVImportAccess() else { return }
         guard url.startAccessingSecurityScopedResource() else {
             presentImportError(message: NSLocalizedString("Unable to read the selected file.", comment: ""))
             return
@@ -618,5 +623,13 @@ extension DatabaseViewController: UIDocumentPickerDelegate {
         )
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default))
         present(alert, animated: true)
+    }
+
+    private func ensureCSVImportAccess() -> Bool {
+        if premiumAccess.isPremiumUnlocked {
+            return true
+        }
+        premiumAccess.presentPaywall(from: self, feature: .csvImport)
+        return false
     }
 }

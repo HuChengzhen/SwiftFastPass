@@ -193,3 +193,4 @@
 "Import passwords from Chrome CSV" = "从 Chrome CSV 导入密码";
 "Bring your existing passwords by importing Chrome’s CSV export directly into a vault." = "将 Chrome 导出的 CSV 直接导入密码库，搬家更省心。";
 "Export from Chrome and drop the CSV into any vault for a quick migration." = "从 Chrome 导出 CSV，直接导入任意密码库，快速完成迁移。";
+"Importing passwords from CSV is a FastPass Pro feature." = "从 CSV 导入密码属于 FastPass Pro 权益，订阅后即可使用。";
