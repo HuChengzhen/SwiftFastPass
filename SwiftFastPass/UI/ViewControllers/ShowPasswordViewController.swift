@@ -1,17 +1,19 @@
 final class ShowPasswordViewController: UIViewController {
 
-    var password: String = ""
+    /// 文本内容（密码 / 用户名 / URL）
+    var text: String = ""
+    /// 弹窗标题，默认“Password”
+    var titleText: String = NSLocalizedString("Password", comment: "")
 
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 17, weight: .semibold)
         label.textColor = .label
-        label.text = NSLocalizedString("Password", comment: "")
         return label
     }()
 
-    private let passwordLabel: UILabel = {
+    private let contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         // 等宽字体，便于辨认
@@ -64,7 +66,8 @@ final class ShowPasswordViewController: UIViewController {
         super.viewDidLoad()
 
         setupLayout()
-        passwordLabel.text = password
+        titleLabel.text = titleText
+        contentLabel.text = text
 
         copyButton.addTarget(self, action: #selector(copyTapped), for: .touchUpInside)
         closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
@@ -90,7 +93,7 @@ final class ShowPasswordViewController: UIViewController {
             cardView.widthAnchor.constraint(lessThanOrEqualToConstant: 360)
         ])
 
-        let stack = UIStackView(arrangedSubviews: [titleLabel, passwordLabel, makeButtonRow()])
+        let stack = UIStackView(arrangedSubviews: [titleLabel, contentLabel, makeButtonRow()])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
         stack.spacing = 16
@@ -114,7 +117,7 @@ final class ShowPasswordViewController: UIViewController {
     }
 
     @objc private func copyTapped() {
-        UIPasteboard.general.string = password
+        UIPasteboard.general.string = text
         dismiss(animated: true)
     }
 

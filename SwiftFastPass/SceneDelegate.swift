@@ -16,6 +16,10 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    private let filesViewController = FilesViewController()
+    private lazy var rootNavigationController: UINavigationController = {
+        UINavigationController(rootViewController: filesViewController)
+    }()
 
     // 模糊遮罩（原来在 AppDelegate）
     lazy var blurView: UIVisualEffectView = {
@@ -37,10 +41,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
 
-        let filesViewController = FilesViewController()
-        let navigationController = UINavigationController(rootViewController: filesViewController)
-        window.rootViewController = navigationController
+        window.rootViewController = rootNavigationController
         window.makeKeyAndVisible()
+
+        presentUpgradeIfNeeded()
+        presentOnboardingIfNeeded()
 
         if PremiumAccessController.shared.isPremiumUnlocked, !setupICloudDocumentsDirectory() {
             DispatchQueue.main.async {
@@ -50,7 +55,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     preferredStyle: .alert
                 )
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default))
-                navigationController.present(alertController, animated: true, completion: nil)
+                self.rootNavigationController.present(alertController, animated: true, completion: nil)
             }
         }
     }
@@ -117,5 +122,37 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print("创建 iCloud Documents 目录失败: \(error)")
             return false
         }
+    }
+
+    private func presentOnboardingIfNeeded() {
+        guard File.files.isEmpty else {
+            OnboardingExperience.markSeen()
+            return
+        }
+
+        guard OnboardingExperience.shouldShow() else {
+            return
+        }
+        let onboarding = OnboardingViewController()
+        onboarding.modalPresentationStyle = .fullScreen
+        onboarding.onPrimaryAction = { [weak self] in
+            self?.filesViewController.presentAddDatabaseActionSheet(sourceView: nil)
+        }
+        rootNavigationController.present(onboarding, animated: true)
+    }
+
+    private func presentUpgradeIfNeeded() {
+        let hasExistingVaults = !File.files.isEmpty
+        guard UpgradeExperience.shouldShow(hasExistingVaults: hasExistingVaults) else {
+            return
+        }
+
+        let promo = UpgradePromoViewController()
+        promo.modalPresentationStyle = .fullScreen
+        promo.onSubscribeTapped = { [weak self] in
+            let paywall = SubscriptionPaywallViewController()
+            self?.rootNavigationController.present(paywall, animated: true)
+        }
+        rootNavigationController.present(promo, animated: true)
     }
 }

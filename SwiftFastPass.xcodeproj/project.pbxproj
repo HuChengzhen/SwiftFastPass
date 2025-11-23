@@ -17,6 +17,9 @@
 		9A4797A0AAD94915ADA5F22D /* SubscriptionPaywallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8DB513DFF4A412C8DEE558E /* SubscriptionPaywallViewController.swift */; };
 		9FF2C461FCD84DADB642D05A /* SubscriptionEntitlementStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C726AD0693455DAB14C2E7 /* SubscriptionEntitlementStore.swift */; };
 		A9D733EE5E78443DA11C1DB6 /* SubscriptionEntitlementStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3CEFB88654733A9DE9C19 /* SubscriptionEntitlementStoreTests.swift */; };
+		00E236E83C0C4AA18DF73EFC082E2412 /* OnboardingExperienceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823DDD9345F14FB1B565948DAE304A73 /* OnboardingExperienceTests.swift */; };
+		2FF7E6EDDC7643B1A14A3F85B29AE70B /* OnboardingExperience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2003C588F99042569BEE5E37E4DFE7BC /* OnboardingExperience.swift */; };
+		93889EBD9A56458EBEF92972FEDE4C20 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C375EF52AD94F3F81B2132F90C8A904 /* OnboardingViewController.swift */; };
 		AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3522A8FC7B0045189E /* FilesViewController.swift */; };
 		AE02DE3922A8FF480045189E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE02DE3822A8FF480045189E /* File.swift */; };
 		AE1375BA2ECCCC53005AE0A9 /* KeePassKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE1375962ECCC36F005AE0A9 /* KeePassKit.xcframework */; };
@@ -68,6 +71,9 @@
 		DBF9A4366394EBEB9E6D2813 /* Pods_SwiftFastPassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AFA4F0C5D555EB847C37348 /* Pods_SwiftFastPassUITests.framework */; };
 		DEE1BABC9560D8105F212CCC /* Pods_SwiftFastPassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92C44502D10673D60F3D090 /* Pods_SwiftFastPassTests.framework */; };
 		EE3C3669021A4CD38C0F54BC /* SubscriptionEntitlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4E06DC64C94FACB1946641 /* SubscriptionEntitlement.swift */; };
+		12160E49101044448B5C833A613FD4B6 /* UpgradeExperience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A70AB0050B846D3A61AA001778D6716 /* UpgradeExperience.swift */; };
+		E3506E41E3B74D8E93370BE7F5A78081 /* UpgradePromoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F309110A3841EC9911B52F57C274D0 /* UpgradePromoViewController.swift */; };
+		2BD066C5BDE74B3FA6138A5857004EC0 /* UpgradeExperienceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908E7563596A4EFFB62D8370C9292C95 /* UpgradeExperienceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +183,8 @@
 		2BF8EE399BF755D1D3124937 /* Pods-SwiftFastPass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPass.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPass/Pods-SwiftFastPass.debug.xcconfig"; sourceTree = "<group>"; };
 		2F0BC8D99D05000362258794 /* Pods-SwiftFastPassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPassUITests/Pods-SwiftFastPassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		3EE8B7608E35450BBC29FFE8 /* PremiumAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumAccessController.swift; sourceTree = "<group>"; };
+		2003C588F99042569BEE5E37E4DFE7BC /* OnboardingExperience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingExperience.swift; sourceTree = "<group>"; };
+		1A70AB0050B846D3A61AA001778D6716 /* UpgradeExperience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeExperience.swift; sourceTree = "<group>"; };
 		4539F8136B01D98442E51AA4 /* Pods_SwiftFastPass.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftFastPass.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4616B8B21860FCB12127B5C5 /* Pods-SwiftFastPassUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftFastPassUITests/Pods-SwiftFastPassUITests.release.xcconfig"; sourceTree = "<group>"; };
 		524D2A5DA1AE4FF08CABA650 /* SubscriptionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionModels.swift; sourceTree = "<group>"; };
@@ -198,6 +206,8 @@
 		AE3BC21922A8F71F00C84275 /* KissXML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KissXML.framework; path = Carthage/Build/iOS/KissXML.framework; sourceTree = "<group>"; };
 		AE3BC22022A9090200C84275 /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		AE3BC22222A9095B00C84275 /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
+		4C375EF52AD94F3F81B2132F90C8A904 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		E5F309110A3841EC9911B52F57C274D0 /* UpgradePromoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradePromoViewController.swift; sourceTree = "<group>"; };
 		AE3F897A56809895C5158C55 /* Pods-SwiftFastPassTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftFastPassTests.release.xcconfig"; path = "Target Support Files/Pods-SwiftFastPassTests/Pods-SwiftFastPassTests.release.xcconfig"; sourceTree = "<group>"; };
 		AE5199F422AD431E002F3BA9 /* ImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerController.swift; sourceTree = "<group>"; };
 		AE5199F522AD431E002F3BA9 /* ImageRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageRow.swift; sourceTree = "<group>"; };
@@ -241,6 +251,8 @@
 		AEC6F1AE22A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEC6F1B322A8EE17007662AD /* SwiftFastPassTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftFastPassTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFastPassTests.swift; sourceTree = "<group>"; };
+		823DDD9345F14FB1B565948DAE304A73 /* OnboardingExperienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingExperienceTests.swift; sourceTree = "<group>"; };
+		908E7563596A4EFFB62D8370C9292C95 /* UpgradeExperienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeExperienceTests.swift; sourceTree = "<group>"; };
 		AEC6F1B922A8EE17007662AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEC6F1BE22A8EE17007662AD /* SwiftFastPassUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftFastPassUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC6F1C222A8EE17007662AD /* SwiftFastPassUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFastPassUITests.swift; sourceTree = "<group>"; };
@@ -376,6 +388,8 @@
 			isa = PBXGroup;
 			children = (
 				AE02DE3522A8FC7B0045189E /* FilesViewController.swift */,
+				4C375EF52AD94F3F81B2132F90C8A904 /* OnboardingViewController.swift */,
+				E5F309110A3841EC9911B52F57C274D0 /* UpgradePromoViewController.swift */,
 				AE99EF5122A9635300C6E13A /* NewDatabaseViewController.swift */,
 				AE9C91E422AA430F008C1629 /* LockViewController.swift */,
 				054B898BF7C0454DB1C9A156 /* DatabaseSettingsViewController.swift */,
@@ -433,6 +447,8 @@
 				AEFD3E952ECD0D1B000E8FCD /* BiometricsUtil.swift */,
 				AEFD3EA72ECD14F3000E8FCD /* FileSecretStore.swift */,
 				AEF2000D2F0D4D1A00E7B1A1 /* AutoFillCredentialSnapshot+KeePass.swift */,
+				2003C588F99042569BEE5E37E4DFE7BC /* OnboardingExperience.swift */,
+				1A70AB0050B846D3A61AA001778D6716 /* UpgradeExperience.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -491,6 +507,8 @@
 			children = (
 				AEC6F1B722A8EE17007662AD /* SwiftFastPassTests.swift */,
 				6FE3CEFB88654733A9DE9C19 /* SubscriptionEntitlementStoreTests.swift */,
+				823DDD9345F14FB1B565948DAE304A73 /* OnboardingExperienceTests.swift */,
+				908E7563596A4EFFB62D8370C9292C95 /* UpgradeExperienceTests.swift */,
 				AEC6F1B922A8EE17007662AD /* Info.plist */,
 			);
 			path = SwiftFastPassTests;
@@ -895,6 +913,8 @@
 				AE9C91EF22AD2224008C1629 /* EntryViewController.swift in Sources */,
 				AE3BC22122A9090200C84275 /* CardCollectionViewCell.swift in Sources */,
 				AE02DE3622A8FC7B0045189E /* FilesViewController.swift in Sources */,
+				93889EBD9A56458EBEF92972FEDE4C20 /* OnboardingViewController.swift in Sources */,
+				E3506E41E3B74D8E93370BE7F5A78081 /* UpgradePromoViewController.swift in Sources */,
 				AE9C91E922ACF961008C1629 /* NodeTableViewCell.swift in Sources */,
 				AE5199FE22AD49CD002F3BA9 /* SelectIconViewController.swift in Sources */,
 				AEFD3E9A2ECD1AEF000E8FCD /* UTType+KeePass.swift in Sources */,
@@ -914,6 +934,8 @@
 				9A4797A0AAD94915ADA5F22D /* SubscriptionPaywallViewController.swift in Sources */,
 				AE5199F922AD431E002F3BA9 /* ImagePickerController.swift in Sources */,
 				AEFD3EA82ECD14F7000E8FCD /* FileSecretStore.swift in Sources */,
+				12160E49101044448B5C833A613FD4B6 /* UpgradeExperience.swift in Sources */,
+				2FF7E6EDDC7643B1A14A3F85B29AE70B /* OnboardingExperience.swift in Sources */,
 				AEFD3E982ECD1916000E8FCD /* SceneDelegate.swift in Sources */,
 				AE6C43292ED26C750082000D /* IconRow.swift in Sources */,
 				AE99EF5022A95AA700C6E13A /* Document.swift in Sources */,
@@ -931,6 +953,8 @@
 			files = (
 				AEC6F1B822A8EE17007662AD /* SwiftFastPassTests.swift in Sources */,
 				A9D733EE5E78443DA11C1DB6 /* SubscriptionEntitlementStoreTests.swift in Sources */,
+				00E236E83C0C4AA18DF73EFC082E2412 /* OnboardingExperienceTests.swift in Sources */,
+				2BD066C5BDE74B3FA6138A5857004EC0 /* UpgradeExperienceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

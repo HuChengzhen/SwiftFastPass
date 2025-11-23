@@ -748,9 +748,17 @@ final class EntryViewController: FormViewController {
         )
     }
 
-    private func presentSensitiveDetail(with value: String) {
+    private func presentSensitiveDetail(for tag: RowTag, value: String) {
         let vc = ShowPasswordViewController()
-        vc.password = value
+        vc.text = value
+        switch tag {
+        case .username:
+            vc.titleText = NSLocalizedString("User Name", comment: "")
+        case .url:
+            vc.titleText = NSLocalizedString("URL", comment: "")
+        default:
+            vc.titleText = NSLocalizedString("Password", comment: "")
+        }
         vc.modalPresentationStyle = .overFullScreen
         vc.modalTransitionStyle = .crossDissolve
         present(vc, animated: true)
@@ -767,7 +775,7 @@ final class EntryViewController: FormViewController {
             self?.copyToPasteboard(value)
         }
         let displayAction = UIAction(title: displayTitle, image: UIImage(systemName: "eye")) { [weak self] _ in
-            self?.presentSensitiveDetail(with: value)
+            self?.presentSensitiveDetail(for: tag, value: value)
         }
         return [copyAction, displayAction]
     }

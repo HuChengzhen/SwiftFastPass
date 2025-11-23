@@ -244,7 +244,7 @@ class FilesViewController: UIViewController {
     }
 
     /// 如果以后你还想在别处（例如导航栏 + 按钮）复用，可以调用这个方法
-    private func presentAddDatabaseActionSheet(sourceView: UIView?) {
+    func presentAddDatabaseActionSheet(sourceView: UIView?) {
         guard premiumAccess.enforceDatabaseLimit(currentCount: File.files.count, presenter: self) else { return }
 
         let alertViewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)

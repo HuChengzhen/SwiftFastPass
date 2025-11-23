@@ -57,6 +57,8 @@
 "Length" = "Length";
 "Please open iCloud in system settings" = "Please open iCloud in system settings";
 "This app does not work without iCloud" = "This app does not work without iCloud";
+"Enable iCloud Drive" = "Enable iCloud Drive";
+"FastPass Pro uses iCloud Drive for secure sync. Turn it on in Settings > Apple ID > iCloud to keep vaults backed up." = "FastPass Pro uses iCloud Drive for secure sync. Turn it on in Settings > Apple ID > iCloud to keep vaults backed up.";
 "Unable to enable biometric unlock" = "Unable to enable biometric unlock";
 "Biometric authentication failed. You can enable it later in database settings." = "Biometric authentication failed. You can enable it later in database settings.";
 "OK" = "OK";
@@ -104,5 +106,23 @@
 "Save Changes?" = "Save Changes?";
 "update_item_warning_message" = "You're about to update this item. Once saved, the previous information cannot be recovered.";
 "Save" = "Save";
+"Private by design" = "Private by design";
+"Welcome to FastPass" = "Welcome to FastPass";
+"Protect your KeePass vaults, sync securely, and keep autofill close at hand." = "Protect your KeePass vaults, sync securely, and keep autofill close at hand.";
+"Bring your KeePass vaults" = "Bring your KeePass vaults";
+"Open existing .kdbx files or create a brand-new vault in seconds." = "Open existing .kdbx files or create a brand-new vault in seconds.";
+"Generate stronger passwords" = "Generate stronger passwords";
+"Use the built-in creator to craft long, unique passwords tailored to your rules." = "Use the built-in creator to craft long, unique passwords tailored to your rules.";
+"Unlock with biometrics" = "Unlock with biometrics";
+"Face ID / Touch ID keeps sign-in fast without compromising security." = "Face ID / Touch ID keeps sign-in fast without compromising security.";
+"Create or import" = "Create or import";
+"Maybe later" = "Maybe later";
+"Thanks for staying with us" = "Thanks for staying with us";
+"Upgrade to FastPass Pro" = "Upgrade to FastPass Pro";
+"Keep your vaults backed up, fill faster across apps, and get priority support." = "Keep your vaults backed up, fill faster across apps, and get priority support.";
+"Protect every vault" = "Protect every vault";
+"Encrypted backups in iCloud Drive keep your KeePass files safe across devices." = "Encrypted backups in iCloud Drive keep your KeePass files safe across devices.";
+"Unlimited vaults" = "Unlimited vaults";
+"Create as many databases as you need with Pro unlocked." = "Create as many databases as you need with Pro unlocked.";
+"Skip for now" = "Skip for now";
 "Cancel" = "Cancel";
-

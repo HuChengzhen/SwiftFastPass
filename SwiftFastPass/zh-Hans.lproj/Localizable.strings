@@ -57,6 +57,8 @@
 "Length" = "长度";
 "Please open iCloud in system settings" = "请在系统设置内打开 iCloud";
 "This app does not work without iCloud" = "本应用在没有 iCloud 支持的情况下无法工作";
+"Enable iCloud Drive" = "启用 iCloud Drive";
+"FastPass Pro uses iCloud Drive for secure sync. Turn it on in Settings > Apple ID > iCloud to keep vaults backed up." = "FastPass Pro 依赖 iCloud Drive 进行安全同步，请在“设置 > Apple ID > iCloud”中开启以备份密码库。";
 "Unable to enable biometric unlock" = "无法启用生物识别自动解锁";
 "Biometric authentication failed. You can enable it later in database settings." = "生物识别失败，你可以稍后在数据库设置中启用。";
 "OK" = "确定";
@@ -104,5 +106,23 @@
 "Save Changes?" = "保存更改？";
 "update_item_warning_message" = "您即将更新此项目。保存后，之前的信息将无法恢复。";
 "Save" = "保存";
+"Private by design" = "以隐私为先";
+"Welcome to FastPass" = "欢迎使用 FastPass";
+"Protect your KeePass vaults, sync securely, and keep autofill close at hand." = "保护你的 KeePass 密码库，安全同步并随时准备自动填充。";
+"Bring your KeePass vaults" = "带上你的 KeePass 密码库";
+"Open existing .kdbx files or create a brand-new vault in seconds." = "导入现有 .kdbx 文件，或几秒钟内新建一个密码库。";
+"Generate stronger passwords" = "生成更强的密码";
+"Use the built-in creator to craft long, unique passwords tailored to your rules." = "使用内置生成器，按你的规则打造更长、更独特的密码。";
+"Unlock with biometrics" = "使用生物识别解锁";
+"Face ID / Touch ID keeps sign-in fast without compromising security." = "Face ID / Touch ID 让解锁更快，同时保持安全。";
+"Create or import" = "创建或导入";
+"Maybe later" = "稍后再说";
+"Thanks for staying with us" = "感谢一路相伴";
+"Upgrade to FastPass Pro" = "升级到 FastPass Pro";
+"Keep your vaults backed up, fill faster across apps, and get priority support." = "让密码库随时备份、跨 App 更快填充，并享受优先支持。";
+"Protect every vault" = "保护每个密码库";
+"Encrypted backups in iCloud Drive keep your KeePass files safe across devices." = "使用 iCloud Drive 的加密备份，让 KeePass 文件在多设备上都安全。";
+"Unlimited vaults" = "无限密码库";
+"Create as many databases as you need with Pro unlocked." = "解锁 Pro 后，可按需创建任意数量的密码库。";
+"Skip for now" = "暂不升级";
 "Cancel" = "取消";
-
