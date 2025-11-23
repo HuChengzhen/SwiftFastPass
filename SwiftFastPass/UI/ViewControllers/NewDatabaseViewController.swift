@@ -220,7 +220,8 @@ class NewDatabaseViewController: FormViewController {
     // MARK: - Form building
 
     private func buildForm() {
-        form +++ Section()
+        form
+        +++ Section()
             <<< TextRow("name") { row in
                 row.title = NSLocalizedString("Name", comment: "")
                 row.placeholder = NSLocalizedString("Enter name here", comment: "")
@@ -229,11 +230,37 @@ class NewDatabaseViewController: FormViewController {
             }
             .cellSetup { cell, _ in
                 self.styleTextRowCell(cell, position: .single)
+
+                // ✅ 关键：强制左对齐，这样前导空格会真正可见
+                cell.textField.textAlignment = .left
+
+                // 可选：清除按钮
+                cell.textField.clearButtonMode = .whileEditing
+
+                cell.textField.autocorrectionType = .no
+                cell.textField.autocapitalizationType = .none
+                cell.textField.spellCheckingType = .no
+                if #available(iOS 11.0, *) {
+                    cell.textField.smartQuotesType = .no
+                    cell.textField.smartDashesType = .no
+                    // 保留你原来的设置
+                    cell.textField.smartInsertDeleteType = .no
+                    cell.textField.textContentType = .nickname
+                }
+
+                // （可选）给 textField 一点很小的内部左边距，不动外面的卡片 layout
+                let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 2, height: 10))
+                cell.textField.leftView = paddingView
+                cell.textField.leftViewMode = .always
             }
-            .onChange { [weak self] _ in
+            .onChange { [weak self] row in
+                row.value = row.cell.textField.text
                 self?.validateInputUpdateAddButtonState()
             }
             .cellUpdate { cell, row in
+                // 🔁 再次锁死左对齐，防止 Eureka 在重用 cell 时改回去
+                cell.textField.textAlignment = .left
+
                 if !row.isValid {
                     cell.textLabel?.textColor = .systemRed
                     cell.textField.textColor = .systemRed
@@ -242,82 +269,119 @@ class NewDatabaseViewController: FormViewController {
                     cell.textField.textColor = .label
                 }
             }
+
 
 
             +++ Section()
-            <<< TextRow("password") { row in
-                row.title = NSLocalizedString("Password", comment: "")
-                row.placeholder = NSLocalizedString("Enter password here", comment: "")
-                row.add(rule: RuleRequired())
-                row.validationOptions = .validatesOnChange
+        <<< TextRow("password") { row in
+            row.title = NSLocalizedString("Password", comment: "")
+            row.placeholder = NSLocalizedString("Enter password here", comment: "")
+            row.add(rule: RuleRequired())
+            row.validationOptions = .validatesOnChange
+        }
+        .cellSetup { cell, _ in
+            self.styleTextRowCell(cell, position: .top)
+
+            cell.textField.isSecureTextEntry = true
+
+            // ✅ 保持右对齐，这样和左边的标题在一条水平线上
+            cell.textField.textAlignment = .right
+
+            // ✅ 关键 1：只用 ASCII 键盘，避免中文输入法/特殊键盘吞空格
+            cell.textField.keyboardType = .asciiCapable
+
+            // ✅ 关键 2：不要再用 oneTimeCode / password 类型
+            if #available(iOS 12.0, *) {
+                cell.textField.textContentType = .none
+            } else {
+                cell.textField.textContentType = nil
             }
-            .cellSetup { cell, _ in
-                self.styleTextRowCell(cell, position: .top)
-                cell.textField.isSecureTextEntry = true
-                if #available(iOS 12.0, *) {
-                    cell.textField.textContentType = .oneTimeCode // prevent iOS from suggesting saving this password
-                } else {
-                    cell.textField.textContentType = nil
+
+            // 建议都关掉：密码不需要这些智能功能
+            cell.textField.autocorrectionType = .no
+            cell.textField.autocapitalizationType = .none
+            cell.textField.spellCheckingType = .no
+            if #available(iOS 11.0, *) {
+                cell.textField.smartQuotesType = .no
+                cell.textField.smartDashesType = .no
+                cell.textField.smartInsertDeleteType = .no
+            }
+        }
+        .onChange { [weak self] _ in
+            self?.validateInputUpdateAddButtonState()
+        }
+        .cellUpdate { cell, row in
+            // 防止重用时被 Eureka 改掉
+            cell.textField.textAlignment = .right
+
+            if !row.isValid {
+                cell.textLabel?.textColor = .systemRed
+                cell.textField.textColor = .systemRed
+            } else {
+                cell.textLabel?.textColor = .secondaryLabel
+                cell.textField.textColor = .label
+            }
+        }
+
+
+
+
+        <<< TextRow("confirmPassword") { [weak self] row in
+            row.title = NSLocalizedString("Confirm password", comment: "")
+            row.placeholder = NSLocalizedString("Confirm password here", comment: "")
+            row.add(rule: RuleRequired())
+            row.add(rule: RuleClosure { [weak self] value -> ValidationError? in
+                guard let self = self else { return nil }
+
+                let passwordRow: TextRow? = self.form.rowBy(tag: "password")
+                let password = passwordRow?.value ?? ""
+                let confirm = value ?? ""
+
+                if !password.isEmpty, !confirm.isEmpty, password != confirm {
+                    return ValidationError(msg: NSLocalizedString("Passwords are different.", comment: ""))
                 }
-            }
-            .onChange { [weak self] _ in
-                self?.validateInputUpdateAddButtonState()
-            }
-            .cellUpdate { cell, row in
-                if !row.isValid {
-                    cell.textLabel?.textColor = .systemRed
-                    cell.textField.textColor = .systemRed
-                } else {
-                    cell.textLabel?.textColor = .secondaryLabel
-                    cell.textField.textColor = .label
-                }
+                return nil
+            })
+            row.validationOptions = .validatesOnChange
+        }
+        .cellSetup { cell, _ in
+            self.styleTextRowCell(cell, position: .bottom)
+            cell.textField.isSecureTextEntry = true
+
+            // ✅ 和上面保持一致
+            cell.textField.textAlignment = .right
+            cell.textField.keyboardType = .asciiCapable
+
+            if #available(iOS 12.0, *) {
+                cell.textField.textContentType = .none
+            } else {
+                cell.textField.textContentType = nil
             }
 
-
-            <<< TextRow("confirmPassword") { [weak self] row in
-                row.title = NSLocalizedString("Confirm password", comment: "")
-                row.placeholder = NSLocalizedString("Confirm password here", comment: "")
-                // 1. 必填
-                row.add(rule: RuleRequired())
-                // 2. 和 password 一致校验
-                row.add(rule: RuleClosure { [weak self] value -> ValidationError? in
-                    guard let self = self else { return nil }
-
-                    let passwordRow: TextRow? = self.form.rowBy(tag: "password")
-                    let password = passwordRow?.value ?? ""
-                    let confirm = value ?? ""
-
-                    // 只有在两个都不为空时才做比较，避免一开始就报错
-                    if !password.isEmpty, !confirm.isEmpty, password != confirm {
-                        return ValidationError(msg: NSLocalizedString("Passwords are different.", comment: ""))
-                    }
-                    return nil
-                })
-
-                row.validationOptions = .validatesOnChange
+            cell.textField.autocorrectionType = .no
+            cell.textField.autocapitalizationType = .none
+            cell.textField.spellCheckingType = .no
+            if #available(iOS 11.0, *) {
+                cell.textField.smartQuotesType = .no
+                cell.textField.smartDashesType = .no
+                cell.textField.smartInsertDeleteType = .no
             }
-            .cellSetup { cell, _ in
-                self.styleTextRowCell(cell, position: .bottom)
-                cell.textField.isSecureTextEntry = true
-                if #available(iOS 12.0, *) {
-                    cell.textField.textContentType = .oneTimeCode
-                } else {
-                    cell.textField.textContentType = nil
-                }
+        }
+        .onChange { [weak self] _ in
+            self?.validateInputUpdateAddButtonState()
+        }
+        .cellUpdate { cell, row in
+            cell.textField.textAlignment = .right
+
+            if !row.isValid {
+                cell.textLabel?.textColor = .systemRed
+                cell.textField.textColor = .systemRed
+            } else {
+                cell.textLabel?.textColor = .secondaryLabel
+                cell.textField.textColor = .label
             }
-            .onChange { [weak self] _ in
-                self?.validateInputUpdateAddButtonState()
-            }
-            .cellUpdate { cell, row in
-                // 根据校验结果切换文字颜色
-                if !row.isValid {
-                    cell.textLabel?.textColor = .systemRed
-                    cell.textField.textColor = .systemRed
-                } else {
-                    cell.textLabel?.textColor = .secondaryLabel
-                    cell.textField.textColor = .label
-                }
-            }
+        }
+
 
 
 
@@ -691,8 +755,20 @@ class NewDatabaseViewController: FormViewController {
 
     // MARK: - Validation & buttons
 
+    private func currentNameInput() -> String? {
+        guard let nameRow: TextRow = form.rowBy(tag: "name") else { return nil }
+        // Prefer the live text field to avoid any formatting that might trim spaces.
+        if let text = nameRow.cell.textField.text {
+            return text
+        }
+        return nameRow.value
+    }
+
     func validateInputUpdateAddButtonState() {
-        navigationItem.rightBarButtonItem?.isEnabled = form.validate().isEmpty
+        // Use the live text from the field to avoid any formatter/IME trimming side effects.
+        let nameHasInput = !(currentNameInput() ?? "").isEmpty
+        let validationErrors = form.validate()
+        navigationItem.rightBarButtonItem?.isEnabled = nameHasInput && validationErrors.isEmpty
     }
 
 
@@ -733,7 +809,10 @@ class NewDatabaseViewController: FormViewController {
         let tree = KPKTree(templateContents: ())
         DefaultGroupIconRewriter.apply(to: tree.root)
         let targetDirURL = premiumAccess.documentsDirectoryURL()
-        let name = (form.rowBy(tag: "name") as! TextRow).value!
+        guard let name = currentNameInput(), !name.isEmpty else {
+            sender.isEnabled = true
+            return
+        }
         let fileName = name + ".kdbx"
         let fileURL = targetDirURL.appendingPathComponent(fileName)
 

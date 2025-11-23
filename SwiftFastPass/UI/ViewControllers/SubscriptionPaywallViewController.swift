@@ -28,6 +28,7 @@ final class SubscriptionPaywallViewController: UIViewController {
     private let heroSubtitleLabel = UILabel()
     private let heroGradientLayer = CAGradientLayer()
     private let restoreButton = UIButton(type: .custom)
+    private let trialBadgeButton = UIButton(type: .system)   // 新增：首月免费 badge
 
     // “你的方案 / 状态” 卡片
     private let planTitleLabel = UILabel()
@@ -43,8 +44,9 @@ final class SubscriptionPaywallViewController: UIViewController {
     private let pricingTitleLabel = UILabel()
     private let productsStackView = UIStackView()
 
-    // 底部订阅按钮
+    // 底部订阅按钮 + 法律说明
     private let subscribeButton = UIButton(type: .system)
+    private let legalLabel = UILabel()
 
     // Loading
     private lazy var loadingView: UIActivityIndicatorView = {
@@ -56,6 +58,15 @@ final class SubscriptionPaywallViewController: UIViewController {
 
     private let accentColor = UIColor(red: 0.25, green: 0.49, blue: 1.0, alpha: 1.0) // #3F7CFF
 
+    // 顶部小横杠
+    private let grabberView: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.backgroundColor = UIColor.systemGray3
+        v.layer.cornerRadius = 3
+        return v
+    }()
+
     // MARK: - Init
 
     init(subscriptionManager: SubscriptionManager = .shared,
@@ -65,22 +76,7 @@ final class SubscriptionPaywallViewController: UIViewController {
         self.featureList = features
         super.init(nibName: nil, bundle: nil)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        if let sheet = self.sheetPresentationController {
-            sheet.prefersGrabberVisible = true
-        }
-    }
-    
-    private let grabberView: UIView = {
-        let v = UIView()
-        v.translatesAutoresizingMaskIntoConstraints = false
-        v.backgroundColor = UIColor.systemGray3
-        v.layer.cornerRadius = 3
-        return v
-    }()
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -88,13 +84,19 @@ final class SubscriptionPaywallViewController: UIViewController {
 
     // MARK: - Life Cycle
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let sheet = self.sheetPresentationController {
+            sheet.prefersGrabberVisible = true
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         heroGradientLayer.frame = heroContainer.bounds
         restoreButton.layer.cornerRadius = restoreButton.bounds.height / 2   // 完美胶囊
     }
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -109,7 +111,7 @@ final class SubscriptionPaywallViewController: UIViewController {
         setupPlanSection()
         setupReasonsSection()
         setupProductsSection()
-        setupSubscribeButton()
+        setupSubscribeSection()
         setupLoading()
 
         // 下拉刷新
@@ -123,6 +125,12 @@ final class SubscriptionPaywallViewController: UIViewController {
         subscriptionManager.fetchProductsIfNeeded(force: true)
     }
 
+    deinit {
+        subscriptionManager.removeObserver(self)
+    }
+
+    // MARK: - Setup UI
+
     private func setupGrabber() {
         view.addSubview(grabberView)
 
@@ -133,12 +141,6 @@ final class SubscriptionPaywallViewController: UIViewController {
             grabberView.heightAnchor.constraint(equalToConstant: 5)
         ])
     }
-    
-    deinit {
-        subscriptionManager.removeObserver(self)
-    }
-
-    // MARK: - Setup UI
 
     private func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -169,12 +171,14 @@ final class SubscriptionPaywallViewController: UIViewController {
         heroTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         heroSubtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         restoreButton.translatesAutoresizingMaskIntoConstraints = false
+        trialBadgeButton.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(heroContainer)
         heroContainer.addSubview(heroIconView)
         heroContainer.addSubview(heroTitleLabel)
         heroContainer.addSubview(heroSubtitleLabel)
         heroContainer.addSubview(restoreButton)
+        heroContainer.addSubview(trialBadgeButton)
 
         // 渐变背景
         heroGradientLayer.colors = [
@@ -199,18 +203,31 @@ final class SubscriptionPaywallViewController: UIViewController {
         heroTitleLabel.textColor = .white
         heroTitleLabel.text = NSLocalizedString("FastPass Pro", comment: "")
 
-        // 副标题
+        // “首月免费” badge（用 UIButton 做胶囊）
+        trialBadgeButton.setTitle(NSLocalizedString("1st Month Free", comment: "Free trial badge"), for: .normal)
+        trialBadgeButton.setTitleColor(accentColor, for: .normal)
+        trialBadgeButton.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        trialBadgeButton.backgroundColor = .white
+        trialBadgeButton.layer.cornerRadius = 11
+        trialBadgeButton.clipsToBounds = true
+        trialBadgeButton.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
+        trialBadgeButton.isUserInteractionEnabled = false   // 只是展示，不可点击
+
+
+        // 副标题（强调先免费再付费，可随时取消）
         heroSubtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         heroSubtitleLabel.textColor = UIColor.white.withAlphaComponent(0.9)
         heroSubtitleLabel.numberOfLines = 0
-        heroSubtitleLabel.text = NSLocalizedString("AutoFill, unlimited vaults, and secure iCloud sync in one simple subscription.", comment: "")
+        heroSubtitleLabel.text = NSLocalizedString(
+            "Start with a 1-month free trial. After the trial, your plan renews monthly and you can cancel anytime in Settings.",
+            comment: ""
+        )
 
         // Restore 按钮（右上角白色小胶囊）
         restoreButton.setTitle(NSLocalizedString("Restore", comment: ""), for: .normal)
         restoreButton.setTitleColor(accentColor, for: .normal)
         restoreButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         restoreButton.backgroundColor = .white
-        restoreButton.layer.cornerRadius = 16
         restoreButton.contentEdgeInsets = UIEdgeInsets(top: 4, left: 12, bottom: 4, right: 12)
         restoreButton.addTarget(self, action: #selector(restoreTapped), for: .touchUpInside)
 
@@ -229,7 +246,11 @@ final class SubscriptionPaywallViewController: UIViewController {
 
             heroTitleLabel.topAnchor.constraint(equalTo: heroIconView.bottomAnchor, constant: 16),
             heroTitleLabel.leadingAnchor.constraint(equalTo: heroContainer.leadingAnchor, constant: 16),
-            heroTitleLabel.trailingAnchor.constraint(equalTo: heroContainer.trailingAnchor, constant: -16),
+
+            trialBadgeButton.centerYAnchor.constraint(equalTo: heroTitleLabel.centerYAnchor),
+            trialBadgeButton.trailingAnchor.constraint(equalTo: heroContainer.trailingAnchor, constant: -16),
+
+            heroTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: trialBadgeButton.leadingAnchor, constant: -8),
 
             heroSubtitleLabel.topAnchor.constraint(equalTo: heroTitleLabel.bottomAnchor, constant: 8),
             heroSubtitleLabel.leadingAnchor.constraint(equalTo: heroContainer.leadingAnchor, constant: 16),
@@ -357,11 +378,18 @@ final class SubscriptionPaywallViewController: UIViewController {
         ])
     }
 
-    private func setupSubscribeButton() {
+    private func setupSubscribeSection() {
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(subscribeButton)
+        legalLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        subscribeButton.setTitle(NSLocalizedString("Subscribe to FastPass Pro", comment: ""), for: .normal)
+        contentView.addSubview(subscribeButton)
+        contentView.addSubview(legalLabel)
+
+        // 主按钮：强调“开始免费试用”
+        subscribeButton.setTitle(
+            NSLocalizedString("Start 1-Month Free Trial", comment: ""),
+            for: .normal
+        )
         subscribeButton.setTitleColor(.white, for: .normal)
         subscribeButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         subscribeButton.backgroundColor = accentColor
@@ -369,11 +397,25 @@ final class SubscriptionPaywallViewController: UIViewController {
         subscribeButton.contentEdgeInsets = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
         subscribeButton.addTarget(self, action: #selector(primarySubscribeTapped), for: .touchUpInside)
 
+        // 小号法律说明：试用结束后按月续订，24 小时前可取消
+        legalLabel.font = UIFont.systemFont(ofSize: 11)
+        legalLabel.textColor = .tertiaryLabel
+        legalLabel.numberOfLines = 0
+        legalLabel.textAlignment = .center
+        legalLabel.text = NSLocalizedString(
+            "Your 1-month free trial will convert to a monthly subscription. You can cancel at least 24 hours before the trial ends in your App Store account settings.",
+            comment: ""
+        )
+
         NSLayoutConstraint.activate([
             subscribeButton.topAnchor.constraint(equalTo: productsStackView.bottomAnchor, constant: 24),
             subscribeButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
             subscribeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
-            subscribeButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32)
+
+            legalLabel.topAnchor.constraint(equalTo: subscribeButton.bottomAnchor, constant: 8),
+            legalLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32),
+            legalLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -32),
+            legalLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
     }
 
@@ -468,10 +510,19 @@ final class SubscriptionPaywallViewController: UIViewController {
         // 更新主按钮文案（默认取第一个订阅）
         if let first = products.first {
             let title = String(
-                format: NSLocalizedString("Subscribe • %@ / month", comment: ""),
+                format: NSLocalizedString("Start 1-Month Free Trial • Then %@ / month", comment: ""),
                 first.localizedPrice
             )
             subscribeButton.setTitle(title, for: .normal)
+
+            // 顺便更新法律说明里的价格（可选）
+            legalLabel.text = String(
+                format: NSLocalizedString(
+                    "Your 1-month free trial will convert to a monthly subscription at %@/month. You can cancel at least 24 hours before the trial ends in your App Store account settings.",
+                    comment: ""
+                ),
+                first.localizedPrice
+            )
         }
     }
 
@@ -506,8 +557,9 @@ final class SubscriptionPaywallViewController: UIViewController {
         subtitleLabel.textColor = .secondaryLabel
         subtitleLabel.numberOfLines = 0
 
+        // 描述：价格 + 首月免费 CTA
         let subtitle = String(
-            format: NSLocalizedString("%@ per month • %@", comment: ""),
+            format: NSLocalizedString("%@ per month • 1-month free trial • %@", comment: ""),
             product.localizedPrice,
             product.callToAction
         )
@@ -549,7 +601,7 @@ final class SubscriptionPaywallViewController: UIViewController {
         }
     }
 
-    // MARK: - Status Text (完全沿用你原来的逻辑)
+    // MARK: - Status Text (沿用原逻辑)
 
     private func statusText(for entitlement: SubscriptionEntitlement) -> (title: String, detail: String) {
         if entitlement.isActive {

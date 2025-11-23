@@ -165,7 +165,7 @@ final class EntryViewController: FormViewController {
                 if let urlString = entry?.url {
                     row.value = URL(string: urlString)
                 }
-                row.placeholder = "https://example.com"
+                row.placeholder = NSLocalizedString("https://example.com", comment: "URL placeholder")
             }
             .cellSetup { [weak self] cell, _ in
                 self?.registerSensitiveFieldInteractions(for: cell, tag: .url)
@@ -370,12 +370,15 @@ final class EntryViewController: FormViewController {
     // MARK: - 图标预览
 
     private func currentIconPreviewImage() -> UIImage? {
-        // 1️⃣ 已有条目：和 DatabaseViewController 保持一致
-        if let entry = entry {
-            return entry.image()
+        if let entry = entry,
+           !EntryViewController.hasIconOverride(entry: entry,
+                                                selectedIconId: iconId,
+                                                selectedColorId: iconColorId) {
+            let image = entry.image()
+            return entry.usesSFSymbolIcon() ? image : image.withRenderingMode(.alwaysOriginal)
         }
 
-        // 2️⃣ 新建条目：用当前选择的 SF Symbols 图标（默认就是蓝色 key.fill）
+        // 用当前选择的 SF Symbols 图标（默认就是蓝色 key.fill）
         let resolvedIconId = iconId ?? DefaultIcon.id
         let resolvedColorId = iconColorId ?? DefaultIcon.colorId
 
@@ -394,6 +397,19 @@ final class EntryViewController: FormViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
         return UIImage(systemName: symbolName, withConfiguration: config)?
             .withTintColor(tint, renderingMode: .alwaysOriginal)
+    }
+
+    /// 判断当前是否有“待保存”的图标/颜色选择，用于预览时决定是否沿用旧图标。
+    static func hasIconOverride(entry: KPKEntry?,
+                                selectedIconId: Int?,
+                                selectedColorId: Int?) -> Bool {
+        guard let entry = entry else { return true }
+
+        let resolvedIconId = selectedIconId ?? entry.iconId
+        let resolvedColorId = IconColors.normalizedIndex(selectedColorId ?? entry.iconColorId)
+        let entryColorId = IconColors.normalizedIndex(entry.iconColorId)
+
+        return resolvedIconId != entry.iconId || resolvedColorId != entryColorId
     }
 
 

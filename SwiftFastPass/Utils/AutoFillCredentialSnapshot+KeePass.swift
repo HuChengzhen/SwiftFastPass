@@ -57,3 +57,23 @@ extension AutoFillCredentialStore {
         group.groups.forEach { removeCredentials(in: $0) }
     }
 }
+
+extension AutoFillCredentialStore {
+    func removeCredentials(for file: File) {
+        guard let url = file.resolvedURL() else { return }
+
+        let document = Document(fileURL: url)
+
+        document.open { [weak self] success in
+            guard let self = self else { return }
+            guard success, let root = document.tree?.root else {
+                document.close(completionHandler: nil)
+                return
+            }
+
+            self.removeCredentials(in: root)
+            document.close(completionHandler: nil)
+        }
+    }
+}
+

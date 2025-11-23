@@ -114,9 +114,9 @@ class AddGroupViewController: FormViewController {
     // MARK: - 自定义右侧图标视图（完全居中）
 
     private func updateIconAccessoryView(for cell: ImageCell) {
-        // 兼容旧数据库：当 iconColorId 为 0（未启用 SF 配色）且正在编辑已有分组时，直接展示原有图标
-        if (iconColorId == nil || iconColorId == 0),
-           case let .edit(group) = mode {
+        if case let .edit(group) = mode,
+           AddGroupViewController.shouldUseLegacyIcon(iconId: iconId,
+                                                      iconColorId: iconColorId) {
             let imageView = UIImageView(image: group.image())
             imageView.contentMode = .scaleAspectFit
             imageView.clipsToBounds = true
@@ -143,6 +143,13 @@ class AddGroupViewController: FormViewController {
             imageView.frame = CGRect(x: 0, y: 0, width: 28, height: 28)
             cell.accessoryView = imageView
         }
+    }
+
+    /// 判断是否需要使用 KeePass 旧图标（避免把 legacy index 误当作 SF Symbol）。
+    static func shouldUseLegacyIcon(iconId: Int?, iconColorId: Int?) -> Bool {
+        let colorIsLegacy = (iconColorId == nil || iconColorId == 0)
+        let iconIsLegacy = !(iconId.flatMap { Icons.sfSymbolNames.indices.contains($0) } ?? false)
+        return colorIsLegacy || iconIsLegacy
     }
 
     private func makeIconAccessoryView(symbolName: String, color: UIColor) -> UIView {

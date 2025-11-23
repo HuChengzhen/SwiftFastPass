@@ -210,7 +210,7 @@ final class PasswordGenerateViewController: FormViewController {
 
         // A-Z
         charsetSection <<< CheckRow("A-Z") {
-            $0.title = "A - Z"
+            $0.title = NSLocalizedString("A - Z", comment: "Uppercase alphabet characters")
             $0.value = true          // 默认选中
         }.cellUpdate { cell, row in
             cell.textLabel?.font = .systemFont(ofSize: 15)
@@ -222,7 +222,7 @@ final class PasswordGenerateViewController: FormViewController {
 
         // a-z
         charsetSection <<< CheckRow("a-z") {
-            $0.title = "a - z"
+            $0.title = NSLocalizedString("a - z", comment: "Lowercase alphabet characters")
             $0.value = true
         }.cellUpdate { cell, row in
             cell.textLabel?.font = .systemFont(ofSize: 15)
@@ -233,7 +233,7 @@ final class PasswordGenerateViewController: FormViewController {
 
         // 0-9
         charsetSection <<< CheckRow("0-9") {
-            $0.title = "0 - 9"
+            $0.title = NSLocalizedString("0 - 9", comment: "Numeric characters")
             $0.value = true
         }.cellUpdate { cell, row in
             cell.textLabel?.font = .systemFont(ofSize: 15)
@@ -244,7 +244,7 @@ final class PasswordGenerateViewController: FormViewController {
 
         // #!?
         charsetSection <<< CheckRow("#!?") {
-            $0.title = "#!?"
+            $0.title = NSLocalizedString("#!?", comment: "Symbol characters")
             $0.value = true
         }.cellUpdate { cell, row in
             cell.textLabel?.font = .systemFont(ofSize: 15)

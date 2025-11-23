@@ -8,8 +8,12 @@ final class UpgradePromoViewController: UIViewController {
     private let contentView = UIView()
     private let stackView = UIStackView()
     private let heroContainer = UIView()
-    private let heroGradient = CAGradientLayer()
-    private let accentColor = UIColor(red: 0.92, green: 0.44, blue: 0.29, alpha: 1.0) // #EA704A
+
+    /// FastPass 主题蓝色（与你现有界面保持一致）
+    private let accentColor = UIColor(red: 0.24, green: 0.53, blue: 0.99, alpha: 1.0) // #3D86FC
+
+    /// hero 卡片的浅蓝背景
+    private let heroBackgroundColor = UIColor(red: 0.93, green: 0.97, blue: 1.0, alpha: 1.0) // 超浅蓝，非常干净
 
     private lazy var subscribeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -35,18 +39,15 @@ final class UpgradePromoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
         setupScrollView()
+        setupTopMessage()
         setupHero()
         setupBenefitsCard()
         setupButtons()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        heroGradient.frame = heroContainer.bounds
-    }
-
-    // MARK: - UI
+    // MARK: - ScrollView
 
     private func setupScrollView() {
         scrollView.alwaysBounceVertical = true
@@ -64,204 +65,210 @@ final class UpgradePromoViewController: UIViewController {
         }
 
         stackView.axis = .vertical
-        stackView.spacing = 22
+        stackView.spacing = 18
         stackView.alignment = .fill
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 24, bottom: 32, right: 24)
-
+        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 24, bottom: 32, right: 24)
+        
+        // 🔴 之前遗漏了这一段，必须有：
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
 
+    // MARK: - 顶部提示文字
+
+    private func setupTopMessage() {
+        let label = UILabel()
+        label.text = NSLocalizedString("Thanks for staying with us", comment: "")
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        label.textColor = accentColor
+        label.textAlignment = .center
+        label.numberOfLines = 0
+
+        stackView.addArrangedSubview(label)
+        
+        // 关键：让顶部文字和 hero 拉开一点距离
+           stackView.setCustomSpacing(18, after: label)
+    }
+
+    // MARK: - Hero 区
+
     private func setupHero() {
         heroContainer.layer.cornerRadius = 24
-        heroContainer.layer.masksToBounds = true
-
-        heroGradient.colors = [
-            accentColor.withAlphaComponent(0.95).cgColor,
-            accentColor.withAlphaComponent(0.7).cgColor,
-            UIColor.systemBackground.withAlphaComponent(0.1).cgColor
-        ]
-        heroGradient.startPoint = CGPoint(x: 0, y: 0)
-        heroGradient.endPoint = CGPoint(x: 1, y: 1)
-        heroContainer.layer.insertSublayer(heroGradient, at: 0)
+        heroContainer.backgroundColor = heroBackgroundColor
 
         let badge = UILabel()
-        badge.text = NSLocalizedString("Thanks for staying with us", comment: "")
+        badge.text = NSLocalizedString("FastPass Pro", comment: "")
         badge.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         badge.textColor = accentColor
-        badge.backgroundColor = .white.withAlphaComponent(0.9)
+        badge.backgroundColor = UIColor.white.withAlphaComponent(0.95)
         badge.textAlignment = .center
         badge.layer.cornerRadius = 12
         badge.layer.masksToBounds = true
 
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Upgrade to FastPass Pro", comment: "")
-        titleLabel.font = UIFont.systemFont(ofSize: 27, weight: .bold)
-        titleLabel.textColor = .white
+        titleLabel.text = NSLocalizedString("A more secure experience", comment: "Upgrade promo hero title")
+        titleLabel.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
 
         let subtitleLabel = UILabel()
-        subtitleLabel.text = NSLocalizedString("Keep your vaults backed up, fill faster across apps, and get priority support.", comment: "")
-        subtitleLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        subtitleLabel.textColor = UIColor.white.withAlphaComponent(0.9)
+        subtitleLabel.text = NSLocalizedString("Keep your vaults backed up, fill faster across apps, and get priority support.", comment: "Upgrade promo hero subtitle")
+        subtitleLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        subtitleLabel.textColor = .secondaryLabel
         subtitleLabel.numberOfLines = 0
 
         let iconBackdrop = UIView()
-        iconBackdrop.backgroundColor = UIColor.white.withAlphaComponent(0.14)
-        iconBackdrop.layer.cornerRadius = 42
-        iconBackdrop.layer.masksToBounds = true
+        iconBackdrop.backgroundColor = UIColor.white
+        iconBackdrop.layer.cornerRadius = 40
 
-        let iconView = UIImageView(image: UIImage(systemName: "bolt.fill"))
-        iconView.tintColor = .white
-        iconView.contentMode = .scaleAspectFit
+        let icon = UIImageView(image: UIImage(systemName: "lock.shield.fill"))
+        icon.tintColor = accentColor
+        icon.contentMode = .scaleAspectFit
 
+        heroContainer.addSubview(iconBackdrop)
         heroContainer.addSubview(badge)
         heroContainer.addSubview(titleLabel)
         heroContainer.addSubview(subtitleLabel)
-        heroContainer.addSubview(iconBackdrop)
-        heroContainer.addSubview(iconView)
+        iconBackdrop.addSubview(icon)
 
-        badge.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(24)
-            make.left.equalToSuperview().offset(24)
-            make.height.equalTo(28)
-            make.width.greaterThanOrEqualTo(10)
+        // 右侧图标区域
+        iconBackdrop.snp.makeConstraints {
+            $0.width.height.equalTo(80)
+            $0.right.equalToSuperview().offset(-18)
+            $0.centerY.equalToSuperview().offset(6)
+            $0.top.greaterThanOrEqualToSuperview().offset(18)
         }
 
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(badge.snp.bottom).offset(16)
-            make.left.equalTo(badge)
-            make.right.lessThanOrEqualToSuperview().offset(-24)
+        icon.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(38)
         }
 
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
-            make.left.equalTo(badge)
-            make.right.equalToSuperview().offset(-24)
+        // 左侧文字区域：右边都贴到 icon 的左边，留出 12pt 间距
+        badge.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(20)
+            $0.left.equalToSuperview().offset(18)
+            $0.right.lessThanOrEqualTo(iconBackdrop.snp.left).offset(-12)
+            $0.height.equalTo(26)
         }
 
-        iconBackdrop.snp.makeConstraints { make in
-            make.width.height.equalTo(84)
-            make.right.equalToSuperview().offset(-24)
-            make.bottom.equalToSuperview().offset(-24)
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(badge.snp.bottom).offset(14)
+            $0.left.equalTo(badge)
+            $0.right.lessThanOrEqualTo(iconBackdrop.snp.left).offset(-12)
         }
 
-        iconView.snp.makeConstraints { make in
-            make.center.equalTo(iconBackdrop)
-            make.width.height.equalTo(44)
+        subtitleLabel.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(6)
+            $0.left.equalTo(badge)
+            $0.right.lessThanOrEqualTo(iconBackdrop.snp.left).offset(-12)
+            $0.bottom.lessThanOrEqualToSuperview().offset(-18)
         }
 
-        heroContainer.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(260)
+        heroContainer.snp.makeConstraints {
+            $0.height.greaterThanOrEqualTo(180)
         }
 
         stackView.addArrangedSubview(heroContainer)
     }
 
+
+    // MARK: - Benefits 卡片
+
     private func setupBenefitsCard() {
         let card = UIView()
-        card.backgroundColor = UIColor.secondarySystemGroupedBackground
+        card.backgroundColor = .secondarySystemBackground
         card.layer.cornerRadius = 20
-        card.layer.masksToBounds = true
 
-        let featuresStack = UIStackView()
-        featuresStack.axis = .vertical
-        featuresStack.spacing = 14
-        featuresStack.alignment = .fill
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 16
 
-        featuresStack.addArrangedSubview(makeFeatureRow(
-            iconName: "icloud.and.arrow.up.fill",
+        stack.addArrangedSubview(makeFeature(
+            icon: "icloud.and.arrow.up.fill",
             title: NSLocalizedString("Protect every vault", comment: ""),
-            detail: NSLocalizedString("Encrypted backups in iCloud Drive keep your KeePass files safe across devices.", comment: "")
-        ))
-        featuresStack.addArrangedSubview(makeFeatureRow(
-            iconName: "wand.and.stars",
-            title: NSLocalizedString("AutoFill everywhere", comment: ""),
-            detail: NSLocalizedString("One-tap fill-ins in Safari, apps, and the FastPass AutoFill extension.", comment: "")
-        ))
-        featuresStack.addArrangedSubview(makeFeatureRow(
-            iconName: "sparkles.rectangle.stack",
-            title: NSLocalizedString("Unlimited vaults", comment: ""),
-            detail: NSLocalizedString("Create as many databases as you need with Pro unlocked.", comment: "")
+            desc: NSLocalizedString("Encrypted vaults stored in iCloud Drive so every change is backed up.", comment: "")
         ))
 
-        card.addSubview(featuresStack)
-        featuresStack.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(20)
-        }
+        stack.addArrangedSubview(makeFeature(
+            icon: "wand.and.stars",
+            title: NSLocalizedString("AutoFill everywhere", comment: ""),
+            desc: NSLocalizedString("One-tap fill-ins in Safari, apps, and the FastPass AutoFill extension.", comment: "")
+        ))
+
+        stack.addArrangedSubview(makeFeature(
+            icon: "sparkles.rectangle.stack",
+            title: NSLocalizedString("Unlimited vaults", comment: ""),
+            desc: NSLocalizedString("Create as many databases as you need with Pro unlocked.", comment: "")
+        ))
+
+        card.addSubview(stack)
+        stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(20) }
 
         stackView.addArrangedSubview(card)
     }
 
-    private func setupButtons() {
-        let buttonStack = UIStackView()
-        buttonStack.axis = .vertical
-        buttonStack.spacing = 12
-        buttonStack.alignment = .fill
-
-        buttonStack.addArrangedSubview(subscribeButton)
-        buttonStack.addArrangedSubview(closeButton)
-
-        subscribeButton.snp.makeConstraints { make in
-            make.height.equalTo(52)
-        }
-
-        stackView.addArrangedSubview(buttonStack)
-    }
-
-    private func makeFeatureRow(iconName: String, title: String, detail: String) -> UIView {
+    private func makeFeature(icon: String, title: String, desc: String) -> UIView {
         let container = UIView()
 
-        let iconWrap = UIView()
-        iconWrap.backgroundColor = accentColor.withAlphaComponent(0.12)
-        iconWrap.layer.cornerRadius = 14
-        iconWrap.layer.masksToBounds = true
+        let wrap = UIView()
+        wrap.backgroundColor = accentColor.withAlphaComponent(0.12)
+        wrap.layer.cornerRadius = 14
 
-        let iconView = UIImageView(image: UIImage(systemName: iconName))
+        let iconView = UIImageView(image: UIImage(systemName: icon))
         iconView.tintColor = accentColor
-        iconView.contentMode = .scaleAspectFit
 
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        titleLabel.textColor = .label
         titleLabel.text = title
-        titleLabel.numberOfLines = 0
+        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
 
-        let detailLabel = UILabel()
-        detailLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
-        detailLabel.textColor = .secondaryLabel
-        detailLabel.text = detail
-        detailLabel.numberOfLines = 0
+        let descLabel = UILabel()
+        descLabel.text = desc
+        descLabel.font = .systemFont(ofSize: 14)
+        descLabel.textColor = .secondaryLabel
+        descLabel.numberOfLines = 0
 
-        let textStack = UIStackView(arrangedSubviews: [titleLabel, detailLabel])
-        textStack.axis = .vertical
-        textStack.spacing = 4
+        let v = UIStackView(arrangedSubviews: [titleLabel, descLabel])
+        v.axis = .vertical
+        v.spacing = 3
 
-        container.addSubview(iconWrap)
-        container.addSubview(iconView)
-        container.addSubview(textStack)
+        container.addSubview(wrap)
+        wrap.addSubview(iconView)
+        container.addSubview(v)
 
-        iconWrap.snp.makeConstraints { make in
-            make.width.height.equalTo(44)
+        wrap.snp.makeConstraints { make in
             make.left.top.equalToSuperview()
+            make.size.equalTo(CGSize(width: 44, height: 44))
             make.bottom.lessThanOrEqualToSuperview()
         }
 
-        iconView.snp.makeConstraints { make in
-            make.center.equalTo(iconWrap)
-            make.width.height.equalTo(22)
-        }
+        iconView.snp.makeConstraints { $0.center.equalToSuperview() }
 
-        textStack.snp.makeConstraints { make in
-            make.left.equalTo(iconWrap.snp.right).offset(12)
+        v.snp.makeConstraints { make in
+            make.left.equalTo(wrap.snp.right).offset(12)
             make.top.equalToSuperview()
             make.right.equalToSuperview()
             make.bottom.equalToSuperview()
         }
 
         return container
+    }
+
+    // MARK: - Buttons
+
+    private func setupButtons() {
+        let buttonStack = UIStackView()
+        buttonStack.axis = .vertical
+        buttonStack.spacing = 14
+
+        buttonStack.addArrangedSubview(subscribeButton)
+        buttonStack.addArrangedSubview(closeButton)
+
+        subscribeButton.snp.makeConstraints { $0.height.equalTo(52) }
+
+        stackView.addArrangedSubview(buttonStack)
     }
 
     // MARK: - Actions
@@ -275,6 +282,6 @@ final class UpgradePromoViewController: UIViewController {
 
     @objc private func closeTapped() {
         UpgradeExperience.markSeen()
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
     }
 }

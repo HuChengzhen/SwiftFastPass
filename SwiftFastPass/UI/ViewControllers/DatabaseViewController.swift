@@ -2,9 +2,6 @@
 //  DatabaseViewController.swift
 //  SwiftFastPass
 //
-//  Created by 胡诚真 on 2019/6/7.
-//  Copyright © 2019 huchengzhen. All rights reserved.
-//
 
 import KeePassKit
 import SnapKit
@@ -16,9 +13,74 @@ class DatabaseViewController: UIViewController {
 
     private var tableView: UITableView!
 
+    /// 和其它页面统一的主色
+    private let accentColor = UIColor(red: 0.25, green: 0.49, blue: 1.0, alpha: 1.0)
+
+    /// 空状态视图（卡片风格）
+    private lazy var emptyStateView: UIView = {
+        let container = UIView()
+
+        let card = UIView()
+        card.backgroundColor = .secondarySystemBackground
+        card.layer.cornerRadius = 18
+        card.layer.masksToBounds = true
+
+        let iconView = UIImageView()
+        // 用系统「rectangle.stack.badge.plus」图标，和 FastPass 其它页面风格接近
+        iconView.image = UIImage(systemName: "rectangle.stack.badge.plus")
+        iconView.tintColor = accentColor
+        iconView.contentMode = .scaleAspectFit
+
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("No Groups or Items", comment: "")
+        titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = NSLocalizedString("Tap the + button in the top right to create a group or item.", comment: "")
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        subtitleLabel.textColor = .secondaryLabel
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.textAlignment = .center
+
+        container.addSubview(card)
+        card.addSubview(iconView)
+        card.addSubview(titleLabel)
+        card.addSubview(subtitleLabel)
+
+        card.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.left.equalToSuperview().offset(32)
+            make.right.equalToSuperview().offset(-32)
+        }
+
+        iconView.snp.makeConstraints { make in
+            make.top.equalTo(card.snp.top).offset(24)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(32)
+        }
+
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(iconView.snp.bottom).offset(16)
+            make.left.equalTo(card.snp.left).offset(20)
+            make.right.equalTo(card.snp.right).offset(-20)
+        }
+
+        subtitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.left.equalTo(card.snp.left).offset(20)
+            make.right.equalTo(card.snp.right).offset(-20)
+            make.bottom.equalTo(card.snp.bottom).offset(-20)
+        }
+
+        return container
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        updateEmptyStateIfNeeded()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -39,13 +101,16 @@ class DatabaseViewController: UIViewController {
             action: #selector(addButtonTapped(sender:))
         )
 
-        // 统一用 insetGrouped 风格，和系统“设置”/你订阅页列表一致
         tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.backgroundColor = .clear
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: 64, bottom: 0, right: 16)
+        tableView.separatorStyle = .none                // ✅ 去掉系统分割线
+        tableView.separatorInset = .zero
         tableView.estimatedRowHeight = 60
-        tableView.rowHeight = 56
+        tableView.rowHeight = 64                        // ✅ 行高稍微高一点
         tableView.tableFooterView = UIView()
+        tableView.contentInset = UIEdgeInsets(          // ✅ 顶部和底部都空一点
+            top: 8, left: 0, bottom: 24, right: 0
+        )
 
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
@@ -61,6 +126,17 @@ class DatabaseViewController: UIViewController {
             action: #selector(handleTableLongPress(_:))
         )
         tableView.addGestureRecognizer(longPressGesture)
+    }
+
+
+    /// 根据当前数据是否为空，决定是否显示空状态
+    private func updateEmptyStateIfNeeded() {
+        let isEmpty = group.groups.isEmpty && group.entries.isEmpty
+        if isEmpty {
+            tableView.backgroundView = emptyStateView
+        } else {
+            tableView.backgroundView = nil
+        }
     }
 
     // MARK: - Actions
@@ -151,6 +227,7 @@ class DatabaseViewController: UIViewController {
 
 extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in _: UITableView) -> Int {
+        // 仍然保留「组 / 项」的分区结构
         return 2
     }
 
@@ -163,11 +240,19 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let rows: Int
         switch section {
-        case 0: return group.groups.count
-        case 1: return group.entries.count
+        case 0: rows = group.groups.count
+        case 1: rows = group.entries.count
         default: fatalError()
         }
+
+        // 每次数据源询问行数时顺带刷新一下空状态
+        DispatchQueue.main.async { [weak self] in
+            self?.updateEmptyStateIfNeeded()
+        }
+
+        return rows
     }
 
     func tableView(_ tableView: UITableView,
@@ -246,15 +331,18 @@ extension DatabaseViewController: UITableViewDataSource, UITableViewDelegate {
                         autoFillUUIDs.forEach {
                             AutoFillCredentialStore.shared.removeCredential(withUUID: $0)
                         }
-                        tableView.deleteRows(at: [indexPath], with: .automatic)
-                        successHandler(true)
+                        DispatchQueue.main.async {
+                            tableView.deleteRows(at: [indexPath], with: .automatic)
+                            self.updateEmptyStateIfNeeded()
+                            successHandler(true)
+                        }
                     }
                 }
             }
             alertController.addAction(deleteAction)
 
             let cancel = UIAlertAction(
-                title: "Cancel",
+                title: NSLocalizedString("Cancel", comment: ""),
                 style: .cancel
             ) { _ in
                 successHandler(false)
@@ -289,6 +377,7 @@ extension DatabaseViewController: EntryViewControllerDelegate {
             DispatchQueue.main.async {
                 if success {
                     self.tableView.reloadData()
+                    self.updateEmptyStateIfNeeded()
                     onSuccess?()
                 } else {
                     let alertController = UIAlertController(
