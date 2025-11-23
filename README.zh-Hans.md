@@ -11,19 +11,14 @@
 本仓库包含完整 App 源码、测试代码及全部依赖配置（CocoaPods / Carthage）。
 
 ---
-![Icon](IconImage/1024.png)
+<img src="IconImage/1024.png" width="180">
 
-![Icon](Screenshot/iphone/en_01.png)
-
-![Icon](Screenshot/iphone/en_02.png)
-
-![Icon](Screenshot/iphone/en_03.png)
-
-![Icon](Screenshot/iphone/en_04.png)
-
-![Icon](Screenshot/iphone/en_05.png)
-
-![Icon](Screenshot/iphone/en_06.png)
+<img src="Screenshot/iphone/en_01.png" width="300">
+<img src="Screenshot/iphone/en_02.png" width="300">
+<img src="Screenshot/iphone/en_03.png" width="300">
+<img src="Screenshot/iphone/en_04.png" width="300">
+<img src="Screenshot/iphone/en_05.png" width="300">
+<img src="Screenshot/iphone/en_06.png" width="300">
 
 # ✨ 功能亮点
 

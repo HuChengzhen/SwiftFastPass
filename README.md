@@ -14,14 +14,14 @@ This repository contains the complete app source code, test suites, and all depe
 
 ---
 
-![Icon](IconImage/1024.png)
+<img src="IconImage/1024.png" width="180">
 
-![Screenshot](Screenshot/iphone/en_01.png)
-![Screenshot](Screenshot/iphone/en_02.png)
-![Screenshot](Screenshot/iphone/en_03.png)
-![Screenshot](Screenshot/iphone/en_04.png)
-![Screenshot](Screenshot/iphone/en_05.png)
-![Screenshot](Screenshot/iphone/en_06.png)
+<img src="Screenshot/iphone/en_01.png" width="300">
+<img src="Screenshot/iphone/en_02.png" width="300">
+<img src="Screenshot/iphone/en_03.png" width="300">
+<img src="Screenshot/iphone/en_04.png" width="300">
+<img src="Screenshot/iphone/en_05.png" width="300">
+<img src="Screenshot/iphone/en_06.png" width="300">
 
 ---
 
