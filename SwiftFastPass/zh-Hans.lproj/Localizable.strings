@@ -177,6 +177,8 @@
 "Your 1-month free trial will convert to a monthly subscription. You can cancel at least 24 hours before the trial ends in your App Store account settings." = "你的 1 个月免费试用结束后将自动转为月度订阅。你可以在试用结束前至少 24 小时在 App Store 账户设置中取消。";
 "Your 1-month free trial will convert to a monthly subscription at %@/month. You can cancel at least 24 hours before the trial ends in your App Store account settings." = "你的 1 个月免费试用结束后将以 %@/月自动续订。你可以在试用结束前至少 24 小时在 App Store 账户设置中取消。";
 "%@ per month • 1-month free trial • %@" = "%@ /月 • 1 个月免费试用 • %@";
+"Privacy Policy" = "《隐私政策》";
+"Terms of Use" = "《使用条款》";
 "A more secure experience" = "更安心的安全体验";
 "Import from Chrome (CSV)" = "从 Chrome 导入（CSV）";
 "Importing Chrome passwords..." = "正在导入 Chrome 密码…";

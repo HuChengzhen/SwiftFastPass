@@ -47,6 +47,9 @@ final class SubscriptionPaywallViewController: UIViewController {
     // 底部订阅按钮 + 法律说明
     private let subscribeButton = UIButton(type: .system)
     private let legalLabel = UILabel()
+    private let legalLinksStackView = UIStackView()
+    private let privacyButton = UIButton(type: .system)
+    private let termsButton = UIButton(type: .system)
 
     // Loading
     private lazy var loadingView: UIActivityIndicatorView = {
@@ -381,9 +384,13 @@ final class SubscriptionPaywallViewController: UIViewController {
     private func setupSubscribeSection() {
         subscribeButton.translatesAutoresizingMaskIntoConstraints = false
         legalLabel.translatesAutoresizingMaskIntoConstraints = false
+        legalLinksStackView.translatesAutoresizingMaskIntoConstraints = false
+        privacyButton.translatesAutoresizingMaskIntoConstraints = false
+        termsButton.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(subscribeButton)
         contentView.addSubview(legalLabel)
+        contentView.addSubview(legalLinksStackView)
 
         // 主按钮：强调“开始免费试用”
         subscribeButton.setTitle(
@@ -407,6 +414,21 @@ final class SubscriptionPaywallViewController: UIViewController {
             comment: ""
         )
 
+        // 链接按钮（隐私政策 / 使用条款）
+        legalLinksStackView.axis = .horizontal
+        legalLinksStackView.spacing = 16
+        legalLinksStackView.alignment = .center
+
+        configureLinkButton(privacyButton,
+                            titleKey: "Privacy Policy",
+                            action: #selector(privacyPolicyTapped))
+        configureLinkButton(termsButton,
+                            titleKey: "Terms of Use",
+                            action: #selector(termsOfUseTapped))
+
+        legalLinksStackView.addArrangedSubview(privacyButton)
+        legalLinksStackView.addArrangedSubview(termsButton)
+
         NSLayoutConstraint.activate([
             subscribeButton.topAnchor.constraint(equalTo: productsStackView.bottomAnchor, constant: 24),
             subscribeButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
@@ -415,7 +437,11 @@ final class SubscriptionPaywallViewController: UIViewController {
             legalLabel.topAnchor.constraint(equalTo: subscribeButton.bottomAnchor, constant: 8),
             legalLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32),
             legalLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -32),
-            legalLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
+            legalLinksStackView.topAnchor.constraint(equalTo: legalLabel.bottomAnchor, constant: 8),
+            legalLinksStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            legalLinksStackView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 24),
+            legalLinksStackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -24),
+            legalLinksStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
     }
 
@@ -588,6 +614,20 @@ final class SubscriptionPaywallViewController: UIViewController {
         return control
     }
 
+    private func configureLinkButton(_ button: UIButton, titleKey: String, action: Selector) {
+        let title = NSLocalizedString(titleKey, comment: "")
+        let attributed = NSAttributedString(
+            string: title,
+            attributes: [
+                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .foregroundColor: accentColor,
+                .font: UIFont.systemFont(ofSize: 12, weight: .medium)
+            ]
+        )
+        button.setAttributedTitle(attributed, for: .normal)
+        button.addTarget(self, action: action, for: .touchUpInside)
+    }
+
     private func updateStatusUI() {
         let description = statusText(for: entitlement)
         planHeadlineLabel.text = description.title
@@ -648,11 +688,24 @@ final class SubscriptionPaywallViewController: UIViewController {
         subscriptionManager.purchase(productID: first.identifier)
     }
 
+    @objc private func privacyPolicyTapped() {
+        openURLString("https://huchengzhen.github.io/fastpass-legal/privacy.html")
+    }
+
+    @objc private func termsOfUseTapped() {
+        openURLString("https://huchengzhen.github.io/fastpass-legal/terms.html")
+    }
+
     @objc private func productCardTapped(_ sender: UIControl) {
         let index = sender.tag
         guard index >= 0, index < products.count else { return }
         let product = products[index]
         subscriptionManager.purchase(productID: product.identifier)
+    }
+
+    private func openURLString(_ string: String) {
+        guard let url = URL(string: string) else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
 
